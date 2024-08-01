@@ -1,0 +1,413 @@
+.loading_dos .modal{
+    display: block;
+    margin: 0 auto;
+    width: 400px;
+    height: 200px;
+	background-color: transparent;
+	
+}
+
+.loading_dos {
+    display: block;
+    margin: 0 auto;
+    position: fixed;
+    z-index: 100000;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba( 0, 0, 0, .4 ) url(../img/loading-spinner-blue.gif) 50% 50% no-repeat;
+}
+.disabledbutton {
+    pointer-events: none;
+    opacity: 0.4;
+    cursor:  not-allowed;
+}
+.static {
+  position: absolute;
+  background-color: white;
+}
+.detail {
+    display: none;
+    margin: 0 auto ;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 0, 0, 0, .4 ) ;
+                
+}
+.select2-container--open {
+	z-index: 15000;
+}
+.detail .modal{
+  display: none;
+  margin: 0 auto ;
+  top: 150px;
+  width: 60%;
+  height: 50%;
+  border: 2px solid;
+  border-color: #fff;
+  border-radius: 10px; 
+  background-color: #fff;
+  -webkit-box-shadow: 10px 10px 28px -4px rgba(82,77,82,1);
+  -moz-box-shadow: 10px 10px 28px -4px rgba(82,77,82,1);
+  box-shadow: 10px 10px 28px -4px rgba(82,77,82,1);
+}
+.fixed-column {
+    position: absolute;
+    display: inline-block;
+    width: auto;
+    border-right: 1px solid #ddd;
+}
+.outer_face {
+	    position: relative;
+	    width: 100px; /* width of clock */
+	    height: 100px; /* height of clock */
+	    border-radius: 100px; /* clock round corner radius */
+	    background: white;
+	    box-shadow: inset 0 0 10px gray;
+	    border: 0 solid gray; /* thickness of outer border */
+	    }
+ 
+	.outer_face::before, .outer_face::after, .outer_face .marker { /* time markers syle */
+	    content: "";
+	    position: absolute;
+	    width: 8px; /* width of 12-6 and 3-9 markers */
+	    height: 100%;
+	    background: black;
+	    z-index: 0;
+	    left: 50%;
+	    margin-left: -4px; /* set this value of 1/2 marker width */
+	    top: 0
+	    }
+ 
+	.outer_face::after {
+	    -moz-transform: rotate(90deg);
+	    -ms-transform: rotate(90deg);
+	    -webkit-transform: rotate(90deg);
+	    transform: rotate(90deg)
+	    }
+ 
+	.outer_face .marker {
+	    background: gray;
+	    width: 6px; /* width of all other markers */
+	    margin-left: -3px /* set this value of 1/2 marker width */
+	    }
+ 
+	.outer_face .marker.oneseven {
+	    -moz-transform: rotate(30deg);
+	    -ms-transform: rotate(30deg);
+	    -webkit-transform: rotate(30deg);
+	    transform: rotate(30deg)
+	    }
+ 
+	.outer_face .marker.twoeight {
+	    -moz-transform: rotate(60deg);
+	    -ms-transform: rotate(60deg);
+	    -webkit-transform: rotate(60deg);
+	    transform: rotate(60deg)
+	    }
+ 
+	.outer_face .marker.fourten {
+	    -moz-transform: rotate(120deg);
+	    -ms-transform: rotate(120deg);
+	    -webkit-transform: rotate(120deg);
+	    transform: rotate(120deg)
+	    }
+ 
+	.outer_face .marker.fiveeleven {
+	    -moz-transform: rotate(150deg);
+	    -ms-transform: rotate(150deg);
+	    -webkit-transform: rotate(150deg);
+	    transform: rotate(150deg)
+	    }
+ 
+	.inner_face {
+	    position: relative;
+	    width: 88%;
+	    height: 88%;
+	    background: white;
+	    -moz-border-radius: 1000px;
+	    -webkit-border-radius: 1000px;
+	    border-radius: 1000px;
+	    z-index: 1000;
+	    left: 6%; /* set this value of 1/2 width value*/
+	    top: 6% /* set this value of 1/2 height value*/
+	    }
+ 
+	.inner_face::before {
+	    /* clock center circle small */
+	    content: "";
+	    width: 18px; /* width of inner circle */
+	    height: 18px; /* height of inner circle */
+	    border-radius: 18px;
+	    margin-left: -9px; /* set this value of 1/2 width value*/
+	    margin-top: -9px; /* set this value of 1/2 height value*/
+	    background: black;
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    box-shadow: 0 0 30px blue;
+	    }
+ 
+	.inner_face::after {
+	    content: "QUARTZ";
+	    position: absolute;
+	    width: 100%;
+	    font: normal 0.8em Arial;
+	    color: gray;
+	    text-align: center;
+	    top: 85%
+	    }
+ 
+	.hand, .hand.hour {
+	    position: absolute;
+	    width: 4px; /* width of hour hand */
+	    height: 30%; /* height of hour hand */
+	    top: 20%; /* set top to 50% - height */
+	    left: 50%;
+	    margin-left: -2px; /* set this value to 1/2 width */
+	    background: black;
+	    -moz-transform: rotate(0deg);
+	    -ms-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	    -moz-transform-origin: bottom;
+	    -ms-transform-origin: bottom;
+	    -webkit-transform-origin: bottom;
+	    transform-origin: bottom;
+	    z-index: -1;
+	    -moz-box-shadow: 0 0 3px gray;
+	    -webkit-box-shadow: 0 0 3px gray;
+	    box-shadow: 0 0 3px gray
+	    }
+ 
+	.hand.minute {
+	    height: 45%; /* height of min hand */
+	    top: 5%; /* set top to 50% - height */
+	    width: 5px; /* width of min hand */
+	    margin-left: -2.5px; /* set this value to 1/2 width */
+	    }
+ 
+	.hand.second {
+	    height: 50%; /* height of sec hand */
+	    width: 2px; /* width of sec hand */
+	    margin-left: -1px; /* set this value to 1/2 width */
+	    top: 0;
+	    background: red
+	    }
+	    
+.switch2 {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 25.5px;
+}
+table {
+  overflow-x: auto;
+}
+
+.static {
+  position: absolute;
+  background-color: white;
+  margin-left: 0px!important;
+  z-index: 100;
+  height: 40.3px;
+  width: 89px;
+}
+.static2 {
+  position: absolute;
+  background-color: white;
+  margin-left: 84px!important;
+  z-index: 100;
+  height: 40.3px;
+  width: 89px;
+}
+.static3 {
+  position: absolute;
+  background-color: white;
+  margin-left: 168px!important;
+  z-index: 100;
+  height: 40.3px;
+  width: 125px;
+}
+
+.first-col {
+  padding-left: 300px!important;
+}
+
+.static-rg {
+  position: absolute;
+  background-color: white;
+  margin-left: 0px!important;
+  z-index: 100;
+  height: 42.3px;
+  width: 50px;
+}
+.static2-rg {
+  position: absolute;
+  background-color: white;
+  margin-left: 49.5px!important;
+  z-index: 100;
+  height: 42.3px;
+  width: 89px;
+}
+.static3-rg {
+  position: absolute;
+  background-color: white;
+  margin-left: 133px!important;
+  z-index: 100;
+  height: 42.3px;
+  width: 125px;
+}
+.static4-rg {
+  position: absolute;
+  background-color: white;
+  margin-left: 257px!important;
+  z-index: 100;
+  height: 42.3px;
+  width: 200px;
+  text-align: left;
+}
+
+.first-col-rg {
+  padding-left: 462px!important;
+}
+.switch2 input {display:none;}
+
+.slider2 {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider2:before {
+  position: absolute;
+  content: "";
+  height: 19.5px;
+  width: 19.5px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+
+input:checked + .slider2 {
+  background-color: #007CFF;
+}
+
+input:focus + .slider2 {
+  box-shadow: 0 0 1px #007CFF;
+}
+
+input:checked + .slider2:before {
+  -webkit-transform: translateX(19.5px);
+  -ms-transform: translateX(19.5px);
+  transform: translateX(19.5px);
+}
+
+/* Rounded sliders */
+.slider2.round {
+  border-radius: 34px;
+}
+
+.slider2.round:before {
+  border-radius: 50%;
+}
+td {
+     text-transform:uppercase;
+}
+.progress-cl .pro-mdl{
+    display: block;
+    margin: 50% auto;
+    width: 80%;
+    height: 200px;
+	background-color: transparent;
+	
+}
+
+.progress-cl {
+    display: block;
+    margin: 0 auto;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba( 0, 0, 0, .4 ) 50% 50% no-repeat;
+}
+#myProgress {
+	width: 100%;
+	background-color: #ddd;
+}
+
+#myBar {
+	width: 1%;
+	height: 8px;
+	background-color: #4CAF50;
+	text-align: center;
+	line-height: 30px;
+	color: white;
+}
+#tbl_RendimientoVlidadr { white-space: nowrap; }
+
+
+.tbl-row-rap { white-space: nowrap; }
+/*     div.dataTables_wrapper { */
+/* /*         width: 800px; */ */
+/*         margin: 0 auto; */
+/*     } */
+details-control{
+	background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+
+td.details-control {
+    background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.details td.details-control {
+    background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
+}
+th.rotate  {
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+	
+	
+	  /* Legacy vendor prefixes that you probably don't need... */
+	
+	  /* Safari */
+	-webkit-transform: rotate(-90deg);
+	
+	  /* Firefox */
+	-moz-transform: rotate(-90deg);
+	
+	  /* IE */
+	-ms-transform: rotate(-90deg);
+	
+	  /* Opera */
+	-o-transform: rotate(-90deg);
+	
+	  /* Internet Explorer */
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	position: relative;
+	text-align: center;
+	/*   height: 80px; */
+	margin: auto;
+	/*   left: -65px; */
+	white-space: nowrap;
+	padding: 10px 0 0 0!important;
+}
