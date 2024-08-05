@@ -4,18 +4,47 @@
     ***********/
 /* Header search bar, toggler button & top menu */
 .page-header.navbar {
-  background-color: #1f1f1f;
+	background-color: #214060;
+/*   background-color: #D8DDE5; */
+/*   background-color: #000; */
   /* Top notification menu/bar */
   /* Header seaech box */
   /* Toggler button for sidebar expand/collapse and responsive sidebar menu */ }
-  .page-header.navbar .top-menu .navbar-nav {
-    /* Extended Dropdowns */
-    /* Notification */
-    /* Inbox */
-    /* Tasks */
-    /* User */
-    /* Language */
-    /* Dark version */ }
+  .page-content-wrapper {
+    background-color: #214060 !important;
+/*     background-color: #D8DDE5; */
+/*     background-color: #000 !important; */
+}
+.page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover,
+.page-sidebar {
+  background-color: #214060;
+/*   background-color: #D8DDE5; */
+/*   background-color: #000; */
+  /* Default sidebar */
+  /* light sidebar */
+  /* Sidebar search */ }
+
+
+.page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li > a > i[class^="icon-"], .page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li > a > i[class*="icon-"], .page-sidebar .page-sidebar-menu > li > a > i[class^="icon-"], .page-sidebar .page-sidebar-menu > li > a > i[class*="icon-"] {
+/*     color: #000 !important; */
+    color: #fff !important;
+}
+.page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li:hover > a, .page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li.open > a, .page-sidebar .page-sidebar-menu > li:hover > a, .page-sidebar .page-sidebar-menu > li.open > a {
+    color: #fff !important;
+/*     color: #000 !important; */
+}
+.page-sidebar-closed.page-sidebar-fixed .page-sidebar:hover .page-sidebar-menu > li > a, .page-sidebar .page-sidebar-menu > li > a {
+/*     color: #000 !important; */
+    color: #fff !important;
+}
+span.username.username-hide-on-mobile {
+/*     color: #000 !important; */
+    color: #fff !important;
+}
+.btn.btn-outline.green {
+    border-color: #3D61A0 !important;
+    color: #3D61A0 !important;
+}
     .page-header.navbar .top-menu .navbar-nav > li.dropdown .dropdown-toggle > i {
       color: #999999; }
     .page-header.navbar .top-menu .navbar-nav > li.dropdown .dropdown-toggle .badge.badge-default {

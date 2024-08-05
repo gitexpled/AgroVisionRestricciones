@@ -55,7 +55,7 @@ License: You must have a valid license purchased only from themeforest(the above
         <!-- BEGIN LOGO -->
         <div class="logo">
            
-                <img src="../assets/pages/img/logo-big.png?1" alt="" /> 
+                <img src="../assets/pages/img/logo-agrovision-blanco.png?1" style="width:100px;" alt="" /> 
         </div>
         <!-- END LOGO -->
         <!-- BEGIN LOGIN -->
@@ -114,10 +114,6 @@ License: You must have a valid license purchased only from themeforest(the above
             </form>
             <!-- END FORGOT PASSWORD FORM -->
           
-        </div>
-        <div class="logo">
-           
-                <img src="../assets/pages/img/hortiSafe.png?1" alt="" /> 
         </div>
         <!-- END LOGIN -->
         <!-- BEGIN COPYRIGHT -->
