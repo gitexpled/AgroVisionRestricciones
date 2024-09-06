@@ -122,7 +122,7 @@
 									<!--/span-->
 									<div class="col-md-3">
 										<div class="form-group">
-											<label class="control-label">Parcela</label> 
+											<label class="control-label">Etapa</label> 
 												<select name="codParcela" class="codParcela form-control" id="codParcela">
                                        		<option value="">Seleccionar</option>
                                       </select>
@@ -277,7 +277,7 @@
 									<!--/span-->
 									<div class="col-md-3">
 										<div class="form-group">
-											<label class="control-label">Parcela</label> 
+											<label class="control-label">Etapa</label> 
 												<select name="codParcela" class="codParcelaUpdate form-control" id="codParcelaUpdate">
                                        		<option value="">Seleccionar</option>
                                       </select>

@@ -48,9 +48,9 @@ var TableDatatablesAjax = function() {
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
 
-										//html += "<a class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
-										//		+ full[8]
-										//		+ "' href='#modal-modifica-cuenta'><i class='fa fa-pencil-square'></i></a> ";
+										html += "<a class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
+												+ full[8]
+												+ "' href='#modal-modifica-cuenta'><i class='fa fa-pencil-square'></i></a> ";
 
 										html += "</div>";
 

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<div class="row">
+<!--  <div class="row">
 	<div class="portlet light portlet-fit portlet-datatable bordered">
 
 		<div class="portlet-body">
@@ -164,7 +164,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Registro Nuevo Parcela</h4>
+                <h4 class="modal-title">Registro Nuevo Etapa</h4>
             </div>
             <div class="modal-body">
                 <div class="scroller" style="height:300px" data-always-visible="1" data-rail-visible1="1">
@@ -216,4 +216,5 @@
         </div>
        </form>
     </div>
-</div>
+</div>-->
+<table class="table table-bordered table-scrollable table-hovertable-striped  table-condensed nowrap" id="tbl_RendimientoVlidadr"></table>

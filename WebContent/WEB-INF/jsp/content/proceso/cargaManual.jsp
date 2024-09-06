@@ -32,7 +32,8 @@
 						<tr role="row" class="heading">
 							<th width="1%">id</th>
 							<th width="20%">Cod. Productor</th>
-							<th width="20%">Cod. Parcela</th>
+							<th width="20%">Especie</th>
+							<th width="20%">Cod. Etapa</th>
 							<th width="20%">Cod. Turno</th>
 							<th width="20%">Cod. Variedad</th>
 							<th width="20%">Fecha muestreo</th>
@@ -44,6 +45,9 @@
 							<td></td>
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_codProductor">
+							</td>
+							<td><input type="text"
+								class="form-control form-filter input-sm" name="vw_especie">
 							</td>
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_codParcela">
@@ -134,7 +138,7 @@
 									<!--/span-->
 									<div class="col-md-3">
 										<div class="form-group">
-											<label class="control-label">Parcela</label> 
+											<label class="control-label">Etapa</label> 
 												<select name="codParcela" class="codParcela form-control" id="codParcela">
                                        		<option value="">Seleccionar</option>
                                       </select>
@@ -298,7 +302,7 @@
 									<!--/span-->
 									<div class="col-md-3">
 										<div class="form-group">
-											<label class="control-label">Parcela</label> 
+											<label class="control-label">Etapa</label> 
 												<select name="codParcela" class="codParcelaUpdate form-control" id="codParcelaUpdate">
                                        		<option value="">Seleccionar</option>
                                       </select>

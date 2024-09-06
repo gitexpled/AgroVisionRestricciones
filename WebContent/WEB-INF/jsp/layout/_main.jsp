@@ -74,7 +74,7 @@ License: You must have a valid license purchased only from themeforest(the above
                     <!-- BEGIN LOGO -->
                          <div class="page-logo">
                         <a href="homePage">
-                            <img src="../assets/pages/img/logo-agrovision-blanco.png?1" alt="logo" class=""  style="width: auto; height: 50px"/> </a>
+                            <img src="../assets/pages/img/LogoAGVBlanco1.png?1" alt="logo" class=""  style="width: auto; height: 50px"/> </a>
                         <div class="menu-toggler sidebar-toggler">
                             <span></span>
                         </div>

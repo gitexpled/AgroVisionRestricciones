@@ -187,8 +187,17 @@ public class cargaManualDB {
 		try {
 
 			stmt = db.conn.createStatement();
+			
+			sql += 	"SELECT ";
+			sql += 		"c.*, e.especie as especie, v.cod , v.nombre ";
+			sql += 	"FROM ";
+			sql += 		"cargaManual c ";
+			sql += 		"left join especie e on(c.idEspecie = e.idEspecie) ";
+			sql += 		"LEFT JOIN variedad v ON (c.idVariedad = v.idVariedad) ";
+			sql += 	"WHERE ";
+			sql += 		"normal = 'Y' ";
 
-			sql = "SELECT * FROM cargaManual c left join variedad v  on (c.idVariedad=v.idVariedad)  WHERE normal='Y'  ";
+			//sql = "SELECT * FROM cargaManual c left join variedad v  on (c.idVariedad=v.idVariedad)  WHERE normal='Y'  ";
 
 			
 			String andSql="  ";
@@ -231,6 +240,7 @@ public class cargaManualDB {
 			if (length > 0) {
 				sql += " limit " + start + "," + length + " ";
 			}
+			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				cargaManual o = new cargaManual();
@@ -242,6 +252,7 @@ public class cargaManualDB {
 				o.setCodParcela(rs.getString("codParcela"));
 				o.setCodTurno(rs.getString("codTurno"));
 				o.setIdVariedad(rs.getString("cod"));
+				o.setEspecie(rs.getString("especie"));
 				arr.add(o);
 			}
 			rs.close();

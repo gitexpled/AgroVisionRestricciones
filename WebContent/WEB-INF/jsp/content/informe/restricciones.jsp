@@ -34,7 +34,7 @@
 						<tr role="row" class="heading">
 							<th width="10%">Codigo HF</th>
 							<th width="20%">Productor</th>
-							<th width="10%">Parcela</th>
+							<th width="10%">Etapa</th>
 							<th width="10%">Turno</th>
 							<th width="10%">Fecha Ingreso</th>
 							<th width="10%">Fecha Carga</th>

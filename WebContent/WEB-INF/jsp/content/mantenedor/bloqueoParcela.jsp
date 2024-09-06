@@ -21,7 +21,7 @@
 						<tr role="row" class="heading">
 							<th width="10%">ID</th>
 							<th width="10%">Cód Productor</th>
-							<th width="10%">Cód Parcela</th>
+							<th width="10%">Cód Etapa</th>
 							<th width="10%">Cód Variedad</th>
 							<th width="10%">Cód Mercado</th>
 							<th width="10%">Comentario</th>
@@ -91,7 +91,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-4 control-label">Cod. Parcela</label>
+							<label class="col-md-4 control-label">Cod. Etapa</label>
 							<div class="col-md-8">
 								<div class="input-icon right">
 									<select name="codParcelaUpdate" class="codParcela form-control" id="codParcelaUpdate">
@@ -164,7 +164,7 @@
                         </div>
                     	
 						 <div class="form-group">
-                            <label class="col-md-4 control-label">Cod Parcela</label>
+                            <label class="col-md-4 control-label">Cod Etapa</label>
                            <div class="col-md-8">
                                 <div class="input-icon input-large">
                                     <div class="input-group">

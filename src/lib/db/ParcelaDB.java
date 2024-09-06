@@ -275,6 +275,8 @@ public class ParcelaDB {
 		try {
 
 			stmt = db.conn.createStatement();
+			
+			sql = "select distinct Etapa, EtapaDenomina from jerarquias where Productor = ";
 
 			sql = "SELECT * FROM parcela ";
 

@@ -54,7 +54,7 @@
 						
 							<th width="15%">especie</th>
 							<th width="15%">productor</th>
-							<th width="15%">parcela</th>
+							<th width="15%">Etapa</th>
 							<th width="15%">turno</th>
 							<th width="15%">variedad</th>
 							

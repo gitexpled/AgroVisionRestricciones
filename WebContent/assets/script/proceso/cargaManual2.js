@@ -991,6 +991,40 @@ jQuery(document).ready(function() {
 $('#codProductor').on('change', function() {
 	$('.codParcela').empty();
 	$('.codParcela').append('<option value="">Seleccionar</option>');
+	
+	const get = {
+		SP: "get_ParcelaByProductor",
+		FILTERS: {
+			p_productor: this.value
+		}
+	}
+	console.log(get)
+	$.ajax({
+		url: PROYECT+"json/CallSp",
+		type:	"PUT",
+		dataType: 'json',
+		data: JSON.stringify(get),
+		async: false,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept","application/json");
+			xhr.setRequestHeader("Content-Type","application/json");
+		},
+		success: function(res){
+			console.log(res)
+			var options = "";
+			
+			$(res.data).each(function(key, val){
+				options += "<option value='"+val.codigo+"'>"+val.nombre+"</option>";
+			})
+		
+			$('.codParcela').append(options);
+		},error: function(e){
+			console.log(e)
+		},complete: function(){
+			return data;
+		}
+	})
+	return;
 	$.ajax({
 		url : "/AgroVisionRestricciones/"+"json/parcela/getAllByProductor/"+this.value,
 		type : "GET",
@@ -1023,6 +1057,41 @@ $('#codParcela').on('change', function() {
 	$('.idVariedad').empty();
 	$('.idVariedad').append('<option value="">Seleccionar</option>');
 	var codParcela=$('#codParcela').children("option:selected").val();
+	
+	const get = {
+		SP: "get_TurnosByProdParcela",
+		FILTERS: {
+			p_productor: productor,
+			p_parcela: this.value
+		}
+	}
+	console.log(get)
+	$.ajax({
+		url: PROYECT+"json/CallSp",
+		type:	"PUT",
+		dataType: 'json',
+		data: JSON.stringify(get),
+		async: false,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept","application/json");
+			xhr.setRequestHeader("Content-Type","application/json");
+		},
+		success: function(res){
+			console.log(res)
+			var options = "";
+			
+			$(res.data).each(function(key, val){
+				options += "<option value='"+val.codTurno+"'>"+val.nombre+"</option>";
+			})
+		
+			$('.codTurno').append(options);
+		},error: function(e){
+			console.log(e)
+		},complete: function(){
+			return data;
+		}
+	})
+	return;
 	$.ajax({
 		url : "/AgroVisionRestricciones/"+"json/variedad/getAllByTurno/"+this.value,
 		type : "GET",

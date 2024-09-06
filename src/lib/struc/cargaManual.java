@@ -14,6 +14,15 @@ public class cargaManual {
 	private String codParcela;
 	private String idVariedad;
 	private String codTurno;
+	String especie;
+
+	public String getEspecie() {
+		return especie;
+	}
+
+	public void setEspecie(String especie) {
+		this.especie = especie;
+	}
 
 	ArrayList<cargaManualDetalle> detalle;
 	

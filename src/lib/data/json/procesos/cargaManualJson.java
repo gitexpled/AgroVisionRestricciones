@@ -30,12 +30,12 @@ public class cargaManualJson {
 		
 		session ses = new session(httpSession);
 		dataTable data = new dataTable();
-		if (ses.isValid()) {
-			
-			data.setDraw(0);
-			data.init();
-			return data;
-		}
+//		if (ses.isValid()) {
+//			
+//			data.setDraw(0);
+//			data.init();
+//			return data;
+//		}
 
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
@@ -74,7 +74,7 @@ public class cargaManualJson {
 			while (f.hasNext()) {
 				cargaManual row = f.next();
 				
-				String[] d = { row.getIdCargaManual()+"",row.getCodProductor(),row.getCodParcela(),row.getCodTurno(),row.getIdVariedad(),row.getFecha(),row.getLaboratorio(),row.getIdentificador() };
+				String[] d = { row.getIdCargaManual()+"",row.getCodProductor(), row.getEspecie(),row.getCodParcela(),row.getCodTurno(),row.getIdVariedad(),row.getFecha(),row.getLaboratorio(),row.getIdentificador() };
 
 				data.setData(d);
 

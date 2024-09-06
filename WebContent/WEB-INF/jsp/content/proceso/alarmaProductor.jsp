@@ -17,7 +17,7 @@
 					<thead>
 						<tr role="row" class="heading">
 							<th width="20%">Cod. Productor</th>
-							<th width="20%">Parcela</th>
+							<th width="20%">Etapa</th>
 							<th width="20%">turno</th>
 							<th width="20%">variedad</th>
 							<th width="20%">Informe</th>
@@ -105,10 +105,10 @@
 								<!--/span-->
 								<div class="col-md-2">
 									<div class="form-group">
-										<label class="control-label">Parcela</label> <input
+										<label class="control-label">Etapa</label> <input
 											type="text" name="codParcela" disabled="disabled"
 											id="codParcela" class="form-control"
-											placeholder="cod Parcela">
+											placeholder="cod Etapa">
 
 									</div>
 								</div>
@@ -160,7 +160,7 @@
 								<!--/span-->
 								<div class="col-md-2">
 									<div class="form-group">
-										<label class="control-label">Parcela</label> <select
+										<label class="control-label">Etapa</label> <select
 											name="codParcelaNew" class="codParcelaNew form-control"
 											id="codParcelaNew">
 											<option value="">Seleccionar</option>

@@ -88,7 +88,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-4 control-label">Cod. Parcela</label>
+							<label class="col-md-4 control-label">Cod. Etapa</label>
 							<div class="col-md-8">
 								<div class="input-icon right">
 									<select name="codParcelaUpdate" class="codParcela form-control" id="codParcelaUpdate">
@@ -151,7 +151,7 @@
                         </div>
                     	
 						 <div class="form-group">
-                            <label class="col-md-4 control-label">Cod Parcela</label>
+                            <label class="col-md-4 control-label">Cod Etapa</label>
                            <div class="col-md-8">
                                 <div class="input-icon input-large">
                                     <div class="input-group">
