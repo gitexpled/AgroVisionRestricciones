@@ -37,6 +37,7 @@ import lib.db.bloqueadoDB;
 import lib.db.bloqueadoOpDB;
 import lib.db.especieDB;
 import lib.db.estadoProductorDB;
+import lib.db.estadoProductorNewDB;
 import lib.db.informesDB;
 import lib.db.mailDB;
 import lib.sap.Sync;
@@ -61,11 +62,11 @@ public class estadoProductorJson {
 
 	
 	
-	@RequestMapping(value = "/detalleRest/{mercado}/{especie}/{productor}/{parcela}/{turno}/{variedad}", method = { RequestMethod.GET })
+	@RequestMapping(value = "/detalleRest/{mercado}/{especie}/{productor}/{etapa}/{campo}/{turno}/{variedad}", method = { RequestMethod.GET })
 	public void getData(HttpServletResponse response, @PathVariable("mercado") String mercado,
 			@PathVariable("especie") String especie, @PathVariable("productor") String productor,
-			@PathVariable("parcela") String parcela, @PathVariable("turno") String turno,
-			@PathVariable("variedad") String variedad, HttpSession httpSession)
+			@PathVariable("etapa") String etapa, @PathVariable("campo") String campo,
+			@PathVariable("turno") String turno,@PathVariable("variedad") String variedad, HttpSession httpSession)
 			throws Exception {
 		
 		session ses = new session(httpSession);
@@ -96,7 +97,8 @@ public class estadoProductorJson {
 		
 		
 		
-		html+="<tr><td width='120px'>Parcela</td><td> "+parcela+"</td></tr>";
+		html+="<tr><td width='120px'>Etapa</td><td> "+etapa+"</td></tr>";
+		html+="<tr><td>Campo</td><td> "+campo+"</td></tr>";
 		html+="<tr><td>Turno</td><td> "+turno+"</td></tr>";
 		html+="<tr><td>Variedad</td><td> "+variedad+"</td></tr>";
 		html+="</table>";
@@ -139,8 +141,8 @@ public class estadoProductorJson {
 		
 		String exporta="Y";
 		
-		
-		exporta=estadoProductorDB.getEstadoProductor(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),mercado,productor,parcela,turno);
+		estadoProductorNewDB dataDB=new estadoProductorNewDB();
+		exporta=dataDB.getEstadoProductor(ses.getIdTemporada(),espe.getIdEspecie(),variedad.trim(),mercado,productor,etapa,campo,turno);
 		if (exporta.equals("SI"))
 			html+="<tr><td>Habilitado</td><td bgcolor='green' align='center'>SI</td></tr>";
 		else
@@ -153,26 +155,25 @@ public class estadoProductorJson {
 		html+="</td></tr></table><br><br><br>";
 		
 		if (!rPorcentaje.equals("No"))
-			html+=estadoProductorDB.getBlockPorcentaje(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,parcela,turno);
+			html+=estadoProductorDB.getBlockPorcentaje(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
 			html+="<br>";
 		if (!rPorcentajeArfD.equals("No"))
-			html+=estadoProductorDB.getBlockPorcentajeArfD(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,parcela,turno);
+			html+=estadoProductorDB.getBlockPorcentajeArfD(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
 			html+="<br>";
 		
 		if (!rMoleculas.equals("No"))
-		html+=estadoProductorDB.getBlockMolecula(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,parcela,turno);
+		html+=estadoProductorDB.getBlockMolecula(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
 		html+="<br>";
 		
 		if (!rProductor.equals("No"))
-			html+=estadoProductorDB.getBlockProductor(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,parcela,turno);
+			html+=estadoProductorDB.getBlockProductor(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
 		
-
+		informesDB info=new informesDB();
 		
-		html += "<div style='width:70%; text-align: center;'><b  style='font-size:18px'>Resultado de pesticidas</b></div>";
-		html += "<b  style='font-size:18px'>Carga Automatica</b>";
-		html+=informesDB.getDetalleRestriccion(espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"", productor,parcela,turno);
-		html += "<br/><b  style='font-size:18px'>Carga Manual</b>";
-		html+=informesDB.getDetalleRestriccionM(espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"", productor,parcela,turno);
+		html += "<div style='width:70%; text-align: center;'><b  style='font-size:18px'>Resultado de pesticidas("+ses.getIdTemporada()+")</b></div>";
+		//html += "<b  style='font-size:18px'>Carga Automatica</b>";
+		html+=info.getDetalleRestriccion(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"", productor,etapa,campo,turno);
+		
 		html+="";
 	OutputStream outputStream2;
 	try {
@@ -338,23 +339,23 @@ public class estadoProductorJson {
 		data.setDraw(0);
 		session ses = new session(httpSession);
 		
-		
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
-		int idEspecie=1;
+		int idEspecie=7;
 		String productor = "";
 		
-		String parcela = "";
+		String etapa = "";
+		String campo = "";
 		String turno = "";
 		String variedad = "";
 		System.out.println("------------- ----------------- --------------- -------------- ------------------");
 		for (String key : parameters.keySet()) {
-			System.out.println(key);
+			//System.out.println(key);
 			if (key.startsWith("vw_")) {
 				String[] vals = parameters.get(key);
 				for (String val : vals) {
-					System.out.println(key+" -> " + val);
+				//	System.out.println(key+" -> " + val);
 					filterSql fil = new filterSql();
 					fil.setCampo(key.substring(3));
 					fil.setValue(val);
@@ -374,10 +375,17 @@ public class estadoProductorJson {
 						}catch(Exception e)
 						{}
 					}
-					if (key.equals("vw_parcela"))
+					if (key.equals("vw_etapa"))
 					{
 						try{
-							parcela=val;
+							etapa=val;
+						}catch(Exception e)
+						{}
+					}
+					if (key.equals("vw_campo"))
+					{
+						try{
+							campo=val;
 						}catch(Exception e)
 						{}
 					}
@@ -398,15 +406,17 @@ public class estadoProductorJson {
 				}
 			}
 		}
+		
 		System.out.println("ses.isValid()"+ses.isValid());
 		
 		if (!ses.isValid()) {
 			
 			data.setDraw(0);
 			data.init();
+			estadoProductorNewDB estadoP=new estadoProductorNewDB();
 			try {
-				System.out.println("idEspecie: "+idEspecie+"---productor: "+productor);
-				ArrayList<String[]> pp=estadoProductorDB.getEstadoProductorA(ses.getIdTemporada(),idEspecie,productor,parcela,turno,variedad,false,"");
+				System.out.println("idEspecie: "+idEspecie+", etapa: "+etapa+", campo: "+campo+", turno: "+turno+"---productor: "+productor);
+				ArrayList<String[]> pp=estadoP.getEstadoProductorA(ses.getIdTemporada(),idEspecie,productor,etapa,campo,turno,variedad,false,"");
 				data.setDatas(pp);
 				data.setRecordsFiltered(pp.size());
 				data.setRecordsTotal(pp.size());
@@ -416,6 +426,8 @@ public class estadoProductorJson {
 			}
 			
 		}
+	
+		
 		return data;
 		
 
