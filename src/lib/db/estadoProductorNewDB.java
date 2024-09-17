@@ -65,12 +65,12 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT SAP FROM mercado ";
+			sql = "SELECT mercado FROM mercado ";
 			if (!cliente.isEmpty())
 				sql +="  where cliente='"+cliente+"';";
 			
 			
-//			System.out.println(sql);
+			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 
@@ -472,8 +472,8 @@ public class estadoProductorNewDB {
 			
 			System.out.println(idTemporada+","+idEspecie+","+idVariedad+","+""+","+productor+","+etapa+","+campo+","+turno);
 	
-			//ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,idVariedad,"",productor,parcela,turno);
-			//matrix=setBloqueo(matrix,bloqueoLmr,false);
+			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,idVariedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,bloqueoLmr,false);
 			
 			//ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,idVariedad,"",productor,parcela,turno);
 			//matrix=setBloqueo(matrix,bloqueoParcela,false);
@@ -495,7 +495,7 @@ public class estadoProductorNewDB {
 		return Estado;
 	}
 	
-	public  String getRestriccionesExcel(int idTemporada,int idEspecie, String productor,String etapa,String campo,String variedad,Boolean titulo) throws Exception {
+	public  String getRestriccionesExcel(int idTemporada,int idEspecie, String productor,String etapa,String campo,String truno,String variedad,Boolean titulo) throws Exception {
 		
 		ArrayList<String[]> data = new ArrayList<>();
 		ArrayList<String> titulos2 = new ArrayList<>();
@@ -504,16 +504,16 @@ public class estadoProductorNewDB {
 		try {
 			
 			ArrayList<String> mercado = getMercado("");
-			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,variedad,productor,etapa,campo,"",true);
+			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,variedad,productor,etapa,campo,truno,true);
 			Hashtable<String, Hashtable<String, Integer>> matrix = createMatrix(mercado,jerarquea);
 			
 			System.out.println(idTemporada+","+idEspecie+","+variedad+","+""+","+productor+","+etapa+","+campo);
 	
-			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,variedad,"",productor,etapa,campo,truno);
 			matrix=setBloqueo(matrix,bloqueoLmr,true);
 			
-			ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
-			matrix=setBloqueo(matrix,bloqueoParcela,true);
+			//ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			//matrix=setBloqueo(matrix,bloqueoParcela,true);
 			
 			data = getMatrix(matrix, mercado);
 			
@@ -535,8 +535,12 @@ public class estadoProductorNewDB {
 			label="PRODUCTOR";
 			columns.put(label);
 			titulos2.add(label);
-			label="PARCELA";
+			label="ETAPA";
 			columns.put(label);
+			label="CAMPO";
+			columns.put(label);
+//			label="TURNO";
+//			columns.put(label);
 			titulos2.add(label);
 			label="VARIEDAD";
 			columns.put(label);
@@ -586,8 +590,8 @@ public class estadoProductorNewDB {
 			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,"","",productor,"","","");
 			matrix=setBloqueo(matrix,bloqueoLmr,true);
 			
-			ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,"","",productor,"","","");
-			matrix=setBloqueo(matrix,bloqueoParcela,true);
+			//ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,"","",productor,"","","");
+			//matrix=setBloqueo(matrix,bloqueoParcela,true);
 			
 			data = getMatrix(matrix, mercado);
 			
@@ -618,20 +622,19 @@ public class estadoProductorNewDB {
 			label="PRODUCTOR";
 			columns.put(label);
 			titulos2.add(label);
-			label="PARCELA";
+			label="ETAPA";
 			columns.put(label);
 			titulos2.add(label);
-			label="CODTURNO";
+			label="CAMPO";
 			columns.put(label);
+			titulos2.add(label);
+//			label="TURNO";
+//			columns.put(label);
 			titulos2.add(label);
 			label="VARIEDAD";
 			columns.put(label);
 			titulos2.add(label);
-			label="CER_ORGANICA";
-			columns.put(label);
-			titulos2.add(label);
-			label="GLOBAL";
-			columns.put(label);
+			
 			titulos2.add(label);
 			
 			for (int i = 0; i < mercado.size(); i++) {
@@ -642,14 +645,14 @@ public class estadoProductorNewDB {
 			for (String[] arr : data) {
 				JSONArray ob = new JSONArray();
 				int j=0;
-				for(int i = 0; i < titulos2.size(); i++){
+				for(int i = 0; i < titulos2.size()-2; i++){
 					
-					if (i==2) {ob.put("05082024");}
-					else if(i==3) {ob.put("1");}
-					else if(i==4) {ob.put("C");}
-					else if(i==8) {ob.put("");}
-					else if(i==10) {ob.put("");}
-					else if(i==11) {ob.put("");}
+					if (i==2 || i==3) {ob.put("17092024");}
+					else if(i==4) {ob.put("");}
+					
+				
+					
+					
 					else
 					{
 					ob.put(arr[j]);

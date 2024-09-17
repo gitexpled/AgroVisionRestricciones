@@ -58,6 +58,7 @@ import lib.db.DiccionarioDB;
 import lib.db.MercadoDB;
 import lib.db.especieDB;
 import lib.db.estadoProductorDB;
+import lib.db.estadoProductorNewDB;
 import lib.db.exportarSapDB;
 import lib.db.informesDB;
 import lib.db.mailDB;
@@ -443,7 +444,8 @@ public class procesos {
 		boolean swTitulos=true;
 		int x = 0;
 		int a = 0;
-		String json = estadoProductorDB.getRestricionesParcelaTurnoExcel(ses.getIdTemporada(), 1, "", "",tipo, swTitulos);
+		estadoProductorNewDB dataDB=new estadoProductorNewDB();
+		String json = dataDB.getRestricionesParcelaTurnoExcel(ses.getIdTemporada(), 7, "", "",tipo, swTitulos);
 		JSONObject j = new JSONObject(json);
 		System.out.println(j);
 		JSONArray columns = j.getJSONArray("columns");
@@ -468,37 +470,7 @@ public class procesos {
 			}
             i++;
         }
-//		while (ff.hasNext()) {
-//			especie es = ff.next();
-//
-//			
-//
-//			
-//			
-////			ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorC(ses.getIdTemporada(), es.getIdEspecie(), "", "",tipo, swTitulos);
-////			Iterator<String[]> rest = pp.iterator();
-////
-////			while (rest.hasNext()) {
-////				String[] r = rest.next();
-////				sheet.autoSizeColumn((short) x);
-////				Row filas = sheet.createRow(a);
-////				System.out.println(es.getIdEspecie() + "-->" + r.length);
-////				for (i = 0; i < r.length; i++) {
-////					Cell col = filas.createCell(i);
-////
-////					col.setCellStyle(datoStyle);
-////
-////					col.setCellValue(r[i].toString().toUpperCase());
-////
-////					// System.out.println(es.getIdEspecie()+"-->"+r.length+":::"+i);
-////				}
-////				a++;
-////				x++;
-////				swTitulos=false;
-////			}
-//
-//		}
-		// FIN DE EXCEL
+
 		UUID uuid = UUID.randomUUID();
 		String fileStr = "/tmp/__" + uuid.toString() + ".xlsx";
 
@@ -690,16 +662,18 @@ public class procesos {
 			// 
 			e.printStackTrace();
 		}
-		String json = estadoProductorDB.getRestriccionesExcel(ses.getIdTemporada(), 1, "", "","", true);
-		System.out.println(ses.getIdTemporada());
-		JSONObject j = new JSONObject(json);
-		System.out.println(j);
-		JSONArray columns = j.getJSONArray("columns");
-		JSONArray data = j.getJSONArray("data");
+		
 		Iterator<especie> ff = esp.iterator();
 		while (ff.hasNext()) {
 			especie es = ff.next();
 			ArrayList<String> tipoMercado = new ArrayList<String>();
+			estadoProductorNewDB dataDB=new estadoProductorNewDB();
+			String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(),es.getIdEspecie(),"", "", "","","", true);
+			System.out.println(ses.getIdTemporada());
+			JSONObject j = new JSONObject(json);
+			System.out.println(j);
+			JSONArray columns = j.getJSONArray("columns");
+			JSONArray data = j.getJSONArray("data");
 			
 				tipoMercado.add("N");
 				tipoMercado.add("Y");
@@ -890,29 +864,7 @@ public class procesos {
 
 	}
 
-	@RequestMapping(value = "/test2/{id}", method = { RequestMethod.GET })
-	public void test(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws InvalidFormatException, IOException {
-		long startTime = System.currentTimeMillis();
-
-		try {
-			FileInputStream fis = new FileInputStream("/eDte/hola.docx");
-			XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
-			// XWPFDocument document = new XWPFDocument( Data.class.getResourceAsStream(
-			// "DocxStructures.docx" ) );
-
-			// 2) Convert POI XWPFDocument 2 PDF with iText
-			File outFile = new File("/eDte/DocxStructures.pdf");
-			outFile.getParentFile().mkdirs();
-
-			OutputStream out = new FileOutputStream(outFile);
-			PdfOptions options = null;// PDFViaITextOptions.create().fontEncoding( "windows-1250" );
-			PdfConverter.getInstance().convert(document, out, options);
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-
-		System.out.println("Generate DocxStructures.pdf with " + (System.currentTimeMillis() - startTime) + " ms.");
-	}
+	
 
 	@RequestMapping("/adm/proceso_cargaManual")
 	public ModelAndView estadoProductorContent(Model model, HttpSession httpSession) {
