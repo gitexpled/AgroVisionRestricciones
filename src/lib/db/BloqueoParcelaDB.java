@@ -162,7 +162,7 @@ public class BloqueoParcelaDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT count(1) FROM turno ";
+			sql = "SELECT count(1) FROM bloqueoParcela ";
 
 			if (filter.size() > 0) {
 				String andSql = "";
@@ -269,6 +269,9 @@ public class BloqueoParcelaDB {
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				BloqueoParcela o = new BloqueoParcela();
+				System.out.println("######");
+				System.out.println(rs.getString("codParcela"));
+				System.out.println("######");
 				
 				o.setIdBloqueo(rs.getInt("idBloqueo"));
 				o.setCodParcela(rs.getString("codParcela"));

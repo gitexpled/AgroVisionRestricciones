@@ -101,6 +101,7 @@ public class BloqueoParcelaJson {
 				BloqueoParcela row = f.next();
 				String fsma = "NO";
 				String habilitado = "NO";
+
 				
 				String[] d = {row.getIdBloqueo()+"", row.getCodProductor(), row.getCodParcela(), row.getIdVariedad(), row.getIdMercado()+"",row.getComentario(),row.getCreado()+"",row.getEstado()+""};
 

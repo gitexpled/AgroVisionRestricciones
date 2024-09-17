@@ -1054,6 +1054,49 @@ $('#codProductor').on('change', function() {
 
 
 $('#codParcela').on('change', function() {
+	
+	$('.idVariedad').empty();
+	$('.idVariedad').append('<option value="">Seleccionar</option>');
+	var codParcela=$('#codParcela').children("option:selected").val();
+	
+	
+	const getV = {
+		SP: "get_VariedadByTurnos",
+		FILTERS: {
+			p_parcela: codParcela,
+			p_turno: ''
+		}
+	}
+	console.log(getV)
+	$.ajax({
+		url: PROYECT+"json/CallSp",
+		type:	"PUT",
+		dataType: 'json',
+		data: JSON.stringify(getV),
+		async: false,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept","application/json");
+			xhr.setRequestHeader("Content-Type","application/json");
+		},
+		success: function(res){
+			console.log(res)
+			var options = "";
+			
+			$(res.data).each(function(key, val){
+				options += "<option value='"+val.cod+"'>"+val.nombre+"</option>";
+			})
+		
+			$('.idVariedad').append(options);
+		},error: function(e){
+			console.log(e)
+		},complete: function(){
+			//return data;
+		}
+	})
+	return;
+	
+	
+	
 	$('.idVariedad').empty();
 	$('.idVariedad').append('<option value="">Seleccionar</option>');
 	var codParcela=$('#codParcela').children("option:selected").val();

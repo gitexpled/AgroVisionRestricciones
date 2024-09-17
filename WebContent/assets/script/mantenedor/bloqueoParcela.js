@@ -553,7 +553,7 @@ jQuery(document).ready(function() {
 				errorThrown) {
 		}
 	});
-	$.ajax({
+	/*$.ajax({
 		url : "/AgroVisionRestricciones/"+"json/parcela/getAllOutFilter",
 		type : "GET",
 		data : "",
@@ -576,7 +576,7 @@ jQuery(document).ready(function() {
 		error : function(jqXHR, textStatus,
 				errorThrown) {
 		}
-	});
+	});*/
 	$.ajax({
 		url : "/AgroVisionRestricciones/"+"json/variedad/getAllOutFilter",
 		type : "GET",
@@ -607,6 +607,42 @@ jQuery(document).ready(function() {
 $('#codProductor').on('change', function() {
 	$('.codParcela').empty();
 	$('.codParcela').append('<option value="">Seleccionar</option>');
+	
+	const get = {
+		SP: "get_ParcelaByProductor",
+		FILTERS: {
+			p_productor: this.value
+		}
+	}
+	console.log(get)
+	$.ajax({
+		url: PROYECT+"json/CallSp",
+		type:	"PUT",
+		dataType: 'json',
+		data: JSON.stringify(get),
+		async: false,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept","application/json");
+			xhr.setRequestHeader("Content-Type","application/json");
+		},
+		success: function(res){
+			console.log(res)
+			var options = "";
+			
+			$(res.data).each(function(key, val){
+				options += "<option value='"+val.codigo+"'>"+val.nombre+"</option>";
+			})
+		
+			$('.codParcela').append(options);
+		},error: function(e){
+			console.log(e)
+		},complete: function(){
+		}
+	})
+	return;
+	
+	$('.codParcela').empty();
+	$('.codParcela').append('<option value="">Seleccionar</option>');
 	$.ajax({
 		url : "/AgroVisionRestricciones/"+"json/parcela/getAllByProductor/"+this.value,
 		type : "GET",
@@ -632,7 +668,47 @@ $('#codProductor').on('change', function() {
 		}
 	});
    
-  });
+ });
+ $('#codParcela').on('change', function() {
+	$('.idVariedad').empty();
+	$('.idVariedad').append('<option value="">Seleccionar</option>');
+	var codParcela=$('#codParcela').children("option:selected").val();
+	
+	
+	const get = {
+		SP: "get_VariedadByTurnos",
+		FILTERS: {
+			p_parcela: codParcela,
+			p_turno: ''
+		}
+	}
+	console.log(get)
+	$.ajax({
+		url: PROYECT+"json/CallSp",
+		type:	"PUT",
+		dataType: 'json',
+		data: JSON.stringify(get),
+		async: false,
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept","application/json");
+			xhr.setRequestHeader("Content-Type","application/json");
+		},
+		success: function(res){
+			console.log(res)
+			var options = "";
+			
+			$(res.data).each(function(key, val){
+				options += "<option value='"+val.cod+"'>"+val.nombre+"</option>";
+			})
+		
+			$('.idVariedad').append(options);
+		},error: function(e){
+			console.log(e)
+		},complete: function(){
+			//return data;
+		}
+	})
+})
 var $mercado = [];
 $.ajax({
 	url : "/AgroVisionRestricciones/"+"json/mercado/getAllOutFilter",

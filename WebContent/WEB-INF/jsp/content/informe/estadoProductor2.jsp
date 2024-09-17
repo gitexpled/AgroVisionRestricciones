@@ -43,7 +43,7 @@
 						
 							<th width="13%">especie</th>
 							<th width="13%">productor</th>
-							<th width="13%">parcela</th>
+							<th width="13%">Etapa</th>
 							<th width="13%">variedad</th>
 						
 							

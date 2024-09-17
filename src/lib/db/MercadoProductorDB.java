@@ -224,7 +224,7 @@ public class MercadoProductorDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT pv.*,v.cod,m.mercado FROM mercadoProductor pv"
+			sql = "SELECT DISTINCT pv.*,v.cod,m.mercado FROM mercadoProductor pv"
 					+ " left join variedad v on (v.cod=pv.idVariedad) "
 					+ "  left join mercado m on (m.idMercado=pv.idMercado)";
 
