@@ -43,7 +43,8 @@
 						
 							<th width="13%">especie</th>
 							<th width="13%">productor</th>
-							<th width="13%">parcela</th>
+							<th width="13%">etapa</th>
+							<th width="13%">campo</th>
 							<th width="13%">variedad</th>
 						
 							
@@ -69,7 +70,8 @@
 									</div>
 								</div></td><td></td><td></td>
 								<td><input  type="text" class="form-control form-filter2 input-sm" name="vw_productor" style="width: 50px"  id="vw_productor"></td>
-							<td><input type="text" class="form-control form-filter2 input-sm"  name="vw_parcela" style="width: 50px"  id="vw_parcela"></td>
+							<td><input type="text" class="form-control form-filter2 input-sm"  name="vw_etapa" style="width: 50px"  id="vw_etapa"></td>
+							<td><input type="text" class="form-control form-filter2 input-sm"  name="vw_campo" style="width: 50px"  id="vw_campo"></td>
 							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_variedad"  style="width: 50px" id="vw_variedad"></td>
 						<!-- 
 							<td><input type="text"

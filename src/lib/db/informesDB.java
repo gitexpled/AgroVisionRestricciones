@@ -18,8 +18,8 @@ public class informesDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = " SELECT r.creado,r.entregado,r.code,  IF(r.producto LIKE '%fosetyl%','fosetil',IF(r.producto LIKE '%fosetil%','fosetil',r.producto)) AS codProducto, '' codTurno,  ";
-			sql += " r.lmr as resultado,l.limite lmr,l.limite2 lmr2,CONCAT(format((( r.lmr * 100) / IFNULL(l.limite2, l.limite)),2),'%'),'' as vigente,IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as habilitado,1 as id ";
+			sql = " SELECT r.creado,r.entregado,r.code,  IF(r.producto LIKE '%fosetyl%','fosetil',IF(r.producto LIKE '%fosetil%','fosetil',r.producto)) AS codProducto, j.Turno,  ";
+			sql += " r.lmr as resultado,format(l.limite,5) lmr,format(l.limite2,5) lmr2,CONCAT(format((( r.lmr * 100) / IFNULL(l.limite2, l.limite)),2),'%') as Porcentaje,'' as vigente,IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as habilitado";
 			sql += " FROM jerarquias j JOIN temporada t ";
 			sql += " inner join  especie e on (j.Especie=e.pf)  ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)  ";
@@ -52,10 +52,33 @@ public class informesDB {
 
 			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
+
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int columnCount = rsmd.getColumnCount();
+			ArrayList<String> j = new ArrayList<>();
+			for (int i = 1; i <= columnCount; i++) {
+				
+			
+				if (rsmd.getColumnLabel(i).equals("resultado"))
+				{
+					String htmlData2="Resultado (ppm)";
+					j.add(htmlData2);
+				}
+				else
+				{
+					String htmlData  = rsmd.getColumnLabel(i); 
+					htmlData = htmlData.substring(0,1).toUpperCase() + htmlData.substring(1).toLowerCase();
+					j.add(htmlData);
+					
+				}
+				
+				
+			}
+			list.add(j);
 			while (rs.next()) {
 				ArrayList<String> l = new ArrayList<>();
-				l.add(rs.getString(1));
-				l.add(rs.getString(2));
+				l.add(rs.getString(1).replace(" 00:00:00.0", ""));
+				l.add(rs.getString(2).replace(" 00:00:00.0", ""));
 				l.add(rs.getString(3));
 				l.add(rs.getString(4));
 				l.add(rs.getString(5));
@@ -73,7 +96,7 @@ public class informesDB {
 				else
 					l.add("NO");
 				
-				l.add(rs.getString(12));
+				//l.add(rs.getString(12));
 				
 
 				list.add(l);

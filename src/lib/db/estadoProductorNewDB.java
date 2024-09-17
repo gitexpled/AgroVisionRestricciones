@@ -444,8 +444,8 @@ public class estadoProductorNewDB {
 			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
 			matrix=setBloqueo(matrix,bloqueoLmr,true);
 			
-			ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
-			matrix=setBloqueo(matrix,bloqueoParcela,true);
+			//ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			//matrix=setBloqueo(matrix,bloqueoParcela,true);
 			
 			data = getMatrix(matrix, mercado);
 
