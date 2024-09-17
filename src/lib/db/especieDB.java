@@ -157,7 +157,7 @@ public class especieDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "select distinct Especie AS pf, EspecieDenomina AS especie from jerarquias ";
+			sql = "select idEspecie,pf, especie from especie ";
 
 			if (filter.size() > 0) {
 				String andSql="";
@@ -203,15 +203,15 @@ public class especieDB {
 //			o.setPf("B");
 //		
 //			arr.add(o);
-			int i = 1;
+		
 			while (rs.next()) {
 				especie o = new especie();
-				System.out.println(rs.getString("especie"));
-				o.setIdEspecie(i);
+				System.out.println("id: " + rs.getInt("idEspecie"));
+				o.setIdEspecie(rs.getInt("idEspecie"));
 				o.setEspecie(rs.getString("especie"));
 				o.setPf(rs.getString("pf"));
 				
-				i++;
+				
 				arr.add(o);
 			}
 			rs.close();

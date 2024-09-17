@@ -12,7 +12,7 @@ public class ConnectionDB {
 
 	public ConnectionDB() {
 		try {
-			System.out.println(ConfigProperties.getProperty("urlDB"));
+			//System.out.println(ConfigProperties.getProperty("urlDB"));
 			Class.forName(ConfigProperties.getProperty("driverDB"));
 			conn = DriverManager.getConnection(ConfigProperties.getProperty("urlDB"), ConfigProperties.getProperty("userDB"),
 					ConfigProperties.getProperty("passDB"));

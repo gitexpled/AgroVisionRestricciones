@@ -52,11 +52,12 @@
 							<th width="15%">Sociedad</th>
 							
 						
-							<th width="15%">especie</th>
-							<th width="15%">productor</th>
+							<th width="15%">Especie</th>
+							<th width="15%">Productor</th>
 							<th width="15%">Etapa</th>
-							<th width="15%">turno</th>
-							<th width="15%">variedad</th>
+							<th width="15%">Campo</th>
+							<th width="15%">Turno</th>
+							<th width="15%">Variedad</th>
 							
 							<c:forEach var="r" items="${th}">
 								<th>${r.mercado}</th>
@@ -83,7 +84,8 @@
 							<td></td>
 							<td></td>
 							<td><input  type="text" class="form-control form-filter2 input-sm" name="vw_productor" style="width: 50px"  id="vw_productor"></td>
-							<td><input type="text" class="form-control form-filter2 input-sm"  name="vw_parcela" style="width: 50px"  id="vw_parcela"></td>
+							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_etapa" style="width: 50px"  id="vw_etapa"></td>
+							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_campo"  style="width: 50px" id="vw_campo"></td>
 							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_turno"  style="width: 50px" id="vw_turno"></td>
 							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_variedad"  style="width: 50px" id="vw_variedad"></td>
 							<c:forEach var="r" items="${th}">

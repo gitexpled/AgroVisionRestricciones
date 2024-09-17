@@ -89,7 +89,7 @@ var TableDatatablesAjax = function() {
 						},
 						"columnDefs" : [
 						           {
-											"targets" : [0,1,2,3,4,5,6],
+											"targets" : [0,1,2,3,4,5,6,7],
 						           "render" : function(data, type, row,meta ) {
 										var html =data;
 										 ;
@@ -128,9 +128,9 @@ var TableDatatablesAjax = function() {
 										var especie=$("#viewEspecie").val()
 										var colName=meta.settings.aoColumns[meta.col].sTitle;
 										if (data=='NO')
-											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[3]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"' href='#modal-informe'>NO</a>";
+											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[3]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"/"+full[7]+"' href='#modal-informe'>NO</a>";
 										else
-											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[3]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"'  href='#modal-informe'>SI</a>";
+											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[3]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"/"+full[7]+"'  href='#modal-informe'>SI</a>";
 										
 										return html;
 									}}],
@@ -205,7 +205,8 @@ var TableDatatablesAjax = function() {
            // $('textarea.form-filter2, select.form-filter2, input.form-filter2:not([type="radio"],[type="checkbox"])').each(function() {
       		  grid.setAjaxParam("vw_especie", $('#viewEspecie').val());
               grid.setAjaxParam("vw_productor", $('#vw_productor').val());
-              grid.setAjaxParam("vw_parcela", $('#vw_parcela').val());
+              grid.setAjaxParam("vw_etapa", $('#vw_etapa').val());
+              grid.setAjaxParam("vw_campo", $('#vw_campo').val());
               grid.setAjaxParam("vw_turno", $('#vw_turno').val());
               grid.setAjaxParam("vw_variedad", $('#vw_variedad').val());
                
@@ -219,13 +220,15 @@ var TableDatatablesAjax = function() {
            // $('textarea.form-filter2, select.form-filter2, input.form-filter2:not([type="radio"],[type="checkbox"])').each(function() {
       		 
               grid.setAjaxParam("vw_productor", '');
-              grid.setAjaxParam("vw_parcela", '');
+              grid.setAjaxParam("vw_etapa", '');
+              grid.setAjaxParam("vw_campo", '');
               grid.setAjaxParam("vw_turno", '');
               grid.setAjaxParam("vw_variedad", '');
               
               
               $('#vw_productor').val('');
-              $('#vw_parcela').val('');
+              $('#vw_etapa').val('');
+              $('#vw_campo').val('');
               $('#vw_turno').val('');
               $('#vw_variedad').val('');
               
