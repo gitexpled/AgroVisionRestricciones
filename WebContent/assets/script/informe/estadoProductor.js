@@ -127,6 +127,7 @@ var TableDatatablesAjax = function() {
 										var html = "";
 										var especie=$("#viewEspecie").val()
 										var colName=meta.settings.aoColumns[meta.col].sTitle;
+										console.log(full)
 										if (data=='NO')
 											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[3]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"/"+full[7]+"' href='#modal-informe'>NO</a>";
 										else

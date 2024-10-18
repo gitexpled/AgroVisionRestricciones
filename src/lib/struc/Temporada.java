@@ -9,9 +9,31 @@ public class Temporada {
 	private String usuario;
 	private String temporada;
 	private Date creado;
+	private String idEspecie;
+	private String desde;
+	private String hasta;
+	
 	
 	public int getIdTemporada() {
 		return idTemporada;
+	}
+	public String getIdEspecie() {
+		return idEspecie;
+	}
+	public void setIdEspecie(String idEspecie) {
+		this.idEspecie = idEspecie;
+	}
+	public String getDesde() {
+		return desde;
+	}
+	public void setDesde(String desde) {
+		this.desde = desde;
+	}
+	public String getHasta() {
+		return hasta;
+	}
+	public void setHasta(String hasta) {
+		this.hasta = hasta;
 	}
 	public void setIdTemporada(int idTemporada) {
 		this.idTemporada = idTemporada;

@@ -105,9 +105,19 @@
             <div class="modal-body">
                 <div class="scroller" style="height:400px; " data-always-visible="1" data-rail-visible1="1">
                          <div class="form-body">
-                         
-							
 								<div class="row">
+									<div class="col-md-12">
+										<div class="col-md-3">
+											<div class="form-group">
+												<label class="control-label">Tipo analisis</label>
+												<select name="tipo" class="tipo form-control" id="tipo">
+		                                       		<option value="">Seleccionar</option>
+		                                       		<option value="1">DFA</option>
+												</select>
+	
+											</div>
+										</div>
+									</div>
 									<div class="col-md-3">
 										<div class="form-group">
 											<label class="control-label">Laboratorio</label> <input
@@ -145,14 +155,22 @@
 
 										</div>
 									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label class="control-label">Campo</label> 
+												<select name="campo" class="campo form-control" id="campo">
+                                       		<option value="">Seleccionar</option>
+                                      </select>
+
+										</div>
+									</div>
 											<!--/span-->
 									<div class="col-md-3">
 										<div class="form-group">
 											<label class="control-label">Turno</label> 
-												<select name="codTurno" class="codTurno form-control" id="codTurno">
-                                       		<option value="">Seleccionar</option>
-                                      </select>
-
+											<select name="codTurno" class="codTurno form-control" id="codTurno">
+	                                       		<option value="">Seleccionar</option>
+											</select>
 										</div>
 									</div>
 										<!--/span-->
@@ -178,7 +196,7 @@
 									<!--/span-->
 									<div class="col-md-3">
 										<div class="form-group">
-											<label class="control-label">Fecha</label> 
+											<label class="control-label">Fecha de muestreo</label> 
 										<input id="fecha" name="fecha" class="form-control" type="date" value="">
                                          
 										</div>
@@ -272,6 +290,18 @@
                          
 							
 								<div class="row">
+									<div class="col-md-12">
+										<div class="col-md-3">
+											<div class="form-group">
+												<label class="control-label">Tipo analisis</label>
+												<select name="tipoUpdate" class="tipoUpdate form-control" id="tipoUpdate">
+		                                       		<option value="">Seleccionar</option>
+		                                       		<option value="1">DFA</option>
+												</select>
+	
+											</div>
+										</div>
+									</div>
 									<div class="col-md-3">
 										<div class="form-group">
 											<label class="control-label">Laboratorio</label> <input
@@ -304,6 +334,15 @@
 										<div class="form-group">
 											<label class="control-label">Etapa</label> 
 												<select name="codParcela" class="codParcelaUpdate form-control" id="codParcelaUpdate">
+                                       		<option value="">Seleccionar</option>
+                                      </select>
+
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label class="control-label">Campo</label> 
+												<select name="campoUpdate" class="campo form-control" id="campoUpdate">
                                        		<option value="">Seleccionar</option>
                                       </select>
 
@@ -342,7 +381,7 @@
 									<!--/span-->
 									<div class="col-md-3">
 										<div class="form-group">
-											<label class="control-label">Fecha</label> 
+											<label class="control-label">Fecha de muestreo</label> 
 											<input id="fechaUpdate" class="form-control" type="date" value="">
 
 										</div>

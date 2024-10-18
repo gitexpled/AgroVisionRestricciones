@@ -146,7 +146,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn dark btn-outline">Cancelar</button>
-                <button type="submit" class="btn green">Guardar</button>
+                <button type="button" onclick="insertDiccionario()" class="btn green">Guardar</button>
             </div>
         </div>
        </form>

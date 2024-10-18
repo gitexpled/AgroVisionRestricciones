@@ -15,9 +15,27 @@ public class cargaManual {
 	private String idVariedad;
 	private String codTurno;
 	String especie;
+	public String campo;
+	public int tipo;
+
+	public String getCampo() {
+		return campo;
+	}
+
+	public void setCampo(String campo) {
+		this.campo = campo;
+	}
 
 	public String getEspecie() {
 		return especie;
+	}
+
+	public int getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(int tipo) {
+		this.tipo = tipo;
 	}
 
 	public void setEspecie(String especie) {

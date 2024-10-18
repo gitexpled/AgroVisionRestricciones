@@ -219,6 +219,9 @@ public class TemporadaDB {
 				o.setTemporada(rs.getString("temporada"));
 				o.setCreado(rs.getDate("creacion"));
 				o.setIdUser(rs.getInt("idUser"));
+				o.setIdEspecie(rs.getString("idEspecie"));
+				o.setDesde(rs.getString("desde"));
+				o.setHasta(rs.getString("hasta"));
 				temporadas.add(o);
 			}
 			rs.close();
@@ -237,7 +240,7 @@ public class TemporadaDB {
 		return temporadas;
 	}
 	
-	public static boolean insertTemporada(Temporada temporada) throws ParseException
+	public static boolean insertTemporada(Temporada t) throws ParseException
 	{
 		ConnectionDB db = new ConnectionDB();
 		Statement stmt = null;
@@ -246,7 +249,7 @@ public class TemporadaDB {
 		String sql = "";
 		try
 		{
-			sql = "INSERT INTO temporada(idUser,temporada,creacion) Values ('"+temporada.getIdUser()+"','"+temporada.getTemporada()+"','"+d+"')";
+			sql = "INSERT INTO temporada(idUser,temporada,creacion, idEspecie, desde, hasta) Values ('"+t.getIdUser()+"','"+t.getTemporada()+"','"+d+"', '"+t.getIdEspecie()+"' , '"+t.getDesde()+"', '"+t.getHasta()+"')";
 			stmt = db.conn.createStatement();
 			resp = stmt.execute(sql);
 			stmt.close();

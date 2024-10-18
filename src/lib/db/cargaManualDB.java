@@ -42,9 +42,11 @@ public class cargaManualDB {
 				//o.setCodProducto(rs.getString("codProducto"));
 				//o.setLimite(rs.getString("limite"));
 				o.setFecha(rs.getString("fecha"));
-				o.setIdEspecie(rs.getInt("idEspecie"));
+				//o.setIdEspecie(rs.getInt("idEspecie"));
 				o.setCodTurno(rs.getString("codTurno"));
 				o.setIdVariedad(rs.getString("idVariedad"));
+				o.setEspecie(rs.getString("idEspecie"));
+				o.setCampo(rs.getString("campo"));
 				
 				
 				
@@ -188,12 +190,13 @@ public class cargaManualDB {
 
 			stmt = db.conn.createStatement();
 			
-			sql += 	"SELECT ";
-			sql += 		"c.*, e.especie as especie, v.cod , v.nombre ";
+			sql += 	"SELECT distinct ";
+			sql += 		"c.*, j.EspecieDenomina as especie, v.cod , v.nombre ";
 			sql += 	"FROM ";
 			sql += 		"cargaManual c ";
 			sql += 		"left join especie e on(c.idEspecie = e.idEspecie) ";
 			sql += 		"LEFT JOIN variedad v ON (c.idVariedad = v.idVariedad) ";
+			sql += 		"LEFT JOIN jerarquias j on(c.idEspecie = j.Especie) ";
 			sql += 	"WHERE ";
 			sql += 		"normal = 'Y' ";
 
@@ -308,8 +311,12 @@ public class cargaManualDB {
 		String sql = "";
 		try
 		{
-			sql = "INSERT INTO cargaManual(`fecha`,`idUsuario`,`creado`,`modificado`,`laboratorio`,`identificador`,codProductor,idEspecie,idTemporada,codParcela,idVariedad,codTurno) "
-					+ "Values (?,?,now(),now(),?,?,?,?,?,?,?,?)";
+			sql = "INSERT INTO cargaManual(`fecha`,`idUsuario`,`creado`,`modificado`,`laboratorio`,`identificador`,codProductor,idEspecie,idTemporada,codParcela,idVariedad,codTurno, campo) "
+					+ "Values (?,?,now(),now(),?,?,?,?,?,?,?,?, ?)";
+			if(o.getTipo() == 1) {
+				sql = "INSERT INTO cargaManualDfa(`fecha`,`idUsuario`,`creado`,`modificado`,`laboratorio`,`identificador`,codProductor,idEspecie,idTemporada,codParcela,idVariedad,codTurno, campo) "
+						+ "Values (?,?,now(),now(),?,?,?,?,?,?,?,?, ?)";
+			}
 			ps = db.conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setString(1,o.getFecha());
@@ -317,13 +324,14 @@ public class cargaManualDB {
 			ps.setString(3,o.getLaboratorio());
 			ps.setString(4,o.getIdentificador());
 			ps.setString(5,o.getCodProductor());
-			ps.setInt(6, o.getIdEspecie());
+			ps.setString(6, o.getEspecie());
 			ps.setInt(7, o.getIdTemporada());
 			
 			
 			ps.setString(8, o.getCodParcela());
 			ps.setString(9, o.getIdVariedad());
 			ps.setString(10, o.getCodTurno());
+			ps.setString(11, o.getCampo());
             
                
 			ps.executeUpdate();
@@ -338,19 +346,24 @@ public class cargaManualDB {
 			System.out.println("resultado: "+resultado);
 			if (resultado != 0) {
 				while (f.hasNext()) {
-				System.out.println("paseee");
-				cargaManualDetalle row = f.next();
-				
-			//	row.setLimite(o.getLimite());
-				System.out.println("paseeee");
-				sql = "INSERT INTO cargaManualDetalle(`idCargaManual`,`codProducto`,`limite`) "
-						+ "Values (?,?,?)";
-				ps = db.conn.prepareStatement(sql);
-				ps.setInt(1, resultado);
-				ps.setString(2,row.getCodProducto());
-				ps.setString(3,row.getLimite());
-
-				ps.executeUpdate();
+					System.out.println("paseee");
+					cargaManualDetalle row = f.next();
+					
+				//	row.setLimite(o.getLimite());
+					System.out.println("paseeee");
+					sql = "INSERT INTO cargaManualDetalle(`idCargaManual`,`codProducto`,`limite`) "
+							+ "Values (?,?,?)";
+					if(o.getTipo() == 1) {
+						sql = "INSERT INTO cargaManualDetalleDfa(`idCargaManual`,`codProducto`,`limite`) "
+								+ "Values (?,?,?)";
+					}
+					
+					ps = db.conn.prepareStatement(sql);
+					ps.setInt(1, resultado);
+					ps.setString(2,row.getCodProducto());
+					ps.setString(3,row.getLimite());
+	
+					ps.executeUpdate();
 				}
 			}
 			
@@ -376,7 +389,7 @@ public class cargaManualDB {
 		
 		ConnectionDB db = new ConnectionDB();
 		try{
-			sql = "UPDATE cargaManual SET fecha = ?,laboratorio = ?, identificador = ?, codProductor = ?, codParcela = ?, idVariedad = ?,"
+			sql = "UPDATE cargaManual SET fecha = ?,laboratorio = ?, identificador = ?, codProductor = ?, codParcela = ?, idVariedad = ?, campo = ?, "
 					+ "modificado = now() WHERE idCargaManual= ?";
 			//sql2 = "UPDATE cargaManualDetalle SET codProducto = ?, limite = ? WHERE idCargaManual= ?";
 					
@@ -390,8 +403,9 @@ public class cargaManualDB {
 			
 			ps.setString(5, map.getCodParcela());
 			ps.setString(6, map.getIdVariedad());
+			ps.setString(7, map.getCampo());
 			
-			ps.setInt(7, map.getIdCargaManual());
+			ps.setInt(8, map.getIdCargaManual());
 			
 			
 			//ps2 = db.conn.prepareStatement(sql2);
@@ -400,7 +414,7 @@ public class cargaManualDB {
 			//ps2.setString(2, map.getLimite());
 			//ps2.setInt(3, map.getIdCargaManual());
 			
-			//ps.execute();
+			ps.execute();
 			System.out.println("update: carga manual:"+map.getIdCargaManual() + "-->"+map.getCodParcela());
 			//ps2.execute();
 			return true;

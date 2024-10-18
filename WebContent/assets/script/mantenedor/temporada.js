@@ -35,8 +35,9 @@ var TableDatatablesAjax = function() {
 						},
 						"columnDefs" : [
 								{
-									"targets" : [ 2 ],
+									"targets" : [ 5 ],
 									"render" : function(data, type, full) {
+										console.log(full)
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
 										html += "<a style='width:100%;' class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
@@ -330,6 +331,9 @@ var TableDatatablesAjax = function() {
 
 						row.temporada = $('#regTemporada').val();
 						row.idUser = $('#idUserPefil').val();
+						row.idEspecie = $('#especie').val();
+						row.desde = $('#desde').val();
+						row.hasta = $('#hasta').val();
 						console.log(row);
 
 						$.ajax({
@@ -390,4 +394,28 @@ var TableDatatablesAjax = function() {
 
 jQuery(document).ready(function() {
 	TableDatatablesAjax.init();
+	
+	$.ajax({
+		url : "/AgroVisionRestricciones/"+"json/especie/getAllOutFilter",
+		type : "GET",
+		data : "",
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept","application/json");
+			xhr.setRequestHeader("Content-Type","application/json");
+		},
+
+		success : function(data, textStatus, jqXHR) {
+			console.log(data)
+			var options = "";
+			
+			$(data).each(function(key, val){
+				options += "<option value='"+val.pf+"'>"+val.especie+"</option>";
+			})
+		
+			$('.especie').append(options);
+		},
+		error : function(jqXHR, textStatus,errorThrown) {
+			
+		}
+	});
 });

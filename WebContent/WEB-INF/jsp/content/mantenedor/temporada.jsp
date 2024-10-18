@@ -31,6 +31,9 @@
 						<tr role="row" class="heading">
 							<th width="40%">Temporada</th>
 							<th width="40%">Creado</th>
+							<th width="40%">Especie</th>
+							<th width="40%">Desde</th>
+							<th width="40%">Hasta</th>
 							<th width="30%">Actions</th>
 						</tr>
 						<tr role="row" class="filter">
@@ -40,6 +43,15 @@
 
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_creado">
+							</td>
+							<td><input type="text"
+								class="form-control form-filter input-sm" name="vw_especie">
+							</td>
+							<td><input type="text"
+								class="form-control form-filter input-sm" name="vw_desde">
+							</td>
+							<td><input type="text"
+								class="form-control form-filter input-sm" name="vw_hasta">
 							</td>
 							<td>
 								<div class="margin-bottom-5">
@@ -151,6 +163,39 @@
                                 </div>
                             </div>
                         </div>
+						<div class="form-group">
+							<label class="col-md-4 control-label">Especie: </label>
+							<div class="col-md-8">
+                                <div class="input-inline input-large">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="sizing-addon1">@</span>
+                                        <select name="especie" id="especie" class="form-control especie"></select>
+                                      </div>
+                                </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-4 control-label">Desde: </label>
+							<div class="col-md-8">
+                                <div class="input-inline input-large">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="sizing-addon1">@</span>
+                                        <input name="desde" id="desde" type="date" class="form-control" placeholder="Desde"> 
+                                      </div>
+                                </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-4 control-label">Hasta: </label>
+							<div class="col-md-8">
+                                <div class="input-inline input-large">
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="sizing-addon1">@</span>
+                                        <input name="hasta" id="hasta" type="date" class="form-control" placeholder="Hasta"> 
+                                      </div>
+                                </div>
+							</div>
+						</div>
                     </div>
                 </div>
             </div>

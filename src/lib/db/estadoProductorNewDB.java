@@ -101,7 +101,7 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT t.temporada temp,'' codSap, j.Especie, j.Productor, j.Etapa, j.Campo,j.Turno,	j.VariedadDenomina ";
+			sql = "SELECT t.temporada temp,'' codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,	j.VariedadDenomina ";
 			sql += "FROM  ";
 			sql += "  jerarquias j JOIN temporada t inner join  especie e on (j.Especie=e.pf) ";
 			sql += "where   ";
@@ -167,7 +167,7 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 			
-			sql = " SELECT t.temporada temp,'' codSap, j.Especie, j.Productor, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina, m.mercado, IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as bloque ";
+			sql = " SELECT t.temporada temp,'' codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina, m.mercado, IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as bloque ";
 			sql += " FROM    jerarquias j JOIN temporada t  ";
 			sql += " inner join  especie e on (j.Especie=e.pf)   ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)   ";
@@ -240,7 +240,7 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT  tt.temporada AS temp,p.codSap,e.pf,p.codProductor,bp.codParcela,pv.codTurno,v.cod,m.mercado, 1 as b   ";
+			sql = "SELECT  tt.temporada AS temp,p.codSap,p.nombre,e.pf,bp.codParcela,pv.codTurno,v.cod,m.mercado, 1 as b   ";
 
 			sql += "FROM  ";
 			sql += "bloqueoParcela bp  join temporada tt ";

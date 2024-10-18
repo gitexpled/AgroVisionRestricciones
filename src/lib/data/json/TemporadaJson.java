@@ -74,7 +74,7 @@ public class TemporadaJson {
 
 			while (f.hasNext()) {
 				Temporada row = f.next();
-				String[] d = { row.getTemporada(),row.getCreado()+"",row.getIdUser()+"",row.getIdTemporada()+"" };
+				String[] d = { row.getTemporada(),row.getCreado()+"", row.getIdEspecie()+"", row.getDesde()+"", row.getHasta()+"" };
 
 				data.setData(d);
 

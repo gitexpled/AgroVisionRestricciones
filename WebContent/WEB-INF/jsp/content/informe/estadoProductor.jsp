@@ -52,8 +52,8 @@
 							<th width="15%">Sociedad</th>
 							
 						
-							<th width="15%">Especie</th>
 							<th width="15%">Productor</th>
+							<th width="15%">Especie</th>
 							<th width="15%">Etapa</th>
 							<th width="15%">Campo</th>
 							<th width="15%">Turno</th>

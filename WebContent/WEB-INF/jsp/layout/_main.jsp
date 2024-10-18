@@ -261,6 +261,7 @@ License: You must have a valid license purchased only from themeforest(the above
         <!-- END THEME GLOBAL SCRIPTS -->
         
         <!-- BEGIN PAGE LEVEL SCRIPTS -->
+        <script async  src="../assets/global/scripts/AppConfig.js" type="text/javascript"></script>
         <script src="../assets/pages/scripts/form-repeater.min.js?${rand}" type="text/javascript"></script>
      	<script src="../assets/script/${javaScriptPage}.js?${rand}?" type="text/javascript"></script>
 
@@ -272,7 +273,6 @@ License: You must have a valid license purchased only from themeforest(the above
         <script src="../assets/layouts/layout/scripts/demo.min.js" type="text/javascript"></script>
         <script src="../assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
 		<script src="../assets/global/plugins/select2/js/select2.full.min.js"></script>
-        <script async  src="../assets/global/scripts/AppConfig.js" type="text/javascript"></script>
         <!-- END THEME LAYOUT SCRIPTS -->
         <script>
        

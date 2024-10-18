@@ -280,15 +280,16 @@ public class DiccionarioDB {
 		try
 		{
 			sql = "INSERT INTO diccionario(codProducto,codRemplazo,creado,modificado,user_idUser) Values ('"+diccionario.getCodProducto()+"','"+diccionario.getCodReemplazo()+"','"+d+"','"+d+"',"+diccionario.getIdUser()+")";
+			System.out.println(sql);
 			stmt = db.conn.createStatement();
 			resp = stmt.execute(sql);
 			stmt.close();
 			
-		}catch(Exception ex)
-		{
+		}catch(SQLException ex){
 			System.out.println(ex.getMessage());
-		}finally
-		{
+		}catch(Exception ex){
+			System.out.println(ex.getMessage());
+		}finally{
 			db.close();
 		}
 		return resp;

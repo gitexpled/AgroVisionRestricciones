@@ -274,7 +274,7 @@ var TableDatatablesAjax = function() {
 		
 		
 		var form1 = $('#form-InsertDiccionario');
-
+		debugger;
 		form1.validate({
 					errorElement : 'span', 
 					errorClass : 'help-block help-block-error',
@@ -306,12 +306,10 @@ var TableDatatablesAjax = function() {
 						regCodigoProd : {
 							required: "Este campo es obligatorio",
 							rangelength : "No debe ser menor a 2 y mayor a 50 caracteres",
-							alfanumerico : "ingrese valores alfanumericos"
 						},
 						regCodigoRem : {
 							required: "Este campo es obligatorio",
 							rangelength : "No debe ser menor a 2 y mayor a 50 caracteres",
-							alfanumerico : "ingrese valores alfanumericos",
 							remote: "Este código de producto ya existe en el diccionario"
 						}
 
@@ -366,7 +364,7 @@ var TableDatatablesAjax = function() {
 						row.codReemplazo = $('#regCodigoProd').val();
 						row.idUser = $('#idUserPefil').val();
 						console.log(row);
-
+						debugger;
 						$.ajax({
 									url : "/AgroVisionRestricciones/"+"json/diccionario/insertDiccionario",
 									type : "PUT",
@@ -411,17 +409,84 @@ var TableDatatablesAjax = function() {
 			insertDiccionario();
 			editar();
 			obtener();
-			jQuery.validator.addMethod("alfanumerico",
+			/*jQuery.validator.addMethod("alfanumerico",
 					function(value, element) {
 						return this.optional(element)
 								|| /^[a-zA-Z0-9._-]+$/.test(value);
-					}, "solo números ddddd");
+					}, "solo números ddddd");*/
 		}
 
 	};
 
 }();
 
+function insertDiccionario (){
+	let row = {};
+	row.codProducto = $('#regCodigoProd').val();
+	row.codReemplazo = $('#regCodigoProd').val();
+	row.idUser = $('#idUserPefil').val();
+	console.log(row);
+	debugger;
+	$.ajax({
+		url : "/AgroVisionRestricciones/"+"json/diccionario/insertDiccionario",
+		type : "PUT",
+		data : JSON.stringify(row),
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept",
+					"application/json");
+			xhr.setRequestHeader("Content-Type",
+					"application/json");
+		},
+
+		success : function(data, textStatus, jqXHR) {
+			$('#modal-newDiccionario').modal('toggle');
+			alert("Diccionario ingresado exitosamente!")
+			var table = $('#datatable_ajax').DataTable({bRetrieve : true});
+			table.ajax.reload();
+		},
+		error : function(jqXHR, textStatus,errorThrown) {
+			console.log("error");
+		}
+	});
+}
+
+function callSp(INPUT){
+	if(INPUT.LOADING == undefined){
+		INPUT.LOADING = true;
+	}
+	var data;
+	return new Promise( function(resolve) {
+		//INPUT.LOADING?loading.show():'';
+		setTimeout(function(){
+			$.ajax({
+				url: PROYECT+"json/CallSp",
+				type:	"PUT",
+				dataType: 'json',
+				data: JSON.stringify(INPUT),
+				async: false,
+				beforeSend : function(xhr) {
+					xhr.setRequestHeader("Accept","application/json");
+					xhr.setRequestHeader("Content-Type","application/json");
+				},
+				success: function(data){
+					data.error != 0?console.log(data.mensaje):'';
+					data = data;
+					if(INPUT.ALERTA){
+						if(data.error != 0){
+							alerta(data.mensaje);
+						}
+					}
+					resolve(data);
+				},error: function(e){
+					console.log(e)
+				},complete: function(){
+					INPUT.LOADING?loading.hide():'';
+					return data;
+				}
+			})
+		}, 10);
+	})
+}
 jQuery(document).ready(function() {
 	TableDatatablesAjax.init();
 });
