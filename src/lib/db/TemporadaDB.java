@@ -57,6 +57,90 @@ public class TemporadaDB {
 
 		return o;
 	}
+	public  int getMaxTemprada(int especie) throws Exception {
+
+		Temporada o = null;
+		int tem=0;
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		String sql = "";
+		try {
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT * FROM temporada t inner join  especie e on (t.idEspecie=e.pf)   where e.idEspecie='"+especie+"' order by idTemporada desc limit 1";
+			
+			
+			
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				o = new Temporada();
+				o.setIdTemporada(rs.getInt("idTemporada"));
+				tem=rs.getInt("idTemporada");
+				o.setTemporada(rs.getString("temporada"));
+				o.setCreado(rs.getDate("creacion"));
+				o.setIdUser(rs.getInt("idUser"));
+			} else {
+				o= null;
+			}
+
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getTemporadas: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return tem;
+	}
+	public  int getMaxTemprada(String especie) throws Exception {
+
+		Temporada o = null;
+		int tem=0;
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		String sql = "";
+		try {
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT * FROM temporada where idEspecie='"+especie+"' order by idTemporada desc limit 1";
+			
+			
+			System.out.println(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				o = new Temporada();
+				o.setIdTemporada(rs.getInt("idTemporada"));
+				tem=rs.getInt("idTemporada");
+				o.setTemporada(rs.getString("temporada"));
+				o.setCreado(rs.getDate("creacion"));
+				o.setIdUser(rs.getInt("idUser"));
+			} else {
+				o= null;
+			}
+
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getTemporadas: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return tem;
+	}
 
 	public static Temporada getTemporada(String idTemporada) throws Exception {
 

@@ -21,7 +21,7 @@
 						<tr role="row" class="heading">
 							<th width="10%">ID</th>
 							<th width="10%">Cód Productor</th>
-							<th width="10%">Cód parcela</th>
+							<th width="10%">Cód Etapa</th>
 							<th width="10%">Cód Turno</th>
 							<th width="10%">Cod Variedad</th>
 							<th width="10%">Mercado</th>

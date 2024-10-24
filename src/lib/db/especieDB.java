@@ -33,6 +33,7 @@ public class especieDB {
 				
 				
 				o.setEspecie(rs.getString("especie"));
+				o.setPf(rs.getString("pf"));
 				o.setIdEspecie(rs.getInt("idEspecie"));
 				
 				

@@ -33,12 +33,14 @@ import lib.db.CertificacionDB;
 import lib.db.MercadoDB;
 import lib.db.ProductorCertificacionDB;
 import lib.db.ProductorDB;
+import lib.db.TemporadaDB;
 import lib.db.bloqueadoDB;
 import lib.db.bloqueadoOpDB;
 import lib.db.especieDB;
 import lib.db.estadoProductorDB;
 import lib.db.estadoProductorNewDB;
 import lib.db.informesDB;
+import lib.db.jerarquiaDB;
 import lib.db.mailDB;
 import lib.sap.Sync;
 import lib.security.session;
@@ -85,9 +87,12 @@ public class estadoProductorJson {
 		}
 		
 		String html="";
+		
 			
 		Productor p=ProductorDB.getProductor(productor);
 		especie espe= especieDB.getId(especie);
+		TemporadaDB temp=new TemporadaDB();
+		int idTemporada=temp.getMaxTemprada(espe.getPf());
 		Mercado m =MercadoDB.getMercadoByName(mercado);
 		html+="<table  width='65%'><tr><td width='70%' valign='top'>";
 		html+="<b style='font-size:18px'>"+productor+": "+p.getNombre() +"</b>";
@@ -142,7 +147,7 @@ public class estadoProductorJson {
 		String exporta="Y";
 		
 		estadoProductorNewDB dataDB=new estadoProductorNewDB();
-		exporta=dataDB.getEstadoProductor(ses.getIdTemporada(),espe.getIdEspecie(),variedad.trim(),mercado,productor,etapa,campo,turno);
+		exporta=dataDB.getEstadoProductor(idTemporada,espe.getIdEspecie(),variedad.trim(),mercado,productor,etapa,campo,turno);
 		if (exporta.equals("SI"))
 			html+="<tr><td>Habilitado</td><td bgcolor='green' align='center'>SI</td></tr>";
 		else
@@ -154,25 +159,34 @@ public class estadoProductorJson {
 		html+="</table>";
 		html+="</td></tr></table><br><br><br>";
 		
+		ArrayList<ArrayList<String>> parcela= dataDB.getBloackParcela(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, turno);
+		
+		if (!parcela.isEmpty())
+			html+="<b>Bloqueo Etapa</b>";
+		
+		ArrayList<ArrayList<String>> bkMercado= dataDB.getBloackMercado(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, turno);
+		
+		if (!bkMercado.isEmpty())
+			html+="<b>Bloqueo Mercado</b>";
+		
 		if (!rPorcentaje.equals("No"))
-			html+=estadoProductorDB.getBlockPorcentaje(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
+			html+=dataDB.getBlockPorcentaje(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, turno);
 			html+="<br>";
 		if (!rPorcentajeArfD.equals("No"))
-			html+=estadoProductorDB.getBlockPorcentajeArfD(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
+			html+=estadoProductorDB.getBlockPorcentajeArfD(idTemporada,espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
 			html+="<br>";
 		
 		if (!rMoleculas.equals("No"))
-		html+=estadoProductorDB.getBlockMolecula(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
+		html+=dataDB.getBlockMolecula(idTemporada,espe.getIdEspecie(),variedad.trim(),mercado,productor,etapa,campo,turno);
 		html+="<br>";
 		
-		if (!rProductor.equals("No"))
-			html+=estadoProductorDB.getBlockProductor(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,turno);
+		
 		
 		informesDB info=new informesDB();
 		
-		html += "<div style='width:70%; text-align: center;'><b  style='font-size:18px'>Resultado de pesticidas("+ses.getIdTemporada()+")</b></div>";
+		html += "<div style='width:70%; text-align: center;'><b  style='font-size:18px'>Resultado de pesticidas("+idTemporada+")</b></div>";
 		//html += "<b  style='font-size:18px'>Carga Automatica</b>";
-		html+=info.getDetalleRestriccion(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"", productor,etapa,campo,turno);
+		html+=info.getDetalleRestriccion(idTemporada,espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"", productor,etapa,campo,turno,false);
 		
 		html+="";
 	OutputStream outputStream2;
@@ -213,9 +227,13 @@ public class estadoProductorJson {
 		}
 		
 		String html="";
-			
+		TemporadaDB temp=new TemporadaDB();
+		
 		Productor p=ProductorDB.getProductor(productor);
 		especie espe= especieDB.getId(especie);
+		
+		int idTemporada=temp.getMaxTemprada(espe.getPf());
+		
 		Mercado m =MercadoDB.getMercadoByName(mercado);
 		html+="<table  width='65%'><tr><td width='70%' valign='top'>";
 		html+="<b style='font-size:18px'>"+productor+": "+p.getNombre() +"</b>";
@@ -227,6 +245,8 @@ public class estadoProductorJson {
 		
 		html+="<tr><td width='120px'>Etapa</td><td> "+etapa+"</td></tr>";
 		html+="<tr><td>Campo</td><td> "+campo+"</td></tr>";
+		jerarquiaDB jerar=new jerarquiaDB();
+		html+="<tr><td>Turnos</td><td> "+jerar.getTurnos(productor, etapa, campo, variedad)+"</td></tr>";
 		
 		html+="<tr><td>Variedad</td><td> "+variedad+"</td></tr>";
 		html+="</table>";
@@ -263,7 +283,7 @@ public class estadoProductorJson {
 		String exporta="Y";
 		estadoProductorNewDB dataDB=new estadoProductorNewDB();
 		
-		exporta=dataDB.getEstadoProductor(ses.getIdTemporada(),espe.getIdEspecie(),variedad.trim(),m.getMercado(),productor,etapa, campo,"");
+		exporta=dataDB.getEstadoProductor(idTemporada,espe.getIdEspecie(),variedad.trim(),m.getMercado(),productor,etapa, campo,"");
 		if (exporta.equals("SI"))
 			html+="<tr><td>Habilitado</td><td bgcolor='green' align='center'>SI</td></tr>";
 		else
@@ -275,18 +295,26 @@ public class estadoProductorJson {
 		html+="</table>";
 		html+="</td></tr></table><br><br><br>";
 		
+		ArrayList<ArrayList<String>> parcela= dataDB.getBloackParcela(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, "");
+		
+		if (!parcela.isEmpty())
+			html+="<b>Bloqueo Etapa</b>";
+		
+		ArrayList<ArrayList<String>> bkMercado= dataDB.getBloackMercado(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, "");
+		
+		if (!bkMercado.isEmpty())
+			html+="<b>Bloqueo Mercado</b>";
+		
 		if (!rPorcentaje.equals("No"))
-			html+=estadoProductorDB.getBlockPorcentaje(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,null);
+			html+=dataDB.getBlockPorcentaje(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, "");
 			html+="<br>";
 		if (!rPorcentajeArfD.equals("No"))
-				html+=estadoProductorDB.getBlockPorcentajeArfD(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,null);
-				html+="<br>";
+			html+=estadoProductorDB.getBlockPorcentajeArfD(idTemporada,espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,"");
+			html+="<br>";
 		
 		if (!rMoleculas.equals("No"))
-		html+=estadoProductorDB.getBlockMolecula(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"",productor,etapa,null);
+		html+=dataDB.getBlockMolecula(idTemporada,espe.getIdEspecie(),variedad.trim(),mercado,productor,etapa,campo,"");
 		html+="<br>";
-		if (!rProductor.equals("No"))
-		html+=estadoProductorDB.getBlockProductor(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),mercado,productor,etapa,null);
 		
 		
 		
@@ -294,7 +322,7 @@ public class estadoProductorJson {
 		informesDB info=new informesDB();
 		html += "<div style='width:70%; text-align: center;'><b  style='font-size:18px'>Resultado de pesticidas</b></div>";
 		//html += "<b  style='font-size:18px'>Carga Automatica</b>";
-		html+=info.getDetalleRestriccion(ses.getIdTemporada(),espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"", productor,etapa,campo,"");
+		html+=info.getDetalleRestriccion(idTemporada,espe.getIdEspecie(),(variedad.trim()),m.getIdMercado()+"", productor,etapa,campo,"",true);
 		
 		html+="";
 	OutputStream outputStream2;

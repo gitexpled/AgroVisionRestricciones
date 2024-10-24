@@ -6,9 +6,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.text.StyledEditorKit.BoldAction;
+
 public class informesDB {
 	
-	public ArrayList<ArrayList<String>> getLmrDetalle(int idTemporada,int idEspecie,String idVariedad, String Mercado,String productor,String etapa,String campo,String turno) throws Exception {
+	public ArrayList<ArrayList<String>> getLmrDetalle(int idTemporada,int idEspecie,String idVariedad, String Mercado,String productor,String etapa,String campo,String turno,Boolean swTurno) throws Exception {
 		ArrayList<ArrayList<String>> list = new ArrayList<>();
 
 		ConnectionDB db = new ConnectionDB();
@@ -19,15 +21,16 @@ public class informesDB {
 			stmt = db.conn.createStatement();
 
 			sql = " SELECT r.creado,r.entregado,r.code,  IF(r.producto LIKE '%fosetyl%','fosetil',IF(r.producto LIKE '%fosetil%','fosetil',r.producto)) AS codProducto, j.Turno,  ";
-			sql += " r.lmr as resultado,format(l.limite,5) lmr,format(l.limite2,5) lmr2,CONCAT(format((( r.lmr * 100) / IFNULL(l.limite2, l.limite)),2),'%') as Porcentaje,'' as vigente,IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as habilitado";
-			sql += " FROM jerarquias j JOIN temporada t ";
+			sql += " r.lmr as resultado,format(l.limite,5) lmr,format(l.limite2,5) lmr2,CONCAT(format((( r.lmr * 100) / IFNULL(l.limite2, l.limite)),2),'%') as Porcentaje, vigente,IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as habilitado";
+			sql += " FROM jerarquias j ";
 			sql += " inner join  especie e on (j.Especie=e.pf)  ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)  ";
+			sql += " inner join temporada t  on (t.idEspecie=j.Especie  and r.creado between t.desde and t.hasta)";
 			sql += " inner join diccionario d on (d.codRemplazo=r.producto) ";
 			sql += " inner join vw_limite l on (d.codProducto=l.codProducto and e.idEspecie=l.idEspecie)   ";
 			sql += " inner join vw_mercados m on (l.idMercado=m.idMercado)  ";
 			sql += "where  ";
-			sql += " t.idTemporada='"+idTemporada+"'  ";
+			sql += " t.idTemporada='"+idTemporada+"'   ";
 			
 			sql += "  and e.idEspecie='"+idEspecie+"' ";
 			
@@ -66,9 +69,14 @@ public class informesDB {
 				}
 				else
 				{
+					if (rsmd.getColumnLabel(i).toUpperCase().equals("TURNO") && !swTurno)
+					{}
+					else
+					{
 					String htmlData  = rsmd.getColumnLabel(i); 
 					htmlData = htmlData.substring(0,1).toUpperCase() + htmlData.substring(1).toLowerCase();
 					j.add(htmlData);
+					}
 					
 				}
 				
@@ -81,6 +89,7 @@ public class informesDB {
 				l.add(rs.getString(2).replace(" 00:00:00.0", ""));
 				l.add(rs.getString(3));
 				l.add(rs.getString(4));
+				if (swTurno)
 				l.add(rs.getString(5));
 				l.add(rs.getString(6));
 				l.add(rs.getString(7));
@@ -117,7 +126,7 @@ public class informesDB {
 
 		return list;
 	}
-	public  String getDetalleRestriccion(int idtemporada,int idEspecie,String idVariedad, String mercado,String productor,String etapa,String campo,String turno) throws Exception {
+	public  String getDetalleRestriccion(int idtemporada,int idEspecie,String idVariedad, String mercado,String productor,String etapa,String campo,String turno,Boolean swTurno) throws Exception {
 		ArrayList<String[]> data = new ArrayList<>();
 
 		ConnectionDB db = new ConnectionDB();
@@ -128,7 +137,7 @@ public class informesDB {
 
 			
 
-			 ArrayList<ArrayList<String>> dataLmr=getLmrDetalle(idtemporada, idEspecie, idVariedad, mercado, productor, etapa,campo, turno);
+			 ArrayList<ArrayList<String>> dataLmr=getLmrDetalle(idtemporada, idEspecie, idVariedad, mercado, productor, etapa,campo, turno,swTurno);
 			 
 			 html="<table border=1>";
 			for (ArrayList<String> arrayList : dataLmr) {
