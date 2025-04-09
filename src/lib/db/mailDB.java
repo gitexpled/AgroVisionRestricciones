@@ -7,105 +7,17 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 
-import lib.struc.Productor;
+import lib.struc.mail;
+import lib.struc.TipoProducto;
 import lib.struc.filterSql;
-import lib.struc.user;
 
 public class mailDB {
-	
-	
-	public static String deleteTurnoVariedad(String codProducto) throws Exception {
-		String respuesta="No se pudo eliminar";
-		PreparedStatement ps = null;
-		String sql = "";
-		ConnectionDB db = new ConnectionDB();
-		try {
-			db.conn.setAutoCommit(false);
-			String[] ids=codProducto.split("_");
-			sql = "update  mailExcel set estado=4  where ";
-			
-		
-			sql+="  codProductor='"+ids[0]+"'";
-			sql+=" and codParcela='"+ids[1]+"'";
-			sql+=" and turno='"+ids[2]+"'";
-			sql+=" and variedad='"+ids[3]+"'";
-			sql+=" and REPLACE(proyecto, '/ ', '')='"+ids[4]+"'";
-			System.out.println(sql);
-			
-		
 
-			ps = db.conn.prepareStatement(sql);
-			
-			
+	public static mail getMail(String idmail) throws Exception {
 
-			ps.executeUpdate();
-			db.conn.commit();
-			db.conn.close();
-			respuesta="Registro eliminado";
-			System.out.println("ok");
-			System.out.println("ok");
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error: " + e.getMessage());
-			System.out.println("sql: " + sql);
-			throw new Exception("sepPfx: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error2: " + e.getMessage());
-			throw new Exception("sepPfx: " + e.getMessage());
-
-		} finally {
-			db.close();
-		}
-		return respuesta;
-	}
-	
-	public static String delete(String codProducto) throws Exception {
-		String respuesta="No se pudo eliminar";
-		PreparedStatement ps = null;
-		String sql = "";
-		ConnectionDB db = new ConnectionDB();
-		try {
-			db.conn.setAutoCommit(false);
-
-			sql = "update  mailExcel set estado=3  where codProducto=?";
-
-			ps = db.conn.prepareStatement(sql);
-			ps.setString(1,codProducto);
-			
-
-			ps.executeUpdate();
-			db.conn.commit();
-			db.conn.close();
-			respuesta="Registro eliminado";
-			System.out.println("ok");
-			System.out.println("ok");
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error: " + e.getMessage());
-			System.out.println("sql: " + sql);
-			throw new Exception("sepPfx: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error2: " + e.getMessage());
-			throw new Exception("sepPfx: " + e.getMessage());
-
-		} finally {
-			db.close();
-		}
-		return respuesta;
-	}
-	
-	
-	
-	public static lib.struc.mail getMail(String id) throws Exception {
-
-		lib.struc.mail o = null;
+		mail o = null;
 		ConnectionDB db = new ConnectionDB();
 		Statement stmt = null;
 		String sql = "";
@@ -113,18 +25,13 @@ public class mailDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT * FROM mail where idGetMail='" + id + "'";
+			sql = "SELECT * FROM mail where idmail='" + idmail + "'";
 			
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next()) {
-				o = new lib.struc.mail();
-				o.setFechaRecibido((rs.getString("fechaRecibido")));
-				o.setFechaCarga(rs.getString("fechaCarga"));
-				o.setArchivo(rs.getString("nombreArchivo"));
-				o.setAsunto(rs.getString("asuntoMail"));
-				o.setIdMail(rs.getInt("idMail"));
-				o.setFile(null);
-				
+				o = new mail();
+				o.setIdMail(rs.getInt("idmail"));
+				o.setMail(rs.getString("mail"));
 			} else {
 				o= null;
 			}
@@ -137,92 +44,7 @@ public class mailDB {
 			// TODO Auto-generated catch block
 			System.out.println("Error: " + e.getMessage());
 			System.out.println("sql: " + sql);
-			throw new Exception("getUser: " + e.getMessage());
-		} finally {
-			db.close();
-		}
-
-		return o;
-	}
-	
-	public static lib.struc.mail getMailFile(String id) throws Exception {
-
-		lib.struc.mail o = null;
-		ConnectionDB db = new ConnectionDB();
-		Statement stmt = null;
-		String sql = "";
-		try {
-
-			stmt = db.conn.createStatement();
-
-			sql = "SELECT * FROM mail where idMail='" + id + "'";
-			
-			ResultSet rs = stmt.executeQuery(sql);
-			if (rs.next()) {
-				o = new lib.struc.mail();
-				o.setFechaRecibido((rs.getString("fechaRecibido")));
-				o.setFechaCarga(rs.getString("fechaCarga"));
-				o.setArchivo(rs.getString("nombreArchivo"));
-				o.setAsunto(rs.getString("asuntoMail"));
-				o.setIdMail(rs.getInt("idMail"));
-				o.setFile(rs.getBinaryStream("file"));
-				
-			} else {
-				o= null;
-			}
-
-			rs.close();
-			stmt.close();
-			db.conn.close();
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error: " + e.getMessage());
-			System.out.println("sql: " + sql);
-			throw new Exception("getUser: " + e.getMessage());
-		} finally {
-			db.close();
-		}
-
-		return o;
-	}
-	
-	
-	public static lib.struc.mail getMailMax() throws Exception {
-
-		lib.struc.mail o = null;
-		ConnectionDB db = new ConnectionDB();
-		Statement stmt = null;
-		String sql = "";
-		try {
-
-			stmt = db.conn.createStatement();
-
-			sql = "SELECT * FROM mail order by fechaCarga desc limit 1";
-			
-			ResultSet rs = stmt.executeQuery(sql);
-			if (rs.next()) {
-				o = new lib.struc.mail();
-				o.setFechaRecibido((rs.getString("fechaRecibido")));
-				o.setFechaCarga(rs.getString("fechaCarga"));
-				o.setArchivo(rs.getString("nombreArchivo"));
-				o.setAsunto(rs.getString("asuntoMail"));
-				o.setIdMail(rs.getInt("idMail"));
-				o.setFile(rs.getBinaryStream("file"));
-				
-			} else {
-				o= null;
-			}
-
-			rs.close();
-			stmt.close();
-			db.conn.close();
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error: " + e.getMessage());
-			System.out.println("sql: " + sql);
-			throw new Exception("getUser: " + e.getMessage());
+			throw new Exception("getmail: " + e.getMessage());
 		} finally {
 			db.close();
 		}
@@ -230,9 +52,7 @@ public class mailDB {
 		return o;
 	}
 
-	
-
-	public static int getMailAll(ArrayList<filterSql> filter) throws Exception {
+	public static int getmailAll(ArrayList<filterSql> filter) throws Exception {
 
 		int total = 0;
 		Statement stmt = null;
@@ -287,7 +107,7 @@ public class mailDB {
 			// TODO Auto-generated catch block
 			System.out.println("Error: " + e.getMessage());
 			System.out.println("sql: " + sql);
-			throw new Exception("getUsersAll: " + e.getMessage());
+			throw new Exception("getmailAll: " + e.getMessage());
 		} finally {
 			db.close();
 		}
@@ -295,9 +115,10 @@ public class mailDB {
 		return total;
 	}
 
-	public static ArrayList<lib.struc.mail> getMail(ArrayList<filterSql> filter, String order, int start, int length)
+	public static ArrayList<mail> getmail(ArrayList<filterSql> filter, String order, int start, int length)
 			throws Exception {
-		ArrayList<lib.struc.mail> productores = new ArrayList<lib.struc.mail>();
+
+		ArrayList<mail> tiposProducto = new ArrayList<mail>();
 		Statement stmt = null;
 		String sql = "";
 		ConnectionDB db = new ConnectionDB();
@@ -337,27 +158,22 @@ public class mailDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
-			}else
-				sql += " order by fechaRecibido desc";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
+			}
 
 			if (length > 0) {
 				sql += " limit " + start + "," + length + " ";
 			}
+			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
-				lib.struc.mail row = new lib.struc.mail();
+				mail o = new mail();
 				
-				
-				row.setIdMail(rs.getInt("idMail"));
-				row.setFechaRecibido((rs.getString("fechaRecibido")));
-				row.setFechaCarga(rs.getString("fechaCarga"));
-				row.setArchivo(rs.getString("nombreArchivo"));
-				row.setAsunto(rs.getString("asuntoMail"));
-				row.setLaboratorio(rs.getString("laboratorio"));
-				row.setFile(null);
-				productores.add(row);
+				o.setIdMail(rs.getInt("idmail"));
+				o.setMail(rs.getString("mail"));
+				tiposProducto.add(o);
 			}
 			rs.close();
 			stmt.close();
@@ -372,10 +188,97 @@ public class mailDB {
 			db.close();
 		}
 
-		return productores;
+		return tiposProducto;
 	}
 	
+	public static boolean insertmail(mail mail) throws ParseException
+	{
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		boolean resp = true;
+		String sql = "";
+		try
+		{
+			sql = "INSERT INTO mail(mail) Values ('"+mail.getMail()+"')";
+			stmt = db.conn.createStatement();
+			resp = stmt.execute(sql);
+			stmt.close();
+			
+		}catch(Exception ex)
+		{
+			System.out.println(ex.getMessage());
+		}finally
+		{
+			db.close();
+		}
+		return resp;
+	}
 	
-	
-	
+	public static void updatemail(mail mail) throws Exception {
+
+		PreparedStatement ps = null;
+		String sql = "";
+		ConnectionDB db = new ConnectionDB();
+		try {
+			db.conn.setAutoCommit(false);
+
+			sql = "update  mail set mail=? where idmail=" + mail.getIdMail()
+					+ "";
+
+			ps = db.conn.prepareStatement(sql);
+			ps.setString(1, mail.getMail());
+
+
+			ps.executeUpdate();
+			db.conn.commit();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("sepPfx: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error2: " + e.getMessage());
+			throw new Exception("sepPfx: " + e.getMessage());
+
+		} finally {
+			db.close();
+		}
+
+	}
+	public static void delete(int idMail) throws Exception {
+
+		PreparedStatement ps = null;
+		String sql = "";
+		ConnectionDB db = new ConnectionDB();
+		try {
+			db.conn.setAutoCommit(false);
+
+			sql = "delete from   mail  where idmail=" + idMail + "";
+
+			ps = db.conn.prepareStatement(sql);
+			
+
+
+			ps.executeUpdate();
+			db.conn.commit();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("delete: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error2: " + e.getMessage());
+			throw new Exception("delete: " + e.getMessage());
+
+		} finally {
+			db.close();
+		}
+
+	}
 }

@@ -48,6 +48,39 @@ public class especieDB {
 		}
 		return o;
 	}
+	public static especie getByCodLab(String id)
+	{
+		ConnectionDB db = new ConnectionDB();
+		especie o = new especie();
+		Statement stmt = null;
+		String sql = "";
+		try
+		{
+			stmt = db.conn.createStatement();
+			sql = "Select * from especie where codLab='"+id+"'";
+			ResultSet rs = stmt.executeQuery(sql);
+			if(rs.next())
+			{
+				
+				
+				o.setEspecie(rs.getString("especie"));
+				o.setPf(rs.getString("pf"));
+				o.setIdEspecie(rs.getInt("idEspecie"));
+				
+				
+			}
+			rs.close();
+			stmt.close();
+		}catch(Exception ex)
+		{
+			System.out.println("Error: "+ex.getMessage());
+			ex.printStackTrace();
+		}finally {
+			
+			db.close();
+		}
+		return o;
+	}
 	
 	public static void update(cargaManual o) throws Exception {
 
@@ -158,7 +191,7 @@ public class especieDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "select idEspecie,pf, especie from especie ";
+			sql = "select idEspecie,pf, especie,codLab from especie ";
 
 			if (filter.size() > 0) {
 				String andSql="";
@@ -198,19 +231,15 @@ public class especieDB {
 				sql += " limit " + start + "," + length + " ";
 			}
 			ResultSet rs = stmt.executeQuery(sql);
-//			especie o = new especie();
-//			o.setIdEspecie(1);
-//			o.setEspecie("ARANDANO");
-//			o.setPf("B");
-//		
-//			arr.add(o);
+
 		
 			while (rs.next()) {
 				especie o = new especie();
-				System.out.println("id: " + rs.getInt("idEspecie"));
+				
 				o.setIdEspecie(rs.getInt("idEspecie"));
 				o.setEspecie(rs.getString("especie"));
 				o.setPf(rs.getString("pf"));
+				o.setCodLab(rs.getString("codLab"));
 				
 				
 				arr.add(o);

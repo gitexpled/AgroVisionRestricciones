@@ -1,22 +1,14 @@
 var TableDatatablesAjax = function() {
-	
-	
-	
-	var populateForm = function()
-	{
-		
-		
-		
-		
-	
-	}
 	var handleDemo1 = function() {
 
 		var grid = new Datatable();
-
 		grid.init({
 					src : $("#datatable_ajax"),
-					onSuccess : function(grid, response) {},
+					onSuccess : function(grid, response) {
+						// grid: grid object
+						// response: json object of server side ajax response
+						// execute some code after table records loaded
+					},
 					onError : function(grid) {
 						// execute some code on network or other general error
 					},
@@ -25,26 +17,44 @@ var TableDatatablesAjax = function() {
 					},
 					loadingMessage : 'Loading...',
 					dataTable : { 
-						"responsive": false,
-						"bStateSave" : true, 
-						"lengthMenu" : [ [ 10, 20, 50, 100, 150, -1 ],[ 10, 20, 50, 100, 150, "All" ] ],
+
+						"bStateSave" : true, // save datatable
+												// state(pagination, sort, etc)
+												// in cookie.
+					
+						"lengthMenu" : [ [ 10, 20, 50, 100, 150, -1 ],
+								[ 10, 20, 50, 100, 150, "All" ] // change per
+																// page values
+																// here
+						],
 						"pageLength" : 20, // default record count per page
-						"ajax" : {"url" : "/AgroVisionRestricciones/"+"json/restZona2/view"},
+						"ajax" : {
+							"url" : "/AgroVisionRestricciones/"+"json/eliminaVariedad/view", // ajax
+																				// source
+						},
 						"columnDefs" : [
-						        
 								{
-									"targets" : [ 4 ],
+									"targets" : [ 2 ],
 									"render" : function(data, type, full) {
-										var html= "";
+										var html = "<div class='btn-group pull-left  btn-group-sm'>";
+
+										html += "<a onclick='' class='col-md-2 btn red btn-table pull-right button-grilla-elimina-cuenta changeStatus'   data-id='"
+												+ full[0]
+												+ "' data-toggle='modal'><i class='fa fa-trash-o'></i></a>";
+
+									
+
+										html += "</div>";
 
 										return html;
-
 									}
-								}],
-						"order" : [ [ 1, "des" ] ]
+								} ],
+						"order" : [ [ 1, "asc" ] ]
+					// set first column as a default sort by asc
 
 					}
 				});
+
 		// handle group actionsubmit button click
 		grid.getTableWrapper().on(
 				'click',
@@ -77,39 +87,48 @@ var TableDatatablesAjax = function() {
 						});
 					}
 				});
-		
-		
-		
-        $(".filter-submit-header").on('click', function(e) {
-
-        	e.preventDefault();
-        	  $('textarea.form-filter2, select.form-filter2, input.form-filter2:not([type="radio"],[type="checkbox"])').each(function() {
-        		  grid.setAjaxParam($(this).attr("name"), $(this).val());
-               
-              });
-        	
-            grid.submitFilter();
-            
-
-            
-        });
-
-        $(".filter-submit2").on('click', function(e) {
-        	
-            e.preventDefault();
-            $('textarea.form-filter2, select.form-filter2, input.form-filter2:not([type="radio"],[type="checkbox"])').each(function() {
-      		  grid.setAjaxParam($(this).attr("name"), $(this).val());
-               
-            });
-            grid.submitFilter();
-        });
-
+		// grid.setAjaxParam("customActionType", "group_action");
+		// grid.getDataTable().ajax.reload();
+		// grid.clearAjaxParams();
 	}
 
-	
-	
+	var setEstado = function(){
+		$("body").on("click",".changeStatus",function(e){
+			var id = $(this).data("id");
+			$.ajax({
+				type : 'GET',
+				url : "/AgroVisionRestricciones/"+"json/eliminaVariedad/delete",
+				data : {
+					id: id
+				},
+				success : function(data) {
+					swal({
+						  title: 'Registro eliminado exitosamente!',
+						  animation: true,
+						  customClass: 'animated tada'
+						})
+					var table = $('#datatable_ajax').DataTable({
+								bRetrieve : true
+					});
+					table.ajax.reload();
+				}
+			});
+		})
+	}
+	var limpiar = function() {
+		$("#modal-newProductor").on(
+				'show.bs.modal',
+				function(e) {
+
+					 $('#idVariedad').val("");
+				
+					
+				
+				});
+	}
+
 	var obtener = function() {
-		$("#modal-modifica-tipoProducto").on(
+		$("#modal-modifica-productor").on(
 				'show.bs.modal',
 				function(e) {
 
@@ -118,13 +137,26 @@ var TableDatatablesAjax = function() {
 					ID=id;
 					$.ajax({
 						type : 'GET',
-						url : "/AgroVisionRestricciones/json/tipoProducto/" + id,
+						url : "/AgroVisionRestricciones/json/eliminaVariedad/" + id,
 						data : "",
 						success : function(data) {
-							console.log(data)
-							$("#updateTipoProducto").val(data.tipoProducto);
+							console.log(data);
+							$("#updatecodParcela").val(data.codParcela);
+							$("#updatecodVariedad").val(data.idVariedad);
 							$("#updateFeCreacion").val(data.creado);
-
+							$("#updateModificacion").val(data.modificado);
+							$("#updateId").val(id);
+							
+								
+							
+							$.ajax({
+								type: 'GET',
+								url : "/AgroVisionRestricciones/json/user/"+data.idUser,
+								data:"",
+								success: function(user){
+									$('#updateUserMod').val(user.user);
+								}
+							})
 						}
 					});
 				});
@@ -141,9 +173,10 @@ var TableDatatablesAjax = function() {
 					errorClass : 'help-block help-block-error',
 					focusInvalid : true, 
 					rules : {
-						updateTipoProducto : {
+						
+						codParcela : {
 							required : true,
-							rangelength : [ 5, 50 ],
+							rangelength : [ 4, 50 ],
 							alfanumerico : true
 						}
 
@@ -151,7 +184,7 @@ var TableDatatablesAjax = function() {
 
 					messages : {
 
-						updateTipoProducto : {
+						updateNombre : {
 							required : "Este campo es obligatorio",
 							rangelength : "Debe ser mayor a 5 y menor a 50",
 							alfanumerico : "Ingrese sólo valores alfanumericos"
@@ -224,11 +257,13 @@ var TableDatatablesAjax = function() {
 
 						// parametrosCuenta.Cuenta = cuenta;
 
-						row.tipoProducto = $('#updateTipoProducto').val();
-						row.idTipoProducto = ID;
+						row.idVariedad = $('#updatecodVariedad').val();;
+						row.codParcela = $("#updatecodParcela").val();
+
+						row.id = $('#updateId').val();;
 						
 						$.ajax({
-									url : "/AgroVisionRestricciones/"+"json/tipoProducto/put",
+									url : "/AgroVisionRestricciones/"+"json/eliminaVariedad/put",
 									type : "PUT",
 									data : JSON.stringify(row),
 									beforeSend : function(xhr) {
@@ -239,9 +274,9 @@ var TableDatatablesAjax = function() {
 									},
 
 									success : function(data, textStatus, jqXHR) {
-										$('#modal-modifica-tipoProducto').modal("toggle");
+										$('#modal-modifica-productor').modal("toggle");
 										swal({
-											  title: 'Tipo Producto Modificada exitosamente!',
+											  title: 'Productor Modificado exitosamente!',
 											  animation: true,
 											  customClass: 'animated tada'
 											})
@@ -256,40 +291,43 @@ var TableDatatablesAjax = function() {
 											errorThrown) {
 									}
 								});
-
 					}
 
 				});
 
 	}
 	
-	var insertTipoProducto = function(){
+	var insert = function(){
 		var row = {};
 
 		
 		
-		var form1 = $('#form-InsertTipoProducto');
+		var form1 = $('#form-InsertProductor');
 
 		form1.validate({
 					errorElement : 'span', 
 					errorClass : 'help-block help-block-error',
 					focusInvalid : true, 
 					rules : {
-						regTipoProducto : {
+						cultivo : {
 							required : true,
-							rangelength : [ 2, 50 ],
-							alfanumerico : true
+							
+						},
+						mercado : {
+							required : true,
+							
 						}
 
 					},
 
 					messages : {
-
-						regTipoProducto : {
-							required: "Este campo es obligatorio",
-							rangelength : "No debe ser menor a 2 y mayor a 50 caracteres",
-							alfanumerico : "ingrese valores alfanumericos"
-						}
+						cultivo : {
+							required: "Este campo es obligatorio"
+						},
+						mercado : {
+							required: "Este campo es obligatorio"
+						},
+						
 
 					},
 
@@ -338,12 +376,14 @@ var TableDatatablesAjax = function() {
 
 					submitHandler : function(form) {
 
-						row.tipoProducto = $('#regTipoProducto').val();
-						row.idUser = $('#idUserPefil').val();
-						console.log(row);
+						row.variedad = $('#idVariedad').val();
+						
+						
+						
+						
 
 						$.ajax({
-									url : "/AgroVisionRestricciones/"+"json/tipoProducto/insertTipoProducto",
+									url : "/AgroVisionRestricciones/"+"json/eliminaVariedad/insert",
 									type : "PUT",
 									data : JSON.stringify(row),
 									beforeSend : function(xhr) {
@@ -354,9 +394,9 @@ var TableDatatablesAjax = function() {
 									},
 
 									success : function(data, textStatus, jqXHR) {
-										$('#modal-newTipoProducto').modal('toggle');
+										$('#modal-newProductor').modal('toggle');
 									swal({
-										  title: 'Tipo Producto ingresada exitosamente!',
+										  title: 'Mercado cultivo ingresado exitosamente!',
 										  animation: true,
 										  customClass: 'animated tada'
 										})
@@ -376,24 +416,22 @@ var TableDatatablesAjax = function() {
 
 				});
 	}
-	
-	
 
 	return {
 
 		// main function to initiate the module
 		init : function() {
-			populateForm();
+			
+			limpiar();
 			handleDemo1();
-			
-			insertTipoProducto();
+			insert();
 			editar();
+			setEstado();
 			obtener();
-			
 			jQuery.validator.addMethod("alfanumerico",
 					function(value, element) {
 						return this.optional(element)
-								|| /^[a-zA-Z0-9._-]+$/.test(value);
+								|| /[a-zA-Z]/.test(value);
 					}, "solo números ddddd");
 		}
 
@@ -403,8 +441,82 @@ var TableDatatablesAjax = function() {
 
 jQuery(document).ready(function() {
 	TableDatatablesAjax.init();
-	document.getElementById("buscarID").click();
-	$('#buscarID').trigger($.Event("click", { keyCode: 13 }));
-	 $("#datatable_ajax").DataTable().ajax.reload();
-});
+	$.ajax({
+		url : "/AgroVisionRestricciones/"+"json/mercado/getAllOutFilter",
+		type : "GET",
+		data : "",
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept",
+					"application/json");
+			xhr.setRequestHeader("Content-Type",
+					"application/json");
+		},
 
+		success : function(data, textStatus, jqXHR) {
+			var options = "";
+			$(data).each(function(key, val){
+				options += "<option value='"+val.mercado+"'>"+val.mercado+"</option>";
+			})
+			$('.mercado').append(options);
+		},
+		error : function(jqXHR, textStatus,
+				errorThrown) {
+		}
+	});
+	
+	
+	jQuery(document).ready(function() {
+	$.ajax({
+		url : "/AgroVisionRestricciones/"+"json/especie/getAllOutFilter",
+		type : "GET",
+		data : "",
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("Accept",
+					"application/json");
+			xhr.setRequestHeader("Content-Type",
+					"application/json");
+		},
+
+		success : function(data, textStatus, jqXHR) {
+			var options = "";
+			
+			$(data).each(function(key, val){
+				options += "<option value='"+val.pf+"'>"+val.especie+"</option>";
+			})
+		
+			$('.cultivo').append(options);
+		},
+		error : function(jqXHR, textStatus,
+				errorThrown) {
+		}
+	});
+	});
+	
+	var $variedad = [];
+$.ajax({
+	url : "/AgroVisionRestricciones/"+"json/variedad/getAllOutFilter",
+	type : "GET",
+	data : "",
+	beforeSend : function(xhr) {
+		xhr.setRequestHeader("Accept",
+				"application/json");
+		xhr.setRequestHeader("Content-Type",
+				"application/json");
+	},
+
+	success : function(data, textStatus, jqXHR) {
+		var options = "";
+		
+		$(data).each(function(key, val){
+			$variedad[val.cod] = val.nombre;
+			options += "<option value='"+val.nombre.replace("'","@")+"'>"+val.nombre+"</option>";
+		})
+	
+		$('.idVariedad').append(options);
+	},
+	error : function(jqXHR, textStatus,
+			errorThrown) {
+	}
+});
+	
+});

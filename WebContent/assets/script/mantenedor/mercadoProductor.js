@@ -34,7 +34,7 @@ var TableDatatablesAjax = function() {
 						},
 						"columnDefs" : [
 								{
-									"targets" : [ 8 ],
+									"targets" : [ 9 ],
 									"render" : function(data, type, full) {
 										var html = "<div class='btn-group pull-left  btn-group-sm'>";
 
@@ -313,7 +313,11 @@ var TableDatatablesAjax = function() {
 							required : true,
 							
 						},
-						codParcela : {
+						codEtapa : {
+							required : true,
+							
+						},
+						codCampo : {
 							required : true,
 							
 						},
@@ -336,7 +340,10 @@ var TableDatatablesAjax = function() {
 						codigoProductor : {
 							required: "Este campo es obligatorio"
 						},
-						codParcela : {
+						codEtapa : {
+							required: "Este campo es obligatorio"
+						},
+						codCampo : {
 							required: "Este campo es obligatorio"
 						},
 						codTurno : {
@@ -397,7 +404,8 @@ var TableDatatablesAjax = function() {
 					submitHandler : function(form) {
 
 						row.codProductor = $('#codProductor').val();
-						row.codParcela = $('#codParcela').val();
+						row.codEtapa = $('#codEtapa').val();
+						row.codCampo = $('#codCampo').val();
 						row.codTurno = $('#codTurno').val();
 						row.idVariedad = $('#idVariedad').val();
 						row.idMercado = $('#idMercado').val();
@@ -511,11 +519,11 @@ jQuery(document).ready(function() {
 	});
 	
 	$('#codProductor').on('change', function() {
-		$('.codParcela').empty();
-		$('.codParcela').append('<option value="">Seleccionar</option>');
+		$('.codEtapa').empty();
+		$('.codEtapa').append('<option value="">Seleccionar</option>');
 		
 		const get = {
-			SP: "get_ParcelaByProductor",
+			SP: "get_EtapaByProductor",
 			FILTERS: {
 				p_productor: this.value
 			}
@@ -539,7 +547,7 @@ jQuery(document).ready(function() {
 					options += "<option value='"+val.codigo+"'>"+val.nombre+"</option>";
 				})
 			
-				$('.codParcela').append(options);
+				$('.codEtapa').append(options);
 			},error: function(e){
 				console.log(e)
 			},complete: function(){
@@ -548,45 +556,62 @@ jQuery(document).ready(function() {
 		return;
 		
 		
-		$('.codParcela').empty();
-		$('.codParcela').append('<option value="">Seleccionar</option>');
-		$.ajax({
-			url : "/AgroVisionRestricciones/"+"json/parcela/getAllByProductor/"+this.value,
-			type : "GET",
-			data : "",
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader("Accept",
-						"application/json");
-				xhr.setRequestHeader("Content-Type",
-						"application/json");
-			},
-
-			success : function(data, textStatus, jqXHR) {
-				var options = "";
-				
-				$(data).each(function(key, val){
-					options += "<option value='"+val.codigo+"'>"+val.nombre+"</option>";
-				})
-			
-				$('.codParcela').append(options);
-			},
-			error : function(jqXHR, textStatus,
-					errorThrown) {
-			}
-		});
+		
 	   
 	  });
-	$('#codParcela').on('change', function() {
+	$('#codEtapa').on('change', function() {
+		
+		$('.codCampo').empty();
+		$('.codCampo').append('<option value="">Seleccionar</option>');
+		var productor=$('#codProductor').children("option:selected").val();
+		
+		const get = {
+			SP: "get_CampoByProdEtapa",
+			FILTERS: {
+				p_productor: productor,
+				p_etapa: this.value
+			}
+		}
+		console.log(get)
+		$.ajax({
+			url: PROYECT+"json/CallSp",
+			type:	"PUT",
+			dataType: 'json',
+			data: JSON.stringify(get),
+			async: false,
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader("Accept","application/json");
+				xhr.setRequestHeader("Content-Type","application/json");
+			},
+			success: function(res){
+				console.log(res)
+				var options = "";
+				
+				$(res.data).each(function(key, val){
+					options += "<option value='"+val.codCampo+"'>"+val.nombre+"</option>";
+				})
+			
+				$('.codCampo').append(options);
+			},error: function(e){
+				console.log(e)
+			},complete: function(){
+			}
+		})
+		return;
+	});
+	$('#codCampo').on('change', function() {
 		
 		$('.codTurno').empty();
 		$('.codTurno').append('<option value="">Seleccionar</option>');
 		var productor=$('#codProductor').children("option:selected").val();
+		var etapa=$('#codEtapa').children("option:selected").val();
 		
 		const get = {
-			SP: "get_TurnosByProdParcela",
+			SP: "get_TurnosByProdEtapaCampo",
 			FILTERS: {
 				p_productor: productor,
-				p_parcela: this.value
+				p_etapa: etapa,
+				p_campo: this.value
 			}
 		}
 		console.log(get)
@@ -612,53 +637,26 @@ jQuery(document).ready(function() {
 			},error: function(e){
 				console.log(e)
 			},complete: function(){
-				return data;
 			}
 		})
 		return;
-		
-		
-		
-		$('.codTurno').empty();
-		$('.codTurno').append('<option value="">Seleccionar</option>');
-		var productor=$('#codProductor').children("option:selected").val();
-		$.ajax({
-			url : "/AgroVisionRestricciones/"+"json/turno/getAllByParcela/"+productor+"/"+this.value,
-			type : "GET",
-			data : "",
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader("Accept",
-						"application/json");
-				xhr.setRequestHeader("Content-Type",
-						"application/json");
-			},
-
-			success : function(data, textStatus, jqXHR) {
-				var options = "";
-				
-				$(data).each(function(key, val){
-					options += "<option value='"+val.codTurno+"'>"+val.nombre+"</option>";
-				})
-			
-				$('.codTurno').append(options);
-			},
-			error : function(jqXHR, textStatus,
-					errorThrown) {
-			}
-		});
-	   
-	  });
+	});
 	$('#codTurno').on('change', function() {
 		
 		$('.idVariedad').empty();
 		$('.idVariedad').append('<option value="">Seleccionar</option>');
-		var codParcela=$('#codParcela').children("option:selected").val();
 		
+		var productor=$('#codProductor').children("option:selected").val();
+		var etapa=$('#codEtapa').children("option:selected").val();
+		var campo=$('#codCampo').children("option:selected").val();
+			
 		
 		const get = {
 			SP: "get_VariedadByTurnos",
 			FILTERS: {
-				p_parcela: codParcela,
+				p_productor: productor,
+				p_etapa: etapa,
+				p_campo:campo,
 				p_turno: this.value
 			}
 		}
@@ -674,8 +672,8 @@ jQuery(document).ready(function() {
 				xhr.setRequestHeader("Content-Type","application/json");
 			},
 			success: function(res){
-				console.log(res)
 				var options = "";
+				console.log(res)
 				
 				$(res.data).each(function(key, val){
 					options += "<option value='"+val.cod+"'>"+val.nombre+"</option>";
@@ -685,7 +683,6 @@ jQuery(document).ready(function() {
 			},error: function(e){
 				console.log(e)
 			},complete: function(){
-				return data;
 			}
 		})
 		return;

@@ -6,6 +6,8 @@ public class especie {
 	int idEspecie;
 	String especie;
 	String pf;
+	String codLab;
+	
 	public int getIdEspecie() {
 		return idEspecie;
 	}
@@ -23,6 +25,12 @@ public class especie {
 	}
 	public void setEspecie(String especie) {
 		this.especie = especie;
+	}
+	public String getCodLab() {
+		return codLab;
+	}
+	public void setCodLab(String codLab) {
+		this.codLab = codLab;
 	}
 	
 	

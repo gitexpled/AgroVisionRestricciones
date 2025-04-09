@@ -21,14 +21,14 @@ public class informesDB {
 			stmt = db.conn.createStatement();
 
 			sql = " SELECT r.creado,r.entregado,r.code,  IF(r.producto LIKE '%fosetyl%','fosetil',IF(r.producto LIKE '%fosetil%','fosetil',r.producto)) AS codProducto, j.Turno,  ";
-			sql += " r.lmr as resultado,format(l.limite,5) lmr,format(l.limite2,5) lmr2,CONCAT(format((( r.lmr * 100) / IFNULL(l.limite2, l.limite)),2),'%') as Porcentaje, vigente,IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as habilitado";
+			sql += " r.lmr as resultado,format(l.limite,5) lmr,format(l.limite2,5) lmr2,CONCAT(format((( r.lmr * 100) / IFNULL(l.limite2, l.limite)),2),'%') as Porcentaje, vigente,IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as habilitado,r.dfa";
 			sql += " FROM jerarquias j ";
 			sql += " inner join  especie e on (j.Especie=e.pf)  ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)  ";
 			sql += " inner join temporada t  on (t.idEspecie=j.Especie  and r.creado between t.desde and t.hasta)";
 			sql += " inner join diccionario d on (d.codRemplazo=r.producto) ";
 			sql += " inner join vw_limite l on (d.codProducto=l.codProducto and e.idEspecie=l.idEspecie)   ";
-			sql += " inner join vw_mercados m on (l.idMercado=m.idMercado)  ";
+			sql += " inner join mercado m on (l.idMercado=m.idMercado)  ";
 			sql += "where  ";
 			sql += " t.idTemporada='"+idTemporada+"'   ";
 			
@@ -47,11 +47,11 @@ public class informesDB {
 				sql += " and j.Turno='"+turno+"' ";
 			
 			if (!idVariedad.isEmpty())
-				sql += " and j.VariedadDenomina='"+idVariedad+"' ";
+				sql += " and j.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 			if (!Mercado.isEmpty())
 				sql += " and m.idMercado='"+Mercado+"' ";
 		
-			//sql+="Order by Idmailexcel desc";
+			sql+="Order by creado desc";
 
 			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -101,6 +101,11 @@ public class informesDB {
 				else
 					l.add("NO");
 				if (rs.getString(11).equals("0"))
+					l.add("SI");
+				else
+					l.add("NO");
+				
+				if (rs.getString(12).equals("Y"))
 					l.add("SI");
 				else
 					l.add("NO");

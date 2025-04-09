@@ -124,19 +124,18 @@ var controllerPage = function() {
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
 
-										html += "<a class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
-												+ full[0]
-												+ "' href='#modal-update'><i class='fa fa-pencil-square'></i></a> ";
-										html += "<a onclick='' class='col-md-6 btn red btn-table pull-right button-grilla-elimina-cuenta drop'   data-id='"
-												+ full[0]
-												+ "' data-toggle='modal'><i class='fa fa-trash-o'></i></a>";
+										//html += "<a class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"+ full[0]
+										//		+ "' href='#modal-update'><i class='fa fa-pencil-square'></i></a> ";
+										//html += "<a onclick='' class='col-md-6 btn red btn-table pull-right button-grilla-elimina-cuenta drop'   data-id='"
+										//		+ full[0]
+										//		+ "' data-toggle='modal'><i class='fa fa-trash-o'></i></a>";
 										html += "</div>";
 
 										return html;
 
 									}
 								}],
-						"order" : [ [ 1, "des" ] ]
+						"order" : [ [ 1, "desc" ] ]
 
 					}
 				});

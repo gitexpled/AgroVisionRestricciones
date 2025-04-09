@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 public class estadoProductorNewDB {
 
-	public ArrayList<String> getMercado(String mercado) throws Exception {
+	public ArrayList<String> getMercado(String mercado,String idEspecie) throws Exception {
 		ArrayList<String> list = new ArrayList<>();
 
 		ConnectionDB db = new ConnectionDB();
@@ -30,10 +30,14 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT mercado FROM mercado ";
+			sql = "SELECT m.mercado FROM mercado m  inner join mercadoCultivo c on (m.mercado=c.mercado) ";
+			sql+=" inner join especie e on (c.cultivo=e.pf) where e.idEspecie='"+idEspecie+"' ";
+					
 			if (!mercado.isEmpty())
-				sql +="  where mercado='"+mercado+"';";
+				sql +="  and m.mercado='"+mercado+"' ";
 			
+			
+			sql+=" order by idMercado";
 			
 //			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -101,11 +105,12 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT t.temporada temp,j.Productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,	j.VariedadDenomina ";
+			sql = "SELECT t.temporada temp,j.Productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,	j.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp ";
 			sql += "FROM  ";
 			sql += "  jerarquias j JOIN temporada t inner join  especie e on (j.Especie=e.pf) ";
+			sql += "  left join bloqueoClp xx on (j.productor=xx.productor and j.etapa=xx.etapa    and j.campo=xx.campo and j.VariedadDenomina=xx.variedad )";
 			sql += "where   ";
-			sql += "  e.idEspecie='"+idEspecie+"' and t.idTemporada='"+idTemporada+"'   ";
+			sql += "  e.idEspecie='"+idEspecie+"' and t.idTemporada='"+idTemporada+"'  and j.VariedadDenomina not in (SELECT variedad FROM eliminaVariedad) ";
 			
 			if (!productor.isEmpty())
 				sql += " and j.Productor='"+productor+"' ";
@@ -118,7 +123,10 @@ public class estadoProductorNewDB {
 				
 				if (!turno.isEmpty())
 					sql += " and j.Turno='"+turno+"' ";
-
+				
+				if (!variedad.isEmpty())
+					sql += " and j.VariedadDenomina='"+variedad.replace("\'", "\\'")+"' ";
+			System.out.println("VARIEDAD: "+variedad+"::::::::::::::::"+variedad.replace("\'", "\\'"));
 			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
@@ -129,14 +137,15 @@ public class estadoProductorNewDB {
 				l.add(rs.getString(4));
 				l.add(rs.getString(5));
 				l.add(rs.getString(6));
+				l.add(rs.getString(7));
 				if (group)
 				{
 					l.add(rs.getString(8));	
 				}
 				else
 				{
-					l.add(rs.getString(7));
 					l.add(rs.getString(8));
+					l.add(rs.getString(9));
 				}
 				
 
@@ -167,14 +176,15 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 			
-			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina, m.mercado, IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as bloque ";
+			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado, IF(r.lmr<l.limite or r.lmr=0 , 0, 1) as bloque ";
 			sql += " FROM    jerarquias j ";
 			sql += " inner join  especie e on (j.Especie=e.pf)   ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)   ";
 			sql += " inner JOIN temporada t  on (t.idEspecie=j.Especie  and r.creado between t.desde and t.hasta)";
 			sql += " inner join diccionario d on (d.codRemplazo=r.producto)  ";
 			sql += " inner join vw_limite l on (d.codProducto=l.codProducto and e.idEspecie=l.idEspecie)   ";
-			sql += " inner join vw_mercados m on (l.idMercado=m.idMercado)     ";
+			sql += " inner join mercado m on (l.idMercado=m.idMercado)     ";
+			sql += "  left join  bloqueoClp xx on (j.productor=xx.productor and j.etapa=xx.etapa    and j.campo=xx.campo and j.VariedadDenomina=xx.variedad )";
 			
 			sql += "where  ";
 			sql += " t.idTemporada='"+idTemporada+"' and r.vigente=1";
@@ -194,7 +204,7 @@ public class estadoProductorNewDB {
 				sql += " and j.Turno='"+turno+"' ";
 			
 			if (!idVariedad.isEmpty())
-				sql += " and j.VariedadDenomina='"+idVariedad+"' ";
+				sql += " and j.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 		
 			
 
@@ -213,6 +223,7 @@ public class estadoProductorNewDB {
 					l.add(rs.getString(8));
 					l.add(rs.getString(9));
 					l.add(rs.getString(10));
+					l.add(rs.getString(11));
 
 					list.add(l);
 				//}
@@ -243,7 +254,7 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 			
-			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina, m.mercado,  count(l.codProducto) as b,m.molecula";
+			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado,  count(l.codProducto) as b,m.molecula";
 			sql += " FROM    jerarquias j ";
 			sql += " inner join  especie e on (j.Especie=e.pf)   ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)   ";
@@ -251,6 +262,7 @@ public class estadoProductorNewDB {
 			sql += " inner join diccionario d on (d.codRemplazo=r.producto)  ";
 			sql += " inner join vw_limite l on (d.codProducto=l.codProducto and e.idEspecie=l.idEspecie)   ";
 			sql += " inner join mercado m on (l.idMercado=m.idMercado)     ";
+			sql += "  left  join bloqueoClp xx on (j.productor=xx.productor and j.etapa=xx.etapa    and j.campo=xx.campo and j.VariedadDenomina=xx.variedad )";
 			
 			sql += "where  ";
 			sql += " t.idTemporada='"+idTemporada+"' and r.vigente=1 and m.retricionMolecula='Y' ";
@@ -270,7 +282,7 @@ public class estadoProductorNewDB {
 				sql += " and j.Turno='"+turno+"' ";
 			
 			if (!idVariedad.isEmpty())
-				sql += " and j.VariedadDenomina='"+idVariedad+"' ";
+				sql += " and j.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 		
 			if (!Mercado.isEmpty())
 				sql += " and m.mercado='"+Mercado+"' ";
@@ -294,6 +306,7 @@ public class estadoProductorNewDB {
 					l.add(rs.getString(8));
 					l.add(rs.getString(9));
 					l.add(rs.getString(10));
+					l.add(rs.getString(11));
 
 					list.add(l);
 				//}
@@ -323,7 +336,7 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 			
-			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina, m.mercado,  1,sum(IF((l.limite = 0),0,((r.lmr * 100) / IFNULL(l.limite2, l.limite)))) as b,m.restValor";
+			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado,  1,sum(IF((l.limite = 0),0,((r.lmr * 100) / IFNULL(l.limite2, l.limite)))) as b,m.restValor";
 			sql += " FROM    jerarquias j ";
 			sql += " inner join  especie e on (j.Especie=e.pf)   ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)   ";
@@ -331,9 +344,10 @@ public class estadoProductorNewDB {
 			sql += " inner join diccionario d on (d.codRemplazo=r.producto)  ";
 			sql += " inner join vw_limite l on (d.codProducto=l.codProducto and e.idEspecie=l.idEspecie)   ";
 			sql += " inner join mercado m on (l.idMercado=m.idMercado)     ";
+			sql += "  left  join bloqueoClp xx on (j.productor=xx.productor and j.etapa=xx.etapa    and j.campo=xx.campo and j.VariedadDenomina=xx.variedad )";
 			
 			sql += "where  ";
-			sql += " t.idTemporada='"+idTemporada+"' and r.vigente=1 and m.retricionMolecula='Y' ";
+			sql += " t.idTemporada='"+idTemporada+"' and r.vigente=1 and m.restPorcentaje='Y' ";
 			
 			sql += "   and e.idEspecie='"+idEspecie+"' ";
 			
@@ -350,7 +364,7 @@ public class estadoProductorNewDB {
 				sql += " and j.Turno='"+turno+"' ";
 			
 			if (!idVariedad.isEmpty())
-				sql += " and j.VariedadDenomina='"+idVariedad+"' ";
+				sql += " and j.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 		
 			if (!Mercado.isEmpty())
 				sql += " and m.mercado='"+Mercado+"' ";
@@ -375,6 +389,7 @@ public class estadoProductorNewDB {
 					l.add(rs.getString(9));
 					l.add(rs.getString(10));
 					l.add(rs.getString(11));
+					l.add(rs.getString(12));
 
 					list.add(l);
 				//}
@@ -394,7 +409,7 @@ public class estadoProductorNewDB {
 
 		return list;
 	}
-	public ArrayList<ArrayList<String>> blockPoArfd(int idTemporada,int idEspecie,String idVariedad, String Mercado,String productor,String etapa,String campo,String turno,Boolean swHaving) throws Exception {
+	public ArrayList<ArrayList<String>> blockArfD(int idTemporada,int idEspecie,String idVariedad, String Mercado,String productor,String etapa,String campo,String turno,Boolean swHaving) throws Exception {
 		ArrayList<ArrayList<String>> list = new ArrayList<>();
 
 		ConnectionDB db = new ConnectionDB();
@@ -404,7 +419,7 @@ public class estadoProductorNewDB {
 
 			stmt = db.conn.createStatement();
 			
-			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina, m.mercado,  1, (l.limite * e.factor) AS ingesta,m.restValor";
+			sql = " SELECT t.temporada temp,j.productor codSap, j.ProductorNombre, j.Especie, j.Etapa, j.Campo,j.Turno,j.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado,  1, (l.limite * e.factor) AS ingesta,m.restValor";
 			sql += " FROM    jerarquias j ";
 			sql += " inner join  especie e on (j.Especie=e.pf)   ";
 			sql += " inner join  resultadoDet r on (r.productor=j.Productor and r.etapa=j.Etapa and r.campo=j.Campo and r.turno=j.Turno and r.especie=e.codLab   and r.variedad=j.VariedadDenomina)   ";
@@ -412,9 +427,10 @@ public class estadoProductorNewDB {
 			sql += " inner join diccionario d on (d.codRemplazo=r.producto)  ";
 			sql += " inner join vw_limite l on (d.codProducto=l.codProducto and e.idEspecie=l.idEspecie)   ";
 			sql += " inner join mercado m on (l.idMercado=m.idMercado)     ";
+			sql += "  left join  bloqueoClp xx on (j.productor=xx.productor and j.etapa=xx.etapa    and j.campo=xx.campo and j.VariedadDenomina=xx.variedad )";
 			
 			sql += "where  ";
-			sql += " t.idTemporada='"+idTemporada+"' and r.vigente=1 and m.retricionMolecula='Y' ";
+			sql += " t.idTemporada='"+idTemporada+"' and r.vigente=1 and m.restArfD='Y' ";
 			
 			sql += "   and e.idEspecie='"+idEspecie+"' ";
 			
@@ -431,7 +447,7 @@ public class estadoProductorNewDB {
 				sql += " and j.Turno='"+turno+"' ";
 			
 			if (!idVariedad.isEmpty())
-				sql += " and j.VariedadDenomina='"+idVariedad+"' ";
+				sql += " and j.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 		
 			if (!Mercado.isEmpty())
 				sql += " and m.mercado='"+Mercado+"' ";
@@ -456,6 +472,7 @@ public class estadoProductorNewDB {
 					l.add(rs.getString(9));
 					l.add(rs.getString(10));
 					l.add(rs.getString(11));
+					l.add(rs.getString(12));
 
 					list.add(l);
 				//}
@@ -490,7 +507,7 @@ public class estadoProductorNewDB {
 			
 			
 
-			sql = "SELECT tt.temporada AS temp,r.productor codSap, r.ProductorNombre, r.Especie, r.Etapa, r.Campo,r.Turno,r.VariedadDenomina, m.mercado, 1 as b   ";
+			sql = "SELECT tt.temporada AS temp,r.productor codSap, r.ProductorNombre, r.Especie, r.Etapa, r.Campo,r.Turno,r.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado, 1 as b   ";
 
 			sql += "FROM  ";
 			sql += "bloqueoParcela bp   ";
@@ -501,7 +518,7 @@ public class estadoProductorNewDB {
 			sql += "  join temporada tt on (tt.idEspecie=e.pf)";
 			
 			sql += " inner join  jerarquias r on (r.productor=bp.codProductor and r.etapa=bp.codParcela   and r.VariedadDenomina=v.nombre)   ";
-			
+			sql += "  left join  bloqueoClp xx on (r.productor=xx.productor and r.etapa=xx.etapa    and r.campo=xx.campo and r.VariedadDenomina=xx.variedad )";
 			
 			
 			sql += "where  ";
@@ -522,10 +539,8 @@ public class estadoProductorNewDB {
 				sql += " and r.Turno='"+turno+"' ";
 			
 			if (!idVariedad.isEmpty())
-				sql += " and r.VariedadDenomina='"+idVariedad+"' ";
+				sql += " and r.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 			
-			if (!Mercado.isEmpty())
-				sql += " and r.VariedadDenomina='"+idVariedad+"' ";
 			
 			if (!Mercado.isEmpty())
 				sql += " and m.mercado='"+Mercado+"' ";
@@ -544,6 +559,7 @@ public class estadoProductorNewDB {
 				l.add(rs.getString(8));
 				l.add(rs.getString(9));
 				l.add(rs.getString(10));
+				l.add(rs.getString(11));
 				
 
 				list.add(l);
@@ -576,7 +592,7 @@ public class estadoProductorNewDB {
 			
 			
 
-			sql = "SELECT tt.temporada AS temp,r.productor codSap, r.ProductorNombre, r.Especie, r.Etapa, r.Campo,r.Turno,r.VariedadDenomina, m.mercado, 1 as b   ";
+			sql = "SELECT tt.temporada AS temp,r.productor codSap, r.ProductorNombre, r.Especie, r.Etapa, r.Campo,r.Turno,r.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado, 1 as b   ";
 
 			sql += "FROM  ";
 			sql += "mercadoProductor bp   ";
@@ -586,8 +602,8 @@ public class estadoProductorNewDB {
 			sql += "inner join especie e on (e.idEspecie=v.idEspecie )  ";
 			sql += "  join temporada tt on (tt.idEspecie=e.pf)";
 			
-			sql += " inner join  jerarquias r on (r.productor=bp.codProductor and r.etapa=bp.codParcela    and r.campo=bp.codTurno   and r.VariedadDenomina=v.nombre)   ";
-			
+			sql += " inner join  jerarquias r on (r.productor=bp.Productor and r.etapa=bp.etapa    and r.campo=bp.turno   and r.VariedadDenomina=v.nombre)   ";
+			sql += "  left join  bloqueoClp xx on (r.productor=xx.productor and r.etapa=xx.etapa    and r.campo=xx.campo and r.VariedadDenomina=xx.variedad )";
 			
 			
 			sql += "where  ";
@@ -608,10 +624,9 @@ public class estadoProductorNewDB {
 				sql += " and r.Turno='"+turno+"' ";
 			
 			if (!idVariedad.isEmpty())
-				sql += " and r.VariedadDenomina='"+idVariedad+"' ";
+				sql += " and r.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 			
-			if (!Mercado.isEmpty())
-				sql += " and r.VariedadDenomina='"+idVariedad+"' ";
+			
 			
 			if (!Mercado.isEmpty())
 				sql += " and m.mercado='"+Mercado+"' ";
@@ -630,6 +645,7 @@ public class estadoProductorNewDB {
 				l.add(rs.getString(8));
 				l.add(rs.getString(9));
 				l.add(rs.getString(10));
+				l.add(rs.getString(11));
 				
 
 				list.add(l);
@@ -643,6 +659,250 @@ public class estadoProductorNewDB {
 			System.out.println("Error: " + e.getMessage());
 			System.out.println("sql: " + sql);
 			throw new Exception("getBloackMercado: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return list;
+	}
+	public ArrayList<ArrayList<String>> getHabilitadoManual(int idTemporada,int idEspecie,String idVariedad, String Mercado,String productor,String etapa,String campo,String turno) throws Exception {
+		ArrayList<ArrayList<String>> list = new ArrayList<>();
+
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		String sql = "";
+		try {
+
+			stmt = db.conn.createStatement();
+			
+			
+			
+
+			sql = "SELECT tt.temporada AS temp,r.productor codSap, r.ProductorNombre, r.Especie, r.Etapa, r.Campo,r.Turno,r.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado, 998 as b   ";
+
+			sql += "FROM  ";
+			sql += "habilitacionManual bp   ";
+			sql += " JOIN mercado m on (m.mercado=bp.mercado) ";
+			//sql += "inner JOIN parcelaVariedad pv ON (pv.codParcela = bp.codParcela AND pv.idVariedad =v.cod )  ";
+			
+			
+			sql += " inner join  jerarquias r on (r.productor=bp.productor and r.etapa=bp.etapa    and r.campo=bp.campo  and r.VariedadDenomina=bp.variedad )   ";
+			sql += "  left join  bloqueoClp xx on (r.productor=xx.productor and r.etapa=xx.etapa    and r.campo=xx.campo and r.VariedadDenomina=xx.variedad ) ";
+			
+			sql += " inner join especie e on (r.Especie=e.pf )  ";
+			sql += " join temporada tt on (tt.idEspecie=e.pf) ";
+			
+			
+			sql += " where  ";
+			sql += " tt.idTemporada='"+idTemporada+"'  and bp.habilitado='Y'";
+			
+			sql += "   and e.idEspecie='"+idEspecie+"' ";
+			
+			
+			
+			if (!etapa.isEmpty())
+				sql += " and r.Etapa='"+etapa+"' ";
+			
+			if (!campo.isEmpty())
+				sql += " and r.Campo='"+campo+"' ";
+			
+			if (!idVariedad.isEmpty())
+				sql += " and r.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
+			
+			if (!Mercado.isEmpty())
+				sql += " and m.mercado='"+Mercado+"' ";
+				
+			
+			
+			System.out.println(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				ArrayList<String> l = new ArrayList<>();
+				l.add(rs.getString(1));
+				l.add(rs.getString(2));
+				l.add(rs.getString(3));
+				l.add(rs.getString(4));
+				l.add(rs.getString(5));
+				l.add(rs.getString(6));
+				l.add(rs.getString(7));
+				l.add(rs.getString(8));
+				l.add(rs.getString(9));
+				l.add(rs.getString(10));
+				l.add(rs.getString(11));
+				
+
+				list.add(l);
+			}
+			rs.close();
+			stmt.close();
+			
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getHabilitadoManual: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return list;
+	}
+	
+	public ArrayList<ArrayList<String>> getHabilitadoComercial(int idTemporada,int idEspecie,String idVariedad, String Mercado,String productor,String etapa,String campo,String turno) throws Exception {
+		ArrayList<ArrayList<String>> list = new ArrayList<>();
+
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		String sql = "";
+		try {
+
+			stmt = db.conn.createStatement();
+			
+			
+			
+
+			sql = "SELECT tt.temporada AS temp,r.productor codSap, r.ProductorNombre, r.Especie, r.Etapa, r.Campo,r.Turno,r.VariedadDenomina,IFNULL(IF(xx.habilitado='Y', 'SI','NO'), 'NO') as clp, m.mercado, 999 as b   ";
+
+			sql += "FROM  ";
+			sql += "habilitacionComercial bp   ";
+			sql += " JOIN mercado m on (m.mercado=bp.mercado) ";
+			//sql += "inner JOIN parcelaVariedad pv ON (pv.codParcela = bp.codParcela AND pv.idVariedad =v.cod )  ";
+			
+			
+			sql += " inner join  jerarquias r on (r.productor=bp.productor and r.etapa=bp.etapa    and r.campo=bp.campo  and r.VariedadDenomina=bp.variedad )   ";
+			sql += "  left join  bloqueoClp xx on (r.productor=xx.productor and r.etapa=xx.etapa    and r.campo=xx.campo and r.VariedadDenomina=xx.variedad ) ";
+			
+			sql += " inner join especie e on (r.Especie=e.pf )  ";
+			sql += " join temporada tt on (tt.idEspecie=e.pf) ";
+			
+			
+			sql += " where  ";
+			sql += " tt.idTemporada='"+idTemporada+"'  and bp.habilitado='Y'";
+			
+			sql += "   and e.idEspecie='"+idEspecie+"' ";
+			
+			
+			
+			if (!etapa.isEmpty())
+				sql += " and r.Etapa='"+etapa+"' ";
+			
+			if (!campo.isEmpty())
+				sql += " and r.Campo='"+campo+"' ";
+			
+			if (!idVariedad.isEmpty())
+				sql += " and r.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
+			
+			if (!Mercado.isEmpty())
+				sql += " and m.mercado='"+Mercado+"' ";
+				
+			
+			
+			System.out.println(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				ArrayList<String> l = new ArrayList<>();
+				l.add(rs.getString(1));
+				l.add(rs.getString(2));
+				l.add(rs.getString(3));
+				l.add(rs.getString(4));
+				l.add(rs.getString(5));
+				l.add(rs.getString(6));
+				l.add(rs.getString(7));
+				l.add(rs.getString(8));
+				l.add(rs.getString(9));
+				l.add(rs.getString(10));
+				l.add(rs.getString(11));
+				
+
+				list.add(l);
+			}
+			rs.close();
+			stmt.close();
+			
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getHabilitadoManual: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return list;
+	}
+	
+	public ArrayList<ArrayList<String>> getBloqueoClp(int idTemporada,int idEspecie,String idVariedad, String Mercado,String productor,String etapa,String campo,String turno) throws Exception {
+		ArrayList<ArrayList<String>> list = new ArrayList<>();
+
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		String sql = "";
+		try {
+
+			stmt = db.conn.createStatement();
+			
+			
+			
+
+			sql = "SELECT tt.temporada AS temp,r.productor codSap, r.ProductorNombre, r.Especie, r.Etapa, r.Campo,r.Turno,r.VariedadDenomina,IF(bp.habilitado='Y', 'SI','NO') as clp, m.mercado, -1 b   ";
+
+			sql += "FROM jerarquias r ";
+			sql += "   ";
+			sql += " JOIN mercado m  ";
+			//sql += "inner JOIN parcelaVariedad pv ON (pv.codParcela = bp.codParcela AND pv.idVariedad =v.cod )  ";
+			
+			
+			sql += " left join bloqueoClp bp  on (r.productor=bp.productor and r.etapa=bp.etapa    and r.campo=bp.campo   and r.VariedadDenomina=bp.variedad )   ";
+			sql += " inner join especie e on (r.Especie=e.pf )  ";
+			sql += " join  temporada tt on (tt.idEspecie=e.pf) ";
+			
+			
+			sql += "where  ";
+			sql += " tt.idTemporada='"+idTemporada+"'  AND (bp.habilitado is null or bp.habilitado='N')";
+			
+			sql += "   and e.idEspecie='"+idEspecie+"' ";
+			
+			
+			
+			if (!etapa.isEmpty())
+				sql += " and r.Etapa='"+etapa+"' ";
+			
+			if (!campo.isEmpty())
+				sql += " and r.Campo='"+campo+"' ";
+				
+			if (!idVariedad.isEmpty())
+				sql += " and r.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
+			
+			System.out.println(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				ArrayList<String> l = new ArrayList<>();
+				l.add(rs.getString(1));
+				l.add(rs.getString(2));
+				l.add(rs.getString(3));
+				l.add(rs.getString(4));
+				l.add(rs.getString(5));
+				l.add(rs.getString(6));
+				l.add(rs.getString(7));
+				l.add(rs.getString(8));
+				l.add(rs.getString(9));
+				l.add(rs.getString(10));
+				l.add(rs.getString(11));
+				
+
+				list.add(l);
+			}
+			rs.close();
+			stmt.close();
+			
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getBloqueoClp: " + e.getMessage());
 		} finally {
 			db.close();
 		}
@@ -688,24 +948,53 @@ public class estadoProductorNewDB {
 			for (ArrayList<String> arr : bloqueo) {
 				String llave="";
 				if (group)
-					llave=arr.get(0)+"$"+arr.get(1)+"$"+arr.get(2)+"$"+arr.get(3)+"$"+arr.get(4)+"$"+arr.get(5)+"$"+arr.get(7);
+					llave=arr.get(0)+"$"+arr.get(1)+"$"+arr.get(2)+"$"+arr.get(3)+"$"+arr.get(4)+"$"+arr.get(5)+"$"+arr.get(7)+"$"+arr.get(8);
 				else
-					llave=arr.get(0)+"$"+arr.get(1)+"$"+arr.get(2)+"$"+arr.get(3)+"$"+arr.get(4)+"$"+arr.get(5)+"$"+arr.get(6)+"$"+arr.get(7);
+					llave=arr.get(0)+"$"+arr.get(1)+"$"+arr.get(2)+"$"+arr.get(3)+"$"+arr.get(4)+"$"+arr.get(5)+"$"+arr.get(6)+"$"+arr.get(7)+"$"+arr.get(8);
 					
 				//System.out.println(llave);
 				try {
 					//System.out.println("arr.get(8):"+arr.get(8));
-					Integer valor=Integer.parseInt(data.get(llave).get(arr.get(8)).toString());
+					Integer valor=Integer.parseInt(data.get(llave).get(arr.get(9)).toString());
 					//System.out.println("valor:"+valor);
 					//System.out.println("get(9):"+arr.get(9));
-					Integer value=Integer.parseInt(arr.get(9));
+					Integer value=Integer.parseInt(arr.get(10));
 					//System.out.println("value:"+value);
 					
 					if (valor<=0)
 					{
-						valor=0;
+						if (value==-1)
+						{
+							if (valor==-1)
+							{
+								valor=0;
+							}
+							else if (valor==0) 
+							{
+								value=1;
+							}
+						}
+						else
+							valor=0;
 					}
-					data.get(llave).put(arr.get(8),valor+value);	
+					if (valor>0 && valor<800)
+					{
+						if (value==-1)
+						{
+							value=1;
+						}
+					}
+					if (value==999)
+					{
+						valor=0;
+						value=999;
+					}
+					if (value==998)
+					{
+						valor=0;
+						value=998;
+					}
+					data.get(llave).put(arr.get(9),valor+value);	
 				} catch (Exception e) {
 					// TODO: handle exception
 					//System.out.println("Error: " + e.getMessage());
@@ -731,7 +1020,7 @@ public class estadoProductorNewDB {
 				String key = dataMatrix.getKey();
 				Hashtable<String, Integer> restriccionMercado = dataMatrix.getValue();
 				String[] arrKey=key.split("\\$");
-				String llave=arrKey[0]+"$"+arrKey[1]+"$"+arrKey[2]+"$"+arrKey[3]+"$"+arrKey[4]+"$"+arrKey[5]+"$"+arrKey[7];
+				String llave=arrKey[0]+"$"+arrKey[1]+"$"+arrKey[2]+"$"+arrKey[3]+"$"+arrKey[4]+"$"+arrKey[5]+"$"+arrKey[7]+"$"+arrKey[8];
 				
 				TreeMap<String, Integer> arrMapMercado = new TreeMap<>(restriccionMercado);
 				
@@ -739,9 +1028,9 @@ public class estadoProductorNewDB {
 				{
 					Hashtable<String, Integer> mercados = new Hashtable<>();
 					for (Map.Entry<String, Integer> row : arrMapMercado.entrySet()) {
-						if (row.getValue()<0)
+						if (row.getValue()!=0)
 						{
-							row.setValue(1);
+							row.setValue(-1);
 						}
 						mercados.put(row.getKey(), row.getValue());
 					}
@@ -755,12 +1044,29 @@ public class estadoProductorNewDB {
 						//System.out.println("get(9):"+arr.get(9));
 						Integer value=row.getValue();
 						//System.out.println("value:"+value);
-						
-						if (valor<=0)
+						//if (row.getKey().equals("China"))
+						//System.out.println(llave+"-"+row.getKey()+"-"+"("+valor+")-("+value+")");
+						if (valor==0 && value==0)
 						{
 							valor=0;
 						}
-						array.get(llave).put(row.getKey(),valor+value);
+						else
+						{
+							if (value==999)
+							{
+								valor=999;
+								value=999;
+							}
+							else if (value==998)
+							{
+								valor=998;
+								value=998;
+							}
+							else
+								valor=-1;
+						}
+						
+						array.get(llave).put(row.getKey(),valor);
 					}
 				}
 				
@@ -794,7 +1100,13 @@ public class estadoProductorNewDB {
 				// Tercer nivel
 				for (String m : mercado) {
 					String valor="NO";
+					if (subMap2.get(m).toString().contentEquals("-1"))
+						valor="PI";
 					if (subMap2.get(m).toString().contentEquals("0"))
+						valor="SI";
+					if (subMap2.get(m).toString().contentEquals("999"))
+						valor="SI.";
+					if (subMap2.get(m).toString().contentEquals("998"))
 						valor="SI";
 					o[i] = valor;
 					++i;
@@ -818,11 +1130,11 @@ public class estadoProductorNewDB {
 		try {
 			TemporadaDB temp=new TemporadaDB();
 			idTemporada=temp.getMaxTemprada(idEspecie);
-			ArrayList<String> mercado = getMercado("");
+			ArrayList<String> mercado = getMercado("",idEspecie+"");
 			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,variedad,productor,etapa,campo,turno,false);
 			Hashtable<String, Hashtable<String, Integer>> matrix = createMatrix(mercado,jerarquea);
 			
-			System.out.println(idTemporada+","+idEspecie+","+variedad+","+""+","+productor+","+etapa+","+campo+","+turno);
+			System.out.println(idTemporada+","+idEspecie+","+variedad+","+""+","+productor+","+etapa+","+campo+","+turno+", ::::TERMINO DE LINEA");
 	
 			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno);
 			matrix=setBloqueo(matrix,bloqueoLmr,false);
@@ -838,6 +1150,20 @@ public class estadoProductorNewDB {
 			
 			ArrayList<ArrayList<String>> blockPorcentaje= blockPorcentaje(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno,true);
 			matrix=setBloqueo(matrix,blockPorcentaje,false);
+			
+			ArrayList<ArrayList<String>> bloqueoClp= getBloqueoClp(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,bloqueoClp,false);
+			
+			
+			
+			
+			
+			
+			ArrayList<ArrayList<String>> habilitacionManual= getHabilitadoManual(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,habilitacionManual,false);
+			
+			ArrayList<ArrayList<String>> habilitacionComercial= getHabilitadoComercial(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,habilitacionComercial,false);
 			
 			data = getMatrix(matrix, mercado);
 
@@ -858,7 +1184,7 @@ public class estadoProductorNewDB {
 		try {
 			TemporadaDB temp=new TemporadaDB();
 			idTemporada=temp.getMaxTemprada(idEspecie);
-			ArrayList<String> mercado = getMercado("");
+			ArrayList<String> mercado = getMercado("",idEspecie+"");
 			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,variedad,productor,etapa,campo,"",false);
 			Hashtable<String, Hashtable<String, Integer>> matrix = createMatrix(mercado,jerarquea);
 			
@@ -878,6 +1204,19 @@ public class estadoProductorNewDB {
 			
 			ArrayList<ArrayList<String>> blockPorcentaje= blockPorcentaje(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"",true);
 			matrix=setBloqueo(matrix,blockPorcentaje,false);
+			
+			ArrayList<ArrayList<String>> bloqueoClp= getBloqueoClp(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			matrix=setBloqueo(matrix,bloqueoClp,false);
+			
+			
+			
+			
+			
+			ArrayList<ArrayList<String>> habilitacionManual= getHabilitadoManual(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			matrix=setBloqueo(matrix,habilitacionManual,false);
+			
+			ArrayList<ArrayList<String>> habilitacionComercial= getHabilitadoComercial(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			matrix=setBloqueo(matrix,habilitacionComercial,false);
 			
 			matrix=setGroup(matrix);
 			data = getMatrix(matrix, mercado);
@@ -900,7 +1239,7 @@ public class estadoProductorNewDB {
 		try {
 			TemporadaDB temp=new TemporadaDB();
 			idTemporada=temp.getMaxTemprada(idEspecie);
-			ArrayList<String> mercado = getMercado(Mercado);
+			ArrayList<String> mercado = getMercado(Mercado,idEspecie+"");
 			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,idVariedad,productor,etapa,campo,turno,false);
 			Hashtable<String, Hashtable<String, Integer>> matrix = createMatrix(mercado,jerarquea);
 			
@@ -921,6 +1260,19 @@ public class estadoProductorNewDB {
 			ArrayList<ArrayList<String>> blockPorcentaje= blockPorcentaje(idTemporada,idEspecie,idVariedad,"",productor,etapa,campo,turno,true);
 			matrix=setBloqueo(matrix,blockPorcentaje,false);
 			
+			ArrayList<ArrayList<String>> bloqueoClp= getBloqueoClp(idTemporada,idEspecie,idVariedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,bloqueoClp,false);
+			
+			
+			
+			
+			ArrayList<ArrayList<String>> habilitacionManual= getHabilitadoManual(idTemporada,idEspecie,idVariedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,habilitacionManual,false);
+			
+			ArrayList<ArrayList<String>> habilitacionComercial= getHabilitadoComercial(idTemporada,idEspecie,idVariedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,habilitacionComercial,false);
+			
+	
 			
 			if (turno.isEmpty())
 				matrix=setGroup(matrix);
@@ -931,10 +1283,11 @@ public class estadoProductorNewDB {
 			System.out.println(data);
 			
 			if (turno.isEmpty())
-				Estado=data.get(0)[7];
-			else
 				Estado=data.get(0)[8];
-				
+			else
+			{
+				Estado=data.get(0)[9];
+			}	
 			
 
 		} catch (SQLException e) {
@@ -965,7 +1318,7 @@ public class estadoProductorNewDB {
 					String str_campo=arr.get(5);
 					String str_turno=arr.get(6);
 					String str_variedad=arr.get(7);
-					String str_valor=arr.get(9);
+					String str_valor=arr.get(10);
 					html+="<tr><td>&nbsp;"+str_etapa+"&nbsp;</td><td>&nbsp;"+str_campo+"&nbsp;</td><td>&nbsp;"+str_turno+"&nbsp;</td><td>&nbsp;"+str_variedad+"&nbsp;</td><td>&nbsp;"+str_valor+"&nbsp;</td></tr>";
 				}
 					
@@ -998,7 +1351,7 @@ public class estadoProductorNewDB {
 			
 			
 				html="<table border=1>";
-				html+="<tr><td>&nbsp;Etapa&nbsp;</td><td>&nbsp;Campo&nbsp;</td><td>&nbsp;Turno&nbsp;</td><td>&nbsp;variedad&nbsp;</td><td>&nbsp;Moleculas&nbsp;</td></tr>";
+				html+="<tr><td>&nbsp;Etapa&nbsp;</td><td>&nbsp;Campo&nbsp;</td><td>&nbsp;Turno&nbsp;</td><td>&nbsp;variedad&nbsp;</td><td>&nbsp;Porcentaje&nbsp;</td></tr>";
 				for (ArrayList<String> arr : matrix) {
 					String str_etapa=arr.get(4);
 					String str_campo=arr.get(5);
@@ -1034,31 +1387,42 @@ public class estadoProductorNewDB {
 		try {
 			TemporadaDB temp=new TemporadaDB();
 			idTemporada=temp.getMaxTemprada(idEspecie);
-			ArrayList<String> mercado = getMercado("");
-			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,variedad,productor,etapa,campo,turno,true);
+			ArrayList<String> mercado = getMercado("",idEspecie+"");
+			
+			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,variedad,productor,etapa,campo,"",false);
 			Hashtable<String, Hashtable<String, Integer>> matrix = createMatrix(mercado,jerarquea);
 			
-			System.out.println(idTemporada+","+idEspecie+","+variedad+","+""+","+productor+","+etapa+","+campo);
+			System.out.println(idTemporada+","+idEspecie+","+variedad+","+""+","+productor+","+etapa+","+campo+","+"");
 	
-			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno);
-			matrix=setBloqueo(matrix,bloqueoLmr,true);
+			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			matrix=setBloqueo(matrix,bloqueoLmr,false);
 			
-			
+			ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			matrix=setBloqueo(matrix,bloqueoParcela,false);
 			
 			ArrayList<ArrayList<String>> bloqueoMercado =getBloackMercado(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
-			matrix=setBloqueo(matrix,bloqueoMercado,true);
+			matrix=setBloqueo(matrix,bloqueoMercado,false);
 			
-			ArrayList<ArrayList<String>> bloqueoParcela= getBloackParcela(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno);
-			matrix=setBloqueo(matrix,bloqueoParcela,true);
+			ArrayList<ArrayList<String>> blockMolecula= blockMolecula(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"",true);
+			matrix=setBloqueo(matrix,blockMolecula,false);
+			
+			ArrayList<ArrayList<String>> blockPorcentaje= blockPorcentaje(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"",true);
+			matrix=setBloqueo(matrix,blockPorcentaje,false);
+			
+			ArrayList<ArrayList<String>> bloqueoClp= getBloqueoClp(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno);
+			matrix=setBloqueo(matrix,bloqueoClp,false);
 			
 			
 			
-			ArrayList<ArrayList<String>> blockMolecula= blockMolecula(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno,true);
-			matrix=setBloqueo(matrix,blockMolecula,true);
+			ArrayList<ArrayList<String>> habilitacionManual= getHabilitadoManual(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			matrix=setBloqueo(matrix,habilitacionManual,false);
 			
-			ArrayList<ArrayList<String>> blockPorcentaje= blockPorcentaje(idTemporada,idEspecie,variedad,"",productor,etapa,campo,turno,true);
-			matrix=setBloqueo(matrix,blockPorcentaje,true);
+			ArrayList<ArrayList<String>> habilitacionComercial= getHabilitadoComercial(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
+			matrix=setBloqueo(matrix,habilitacionComercial,false);
 			
+			
+			
+			matrix=setGroup(matrix);
 			data = getMatrix(matrix, mercado);
 			
 			
@@ -1070,25 +1434,36 @@ public class estadoProductorNewDB {
 			label="TEMPORADA";
 			columns.put(label);
 			titulos2.add(label);
+			
 			label="SOCIEDAD";
 			columns.put(label);
 			titulos2.add(label);
-			label="ESPECIE";
-			columns.put(label);
-			titulos2.add(label);
+			
 			label="PRODUCTOR";
 			columns.put(label);
 			titulos2.add(label);
+			
+			label="ESPECIE";
+			columns.put(label);
+			titulos2.add(label);
+			
+			
 			label="ETAPA";
 			columns.put(label);
+			titulos2.add(label);
+			
 			label="CAMPO";
 			columns.put(label);
+			titulos2.add(label);
 //			label="TURNO";
 //			columns.put(label);
-			titulos2.add(label);
 			label="VARIEDAD";
 			columns.put(label);
 			titulos2.add(label);
+			label="CLP";
+			columns.put(label);
+			titulos2.add(label);
+			
 			
 			for (int i = 0; i < mercado.size(); i++) {
 				columns.put(mercado.get(i));
@@ -1150,6 +1525,21 @@ public class estadoProductorNewDB {
 			ArrayList<ArrayList<String>> blockPorcentaje= blockPorcentaje(idTemporada,idEspecie,"","",productor,"","","",true);
 			matrix=setBloqueo(matrix,blockPorcentaje,true);
 			
+			
+			ArrayList<ArrayList<String>> bloqueoClp= getBloqueoClp(idTemporada,idEspecie,"","",productor,"","","");
+			matrix=setBloqueo(matrix,bloqueoClp,false);
+			
+			
+			
+			
+			
+			
+			ArrayList<ArrayList<String>> habilitacionManual= getHabilitadoManual(idTemporada,idEspecie,"","",productor,"","","");
+			matrix=setBloqueo(matrix,habilitacionManual,false);
+			
+			ArrayList<ArrayList<String>> habilitacionComercial= getHabilitadoComercial(idTemporada,idEspecie,"","",productor,"","","");
+			matrix=setBloqueo(matrix,habilitacionComercial,false);
+			
 			data = getMatrix(matrix, mercado);
 			
 			
@@ -1173,12 +1563,15 @@ public class estadoProductorNewDB {
 			label="MANEJO";
 			columns.put(label);
 			titulos2.add(label);
-			label="ESPECIE";
-			columns.put(label);
-			titulos2.add(label);
+			
 			label="PRODUCTOR";
 			columns.put(label);
 			titulos2.add(label);
+			
+			label="ESPECIE";
+			columns.put(label);
+			titulos2.add(label);
+			
 			label="ETAPA";
 			columns.put(label);
 			titulos2.add(label);
@@ -1191,6 +1584,11 @@ public class estadoProductorNewDB {
 			label="VARIEDAD";
 			columns.put(label);
 			titulos2.add(label);
+			
+			label="CLP";
+			columns.put(label);
+			titulos2.add(label);
+			
 			
 			titulos2.add(label);
 			

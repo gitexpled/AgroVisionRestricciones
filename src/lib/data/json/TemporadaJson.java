@@ -38,7 +38,35 @@ public class TemporadaJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "temporada";break;
+		case "1":colum = "creacion";break;
+		case "2":colum = "idEspecie";break;
+		case "3":colum = "desde";break;
+		case "4":colum = "hasta";break;
+
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -66,7 +94,7 @@ public class TemporadaJson {
 
 		ArrayList<Temporada> datas;
 		try {
-			datas = TemporadaDB.getTemporada(filter, "", start, length);
+			datas = TemporadaDB.getTemporada(filter, order, start, length);
 
 			Iterator<Temporada> f = datas.iterator();
 			data.setRecordsFiltered(TemporadaDB.getTemporadasAll(filter));
@@ -74,7 +102,7 @@ public class TemporadaJson {
 
 			while (f.hasNext()) {
 				Temporada row = f.next();
-				String[] d = { row.getTemporada(),row.getCreado()+"", row.getIdEspecie()+"", row.getDesde()+"", row.getHasta()+"" };
+				String[] d = { row.getTemporada(),row.getCreado()+"", row.getIdEspecie()+"", row.getDesde()+"", row.getHasta()+"" ,row.getIdTemporada()+""};
 
 				data.setData(d);
 
@@ -114,7 +142,7 @@ public class TemporadaJson {
 	}
 	
 	@RequestMapping(value = "/temporada/{codigo}", method = { RequestMethod.GET })
-	public @ResponseBody Temporada getUserId(@PathVariable String codigo,HttpSession httpSession) throws Exception {
+	public @ResponseBody Temporada getTemporada(@PathVariable String codigo,HttpSession httpSession) throws Exception {
 		
 		session ses = new session(httpSession);
 		
@@ -130,7 +158,7 @@ public class TemporadaJson {
 	}
 	
 	@RequestMapping(value = "/temporada/put", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody mesajesJson setUser(@RequestBody Temporada row,HttpSession httpSession) throws Exception {
+	public @ResponseBody mesajesJson setTemporada(@RequestBody Temporada row,HttpSession httpSession) throws Exception {
 		
 		session ses = new session(httpSession);
 		mesajesJson mensaje = new mesajesJson();

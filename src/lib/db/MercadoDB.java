@@ -25,7 +25,7 @@ public class MercadoDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT * FROM vw_mercados where idMercado='" + idMercado + "'";
+			sql = "SELECT * FROM mercado where idMercado='" + idMercado + "'";
 			
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next()) {
@@ -86,7 +86,7 @@ public class MercadoDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT * FROM vw_mercados where mercado2='" + mercado + "'";
+			sql = "SELECT * FROM mercado where mercado2='" + mercado + "'";
 			
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()) {
@@ -126,7 +126,7 @@ public class MercadoDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT * FROM vw_mercados where mercado2='" + mercado + "'";
+			sql = "SELECT * FROM mercado where mercado2='" + mercado + "'";
 			
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next()) {
@@ -227,7 +227,7 @@ public class MercadoDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT count(1) FROM vw_mercados ";
+			sql = "SELECT count(1) FROM mercado ";
 
 			if (filter.size() > 0) {
 				String andSql="";
@@ -279,6 +279,55 @@ public class MercadoDB {
 
 		return total;
 	}
+	public static ArrayList<Mercado> getMercadoJSP(String idEspecie)
+			throws Exception {
+
+		ArrayList<Mercado> mercados = new ArrayList<Mercado>();
+		Statement stmt = null;
+		String sql = "";
+		ConnectionDB db = new ConnectionDB();
+		try {
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT m.* FROM mercado m  inner join mercadoCultivo c on (m.mercado=c.mercado) inner join especie e on (c.cultivo=e.pf) where e.idEspecie='"+idEspecie+"' "
+					+ "order by idMercado";
+
+			
+
+				
+			System.out.println("sql: " + sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				Mercado o = new Mercado();
+				
+				o.setIdMercado(rs.getInt("idMercado"));
+				o.setMercado(rs.getString("mercado"));
+				o.setMercado2(rs.getString("mercado2"));
+				o.setPf(rs.getString("pf"));
+				o.setCreado(rs.getDate("creado"));
+				o.setModificado(rs.getDate("modificado"));
+				o.setIdUser(rs.getInt("idUser"));
+				o.setRegla(rs.getString("regla"));
+				o.setCliente(rs.getString("cliente"));
+				o.setSap(rs.getString("sap"));
+				mercados.add(o);
+			}
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getMercado: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return mercados;
+	}
 
 	public static ArrayList<Mercado> getMercado(ArrayList<filterSql> filter, String order, int start, int length)
 			throws Exception {
@@ -291,7 +340,7 @@ public class MercadoDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT * FROM vw_mercados ";
+			sql = "SELECT * FROM mercado ";
 
 			if (filter.size() > 0) {
 				String andSql="";
@@ -323,8 +372,13 @@ public class MercadoDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by idMercado";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
+			}
+			else
+			{
+				sql += " order by mercado asc";
 			}
 
 			if (length > 0) {
@@ -376,7 +430,7 @@ public class MercadoDB {
 			stmt = db.conn.createStatement();
 			resp = stmt.execute(sql);
 			stmt.close();
-			TemporadaDB.setCreateRestriciones();
+			
 			
 		}catch(Exception ex)
 		{
@@ -395,7 +449,7 @@ public class MercadoDB {
 		Statement stmt = null;
 		String sql = "";
 		try{
-			sql = "Select * from vw_mercados where lower(mercado)=lower('"+mercado+"')";
+			sql = "Select * from mercado where lower(mercado)=lower('"+mercado+"')";
 			System.out.println(sql);
 			stmt = db.conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
@@ -444,7 +498,7 @@ public class MercadoDB {
 		Statement stmt = null;
 		String sql = "";
 		try{
-			sql = "Select * from vw_mercados where lower(pf)=lower('"+mercado+"')";
+			sql = "Select * from mercado where lower(pf)=lower('"+mercado+"')";
 			System.out.println(sql);
 			stmt = db.conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);

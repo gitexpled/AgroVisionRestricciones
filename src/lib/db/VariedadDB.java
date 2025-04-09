@@ -363,7 +363,7 @@ public class VariedadDB {
 			stmt = db.conn.createStatement();
 			resp = stmt.execute(sql);
 			stmt.close();
-			TemporadaDB.setCreateRestriciones();
+			
 
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());

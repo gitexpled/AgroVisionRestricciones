@@ -43,13 +43,13 @@ var TableDatatablesAjax = function() {
 						},
 						"columnDefs" : [
 								{
-									"targets" : [ 8 ],
+									"targets" : [ 7 ],
 									"render" : function(data, type, full) {
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
 
 										html += "<a class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
-												+ full[8]
+												+ full[7]
 												+ "' href='#modal-modifica-cuenta'><i class='fa fa-pencil-square'></i></a> ";
 
 										html += "</div>";
@@ -58,7 +58,7 @@ var TableDatatablesAjax = function() {
 									}
 								},
 								{
-									"targets" : [ 8 ]
+									"targets" : [ 7 ]
 								} ],
 						"order" : [ [ 1, "desc" ] ]
 					// set first column as a default sort by asc

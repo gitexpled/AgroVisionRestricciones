@@ -88,7 +88,7 @@ public class LimiteJson {
 	}
 
 	@RequestMapping(value = "/limite/view", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody dataTable getShopInJSON(HttpServletRequest request,HttpSession httpSession)  {
+	public @ResponseBody dataTable view(HttpServletRequest request,HttpSession httpSession)  {
 		
 		session ses = new session(httpSession);
 		dataTable data = new dataTable();
@@ -98,6 +98,37 @@ public class LimiteJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
+
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "m.mercado";break;
+		case "1":colum = "idEspecie";break;
+		case "2":colum = "limite";break;
+		case "3":colum = "l.codProducto";break;
+		case "4":colum = "f.nombre";break;
+	
+		case "5":colum = "l.creado";break;
+		case "6":colum = "l.modificacion";break;
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -124,7 +155,7 @@ public class LimiteJson {
 
 		ArrayList<Limite> datas;
 		try {
-			datas = LimiteDB.getLimites(filter, "idMercado", start, length);
+			datas = LimiteDB.getLimites(filter, order, start, length);
 
 			Iterator<Limite> f = datas.iterator();
 
@@ -137,7 +168,7 @@ public class LimiteJson {
 						especieDB.getId(row.getIdEspecie()+"").getEspecie(),
 						row.getLimite(), 
 						row.getCodProducto(),
-						row.getTipoProducto(),
+						
 						row.getFuente() , 
 						row.getCreado() + "", row.getModificado()+"", row.getIdLimite()+"", "" };
 

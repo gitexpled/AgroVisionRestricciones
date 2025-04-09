@@ -41,7 +41,7 @@ var TableDatatablesAjax = function() {
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
 										html += "<a style='width:100%;' class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
-												+ full[3]
+												+ full[5]
 												+ "' href='#modal-modifica-temporada'><i class='fa fa-pencil-square'></i></a> ";
 
 										html += "</div>";
@@ -99,6 +99,7 @@ var TableDatatablesAjax = function() {
 
 					var button = $(e.relatedTarget);// Button which is clicked
 					var id = button.data('id');// Get id of the button
+				
 					ID=id;
 					$.ajax({
 						type : 'GET',
@@ -107,6 +108,43 @@ var TableDatatablesAjax = function() {
 						success : function(data) {
 							console.log(data)
 							$("#updateTemporada").val(data.temporada);
+							$("#updateEspecie").val(data.especie);
+							
+							var idEspecie = data.idEspecie;
+							$("#updateEspecie option[value='"+idEspecie+"']").attr("selected","selected");
+							$('#updateEspecie').empty();
+							$('#updateEspecie').append('<option value="">Seleccionar</option>');
+							$.ajax({
+								url : "/AgroVisionRestricciones/"+"json/especie/getAllOutFilter",
+								type : "GET",
+								data : "",
+								beforeSend : function(xhr) {
+									xhr.setRequestHeader("Accept",
+											"application/json");
+									xhr.setRequestHeader("Content-Type",
+											"application/json");
+								},
+
+								success : function(data, textStatus, jqXHR) {
+									var options = "";
+									
+									$(data).each(function(key, val){
+										if(val.pf==idEspecie)
+											options += "<option value='"+val.pf+"'  selected='selected' >"+val.especie+"</option>";
+										else
+											options += "<option value='"+val.pf+"'>"+val.especie+"</option>";
+									})
+									
+									$('#updateEspecie').append(options);
+								},
+								error : function(jqXHR, textStatus,
+										errorThrown) {
+								}
+							});
+							
+							
+							$("#updateDesde").val(data.desde);
+							$("#updateHasta").val(data.hasta);
 							$("#usuario").val(data.usuario);
 							$("#updateFeCreacion").val(data.creado);
 
@@ -213,8 +251,11 @@ var TableDatatablesAjax = function() {
 
 
 						// parametrosCuenta.Cuenta = cuenta;
-						//row.temporada = $('#regTemporada').val();
+						
 						row.temporada = $('#updateTemporada').val();
+						row.idEspecie = $('#updateEspecie').val();
+						row.desde = $('#updateHasta').val();
+						row.hasta = $('#updateDesde').val();
 						row.idUser = $("#idUserPefil").val();
 						row.idTemporada = ID;
 						console.log(row);

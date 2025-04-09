@@ -194,7 +194,18 @@
 							</div>
 						</div>
 
-
+						<div class="form-group">
+							<label class="col-md-4 control-label">Estado<span
+								class="required">*</span></label>
+							<div class="col-md-8">
+								<select name="update_regPerfil" class="cleanReg form-control" id="update_regPerfil">
+                                         		<option value="">Seleccionar</option>
+                                         		<option value="1">Administrador</option>
+                                         		<option value="3">Usuario</option>
+                                         		
+                                         	</select><br /> <br />
+							</div>
+						</div>
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Estado<span
@@ -328,7 +339,7 @@
                                          		<option value="">Seleccionar</option>
                                          		<option value="1">Administrador</option>
                                          		<option value="3">Usuario</option>
-                                         		<option value="4">Operaciones</option>
+                                         		
                                          	</select>
                                          </div>
                                      </div>

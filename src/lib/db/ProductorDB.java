@@ -25,41 +25,7 @@ public class ProductorDB {
 		try {
 			db.conn.setAutoCommit(false);
 			
-			sql = "DELETE t1 ";
-			sql += "FROM restriciones t1 ";
-			sql += "WHERE  codProductor='" + id + "';";
-			System.out.println("sql: " + sql);
-			ps = db.conn.prepareStatement(sql);
-			ps.executeUpdate();
 			
-			sql = "DELETE t1 ";
-			sql += "FROM restriciones2 t1 ";
-			sql += "WHERE  codProductor='" + id + "';";
-			System.out.println("sql: " + sql);
-			ps = db.conn.prepareStatement(sql);
-			ps.executeUpdate();
-			
-			sql = "DELETE t1 ";
-			sql += "FROM parcelaVariedad t1 ";
-			sql += "WHERE  codProductor='" + id + "';";
-			System.out.println("sql: " + sql);
-			ps = db.conn.prepareStatement(sql);
-			ps.executeUpdate();
-			
-			sql = "DELETE t1 ";
-			sql += "FROM turno t1 ";
-			sql += "WHERE  codProductor='" + id + "';";
-			System.out.println("sql: " + sql);
-			ps = db.conn.prepareStatement(sql);
-			ps.executeUpdate();
-			
-			
-			
-			sql = "delete  from parcela ";
-			sql += "WHERE  codProductor='" + id + "';";
-			System.out.println("sql: " + sql);
-			ps = db.conn.prepareStatement(sql);
-			ps.executeUpdate();
 			
 			sql = "delete  from productor ";
 			sql += "WHERE  codProductor='" + id + "';";
@@ -431,13 +397,93 @@ public class ProductorDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			else
+			{
+				sql+=" where codProductor not in (SELECT codProductor FROM AgroVisionRestricciones.productor where activo=2)";
+			}
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {
 				sql += " limit " + start + "," + length + " ";
 			}
+			System.out.println(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				Productor row = new Productor();
+
+				row.setCodigo((rs.getString("codProductor")));
+				row.setNombre(rs.getString("nombre"));
+				row.setCreado(rs.getDate("creado"));
+				row.setModificado(rs.getDate("modificado"));
+			
+				productores.add(row);
+			}
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getUsers: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return productores;
+	}
+	public static ArrayList<Productor> getProductorAll(ArrayList<filterSql> filter, String order, int start, int length)
+			throws Exception {
+		ArrayList<Productor> productores = new ArrayList<Productor>();
+		Statement stmt = null;
+		String sql = "";
+		ConnectionDB db = new ConnectionDB();
+		try {
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT * FROM productor ";
+
+			if (filter.size() > 0) {
+				String andSql = "";
+				andSql += " WHERE ";
+				Iterator<filterSql> f = filter.iterator();
+
+				while (f.hasNext()) {
+					filterSql row = f.next();
+
+					if (!row.getValue().equals("")) {
+						if (row.getCampo().endsWith("_to")) {
+							SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+							SimpleDateFormat sqlDate = new SimpleDateFormat("yyyyMMdd");
+							sql += andSql + row.getCampo().substring(0, row.getCampo().length() - 3) + " <='"
+									+ sqlDate.format(formatter.parse(row.getValue())) + "'";
+						} else if (row.getCampo().endsWith("_from")) {
+							SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+							SimpleDateFormat sqlDate = new SimpleDateFormat("yyyyMMdd");
+							sql += andSql + row.getCampo().substring(0, row.getCampo().length() - 5) + " >='"
+									+ sqlDate.format(formatter.parse(row.getValue())) + "'";
+						} else
+							sql += andSql + row.getCampo() + " like '%" + row.getValue() + "%'";
+						andSql = " and ";
+					}
+				}
+
+			}
+			
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
+			}
+
+			if (length > 0) {
+				sql += " limit " + start + "," + length + " ";
+			}
+			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				Productor row = new Productor();
@@ -479,7 +525,7 @@ public class ProductorDB {
 			stmt = db.conn.createStatement();
 			resp = stmt.execute(sql);
 			stmt.close();
-			TemporadaDB.setCreateRestriciones();
+			
 
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());

@@ -35,7 +35,32 @@ public class alarmaComponenteJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "codProducto";break;
+		case "1":colum = "cantidad";break;
+		
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -63,7 +88,7 @@ public class alarmaComponenteJson {
 
 		ArrayList<alarmaComponente> datas;
 		try {
-			datas = alarmaComponenteDB.getAll(filter, "", start, length);
+			datas = alarmaComponenteDB.getAll(filter, order, start, length);
 
 			Iterator<alarmaComponente> f = datas.iterator();
 
@@ -116,9 +141,9 @@ public class alarmaComponenteJson {
 		}
 		System.out.println("DROP::::::::::::::::::::::::::::"+id);
 	
-		String mensaje=mailDB.delete(id);
+		
 		msn.setEstado("OK");
-		msn.setMensaje(mensaje);
+		msn.setMensaje("");
 		return msn;
 
 	}

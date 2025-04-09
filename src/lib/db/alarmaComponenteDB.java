@@ -196,8 +196,9 @@ public class alarmaComponenteDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by "+order;
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {

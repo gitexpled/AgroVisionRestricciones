@@ -20,10 +20,11 @@
 					<thead>
 						<tr role="row" class="heading">
 							<th width="10%">ID</th>
-							<th width="10%">Cód Productor</th>
-							<th width="10%">Cód Etapa</th>
-							<th width="10%">Cód Turno</th>
-							<th width="10%">Cod Variedad</th>
+							<th width="10%">Productor</th>
+							<th width="10%">Etapa</th>
+							<th width="10%">Campo</th>
+							<th width="10%">Turno</th>
+							<th width="10%">Variedad</th>
 							<th width="10%">Mercado</th>
 							<th width="10%">Creado</th>
 							<th width="10%">Modificado</th>
@@ -33,13 +34,15 @@
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_ID"></td>
 							<td><input type="text"
-								class="form-control form-filter input-sm" name="vw_codProductor"></td>
+								class="form-control form-filter input-sm" name="vw_Productor"></td>
 							<td><input type="text"
-								class="form-control form-filter input-sm" name="vw_codParcela"></td>
+								class="form-control form-filter input-sm" name="vw_Etapa"></td>
 							<td><input type="text"
-								class="form-control form-filter input-sm" name="vw_codTurno"></td>
+								class="form-control form-filter input-sm" name="vw_Campo"></td>
 							<td><input type="text"
-								class="form-control form-filter input-sm" name="vw_codVariedad">
+								class="form-control form-filter input-sm" name="vw_Turno"></td>
+							<td><input type="text"
+								class="form-control form-filter input-sm" name="vw_idVariedad">
 							</td>
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_mercado">
@@ -194,11 +197,11 @@
                 <h4 class="modal-title">Registro Mercado Productor</h4>
             </div>
             <div class="modal-body">
-                <div class="scroller" style="height:300px" data-always-visible="1" data-rail-visible1="1">
+                <div class="scroller" style="height:350px" data-always-visible="1" data-rail-visible1="1">
                     <div class="form-body">
                     
                      <div class="form-group">
-                            <label class="col-md-4 control-label">Cod Productor</label>
+                            <label class="col-md-4 control-label">Productor</label>
                            <div class="col-md-8">
                                 <div class="input-icon input-large">
                                     <div class="input-group">
@@ -211,11 +214,23 @@
                         </div>
                     	
 						 <div class="form-group">
-                            <label class="col-md-4 control-label">Cod Etapa</label>
+                            <label class="col-md-4 control-label">Etapa</label>
                            <div class="col-md-8">
                                 <div class="input-icon input-large">
                                     <div class="input-group">
-                                   <select name="codParcela" class="codParcela form-control" id="codParcela">
+                                   <select name="codEtapa" class="codEtapa form-control" id="codEtapa">
+                                       		<option value="">Seleccionar</option>
+                                      </select>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Campo</label>
+                           <div class="col-md-8">
+                                <div class="input-icon input-large">
+                                    <div class="input-group">
+                                   <select name="codCampo" class="codCampo form-control" id="codCampo">
                                        		<option value="">Seleccionar</option>
                                       </select>
                                       </div>
@@ -223,7 +238,7 @@
                             </div>
                         </div>
                          <div class="form-group">
-                            <label class="col-md-4 control-label">Cod Turno</label>
+                            <label class="col-md-4 control-label">Turno</label>
                            <div class="col-md-8">
                                 <div class="input-icon input-large">
                                     <div class="input-group">

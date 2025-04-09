@@ -6,7 +6,8 @@ public class MercadoProductor {
 	
 	private int id;
 	private String codProductor;
-	private String codParcela;
+	private String codEtapa;
+	private String codCampo;
 	private String codTurno;
 	private String idVariedad;
 	private String codVariedad;
@@ -21,11 +22,18 @@ public class MercadoProductor {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getCodParcela() {
-		return codParcela;
+
+	public String getCodEtapa() {
+		return codEtapa;
 	}
-	public void setCodParcela(String codParcela) {
-		this.codParcela = codParcela;
+	public void setCodEtapa(String codEtapa) {
+		this.codEtapa = codEtapa;
+	}
+	public String getCodCampo() {
+		return codCampo;
+	}
+	public void setCodCampo(String codCampo) {
+		this.codCampo = codCampo;
 	}
 	public String getIdVariedad() {
 		return idVariedad;

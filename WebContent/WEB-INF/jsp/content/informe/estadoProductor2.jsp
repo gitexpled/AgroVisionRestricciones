@@ -13,8 +13,8 @@
 				</a>
 				<ul class="dropdown-menu pull-right">
 					<li><a href="/AgroVisionRestricciones/webApp/exportaExcel/1"> Export to Excel Normal</a></li>
-					<li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/N"> Export SAP MERCADO</a></li>
-					<li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/Y"> Export SAP CLIENTE</a></li>
+					<!-- <li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/N"> Export SAP MERCADO</a></li>
+					<li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/Y"> Export SAP CLIENTE</a></li> -->
 					
 				</ul>
 				
@@ -46,6 +46,7 @@
 							<th width="13%">etapa</th>
 							<th width="13%">campo</th>
 							<th width="13%">variedad</th>
+							<th width="5%">CLP</th>
 						
 							
 							<c:forEach var="r" items="${th}">
@@ -53,7 +54,7 @@
 							</c:forEach>
 							<!-- ${thMercado} -->
 
-							<th width="120px">Actions</th>
+							
 						</tr>
 						<tr role="row" class="filter">
 							<td><div class="margin-bottom-5">
@@ -69,10 +70,11 @@
 										</button>
 									</div>
 								</div></td><td></td><td></td>
-								<td><input  type="text" class="form-control form-filter2 input-sm" name="vw_especie" style="width: 50px"  id="vw_especie"></td>
+								<td></td>
 							<td><input type="text" class="form-control form-filter2 input-sm"  name="vw_etapa" style="width: 50px"  id="vw_etapa"></td>
 							<td><input type="text" class="form-control form-filter2 input-sm"  name="vw_campo" style="width: 50px"  id="vw_campo"></td>
-							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_variedad"  style="width: 50px" id="vw_variedad"></td>
+							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_variedad"  style="width: 100px" id="vw_variedad"></td>
+							<td></td>
 						<!-- 
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_codProductor"></td>
@@ -82,10 +84,7 @@
 							<c:forEach var="r" items="${th}">
 								<td></td>
 							</c:forEach>
-							<td>
-								
-
-							</td>
+							<td></td>
 						</tr>
 					</thead>
 					<tbody>

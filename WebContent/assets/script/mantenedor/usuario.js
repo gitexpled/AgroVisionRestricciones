@@ -160,15 +160,17 @@ var TableDatatablesAjax = function() {
 							$("#update_usuario_password").val(data.password);
 							$("#update_usuario_mail").val(data.mail);
 							$('#update_usuario_estado').children('option:not(:first)').remove();
-							$("#update_usuario_estado").append(
-									'<option value="0">Activo</option>');
-							$("#update_usuario_estado").append(
-									'<option value="1">Desactivado</option>');
-							$(
-									"#update_usuario_estado option[value='"
-											+ data.estado + "']").attr(
-									"selected", "selected");
+							$("#update_usuario_estado").append('<option value="0">Activo</option>');
+							$("#update_usuario_estado").append('<option value="1">Desactivado</option>');
+							$("#update_usuario_estado option[value='"+ data.estado + "']").attr("selected", "selected");
 
+
+							$('#update_regPerfil').children('option:not(:first)').remove();
+							$("#update_regPerfil").append('<option value="1">Administrador</option>');
+							$("#update_regPerfil").append('<option value="3">Usuario</option>');
+							$("#update_regPerfil option[value='"+ data.idPerfil + "']").attr("selected", "selected");
+							
+							
 							/*
 							 * $.each(selectValues, function(key, value) {
 							 * $('#mySelect') .append($("<option></option>")
@@ -323,6 +325,7 @@ var TableDatatablesAjax = function() {
 						row.password = $("#update_usuario_password").val();
 						row.estado = $("#update_usuario_estado option:selected").val();
 						row.mail = $('#update_usuario_mail').val();
+						row.idPerfil = $("#update_regPerfil option:selected").val();
 
 						$.ajax({
 									url : "/AgroVisionRestricciones/"+"json/user/put",

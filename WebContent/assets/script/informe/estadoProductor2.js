@@ -19,22 +19,22 @@ var TableDatatablesAjax = function() {
 
 			success : function(data, textStatus, jqXHR) {
 				var options = "";
-				
+				var url_string = location.href; //window.location.href
+				var url = new URL(url_string);
+				var c = url.searchParams.get("id");
 				$(data).each(function(key, val){
-					var url_string = location.href; //window.location.href
-					var url = new URL(url_string);
-					var c = url.searchParams.get("key");
-					console.log(c);
-					if (c==val.especie)
+					
+					
+					if (c==val.idEspecie)
 						options += "<option value='"+val.idEspecie+"' selected>"+val.especie+"</option>";
 					else
 						options += "<option value='"+val.idEspecie+"' >"+val.especie+"</option>";	
 				})
 			
 				$('.btn_especie').append(options);
-				document.getElementById("buscarID").click();
-				$('#buscarID').trigger($.Event("click", { keyCode: 13 }));
-				 $("#datatable_ajax").DataTable().ajax.reload();
+				//document.getElementById("buscarID").click();
+				//$('#buscarID').trigger($.Event("click", { keyCode: 13 }));
+				//$("#datatable_ajax").DataTable().ajax.reload();
 			},
 			error : function(jqXHR, textStatus,
 					errorThrown) {
@@ -47,14 +47,18 @@ var TableDatatablesAjax = function() {
 
 		var grid = new Datatable();
 	
-		
+		var url_string = location.href; //window.location.href
+		var url = new URL(url_string);
+		var c = url.searchParams.get("id");
+		if (c==null)
+			c=7;
 	
 		
 		
 		grid.init({
 					src : $("#datatable_ajax"),
 					onSuccess : function(grid, response) {
-						console.log(response);
+						
 						// grid: grid object
 						// response: json object of server side ajax response
 						// execute some code after table records loaded
@@ -71,6 +75,7 @@ var TableDatatablesAjax = function() {
 				        "scrollX": true,
 				        "searching": true,
 				        "searchable": true,
+				         "ordering": false,
 						"bStateSave" : true, // save datatable
 												// state(pagination, sort, etc)
 												// in cookie.
@@ -82,12 +87,12 @@ var TableDatatablesAjax = function() {
 						],
 						"pageLength" : -1, // default record count per page
 						"ajax" : {
-							"url" : "/AgroVisionRestricciones/"+"json/estadoProductor/view2", // ajax
+							"url" : "/AgroVisionRestricciones/"+"json/estadoProductor/view2/"+c, // ajax
 																				// source
 						},
 						"columnDefs" : [
 						           {
-											"targets" : [0,1,2,3,4,5,6],
+											"targets" : [0,1,2,3,4,5,6,7],
 						           "render" : function(data, type, row,meta ) {
 										var html =data;
 										 ;
@@ -127,9 +132,13 @@ var TableDatatablesAjax = function() {
 										var especie=$("#viewEspecie").val()
 										var colName=meta.settings.aoColumns[meta.col].sTitle;
 										if (data=='NO')
-											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"' href='#modal-informe'>NO</a>";
+											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6].replace("'","@")+"' href='#modal-informe' style='color: #ff5733'><i class='fa fa-close'  style='font-size:24px;color:red'></i></a>";
+										else if (data=='SI.')
+											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6].replace("'","@")+"'  href='#modal-informe' style='color:orange'>LC<i class='fa fa-exclamation-circle'  style='font-size:14px;color:orange'></i></a>";
+										else if (data=='PI')
+											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6].replace("'","@")+"'  href='#modal-informe' style='color:red'>PI<i class='fa fa-exclamation-circle'  style='font-size:14px;color:red'></i></a>";
 										else
-											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"'  href='#modal-informe'>SI</a>";
+											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6].replace("'","@")+"'  href='#modal-informe' style='color: #34cb5d'><i class='fa fa-check'  style='font-size:24px;color:green'></i></a>";
 										
 										
 										return html;
@@ -189,17 +198,17 @@ var TableDatatablesAjax = function() {
             
         });
         
-        $('#viewEspecie').change(function(e){
+         $('#viewEspecie').change(function(e){
         	e.preventDefault();
-      	  $('textarea.form-filter2, select.form-filter2, input.form-filter2:not([type="radio"],[type="checkbox"])').each(function() {
-      		  grid.setAjaxParam($(this).attr("name"), $(this).val());
-             
-            });
-      	
-          grid.submitFilter();
+      	    const url = new URL(window.location);
+		    if (url.searchParams.has('id')) {
+		      url.searchParams.delete('id');
+		    }
+		    url.searchParams.set('id', $(this).val());
+		    window.location.href = url.toString();
         })
 
-        $(".filter-submit2").on('click', function(e) {
+         $(".filter-submit2").on('click', function(e) {
         	
             e.preventDefault();
            // $('textarea.form-filter2, select.form-filter2, input.form-filter2:not([type="radio"],[type="checkbox"])').each(function() {
@@ -207,7 +216,7 @@ var TableDatatablesAjax = function() {
               grid.setAjaxParam("vw_productor", $('#vw_productor').val());
               grid.setAjaxParam("vw_etapa", $('#vw_etapa').val());
               grid.setAjaxParam("vw_campo", $('#vw_campo').val());
-              
+              //grid.setAjaxParam("vw_turno", $('#vw_turno').val());
               grid.setAjaxParam("vw_variedad", $('#vw_variedad').val());
                
            // });
@@ -254,7 +263,7 @@ var TableDatatablesAjax = function() {
 						url : "/AgroVisionRestricciones/json/tipoProducto/" + id,
 						data : "",
 						success : function(data) {
-							console.log(data)
+							
 							$("#updateTipoProducto").val(data.tipoProducto);
 							$("#updateFeCreacion").val(data.creado);
 
@@ -473,7 +482,7 @@ var TableDatatablesAjax = function() {
 
 						row.tipoProducto = $('#regTipoProducto').val();
 						row.idUser = $('#idUserPefil').val();
-						console.log(row);
+						
 
 						$.ajax({
 									url : "/AgroVisionRestricciones/"+"json/tipoProducto/insertTipoProducto",

@@ -61,30 +61,6 @@ public class cargaAutomaticaJson {
 		data.setDraw(0);
 		data.init();
 
-		int start = Integer.parseInt(parameters.get("start")[0]);
-		int length = Integer.parseInt(parameters.get("length")[0]);
-		;
-
-		ArrayList<mail> datas;
-		try {
-			datas = mailDB.getMail(filter, "", start, length);
-
-			Iterator<mail> f = datas.iterator();
-
-			data.setRecordsFiltered(mailDB.getMailAll(filter));
-			data.setRecordsTotal(mailDB.getMailAll(filter));
-
-			while (f.hasNext()) {
-				mail row = f.next();
-				String[] d = { row.getFechaRecibido(),row.getFechaCarga(),row.getAsunto(),row.getArchivo(),row.getLaboratorio(),row.getIdMail()+"" };
-
-				data.setData(d);
-
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		return data;
 

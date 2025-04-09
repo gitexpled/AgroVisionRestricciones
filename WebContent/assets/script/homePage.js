@@ -1,7 +1,7 @@
 
 var ChartsAmcharts = function() {
 	
-	
+	/*
 
   	    
 	var populateForm = function()
@@ -507,7 +507,7 @@ function exportCharts(idGrafico) {
 	      
 	      } );
 	    } );
-	 
+	 */
 }
 
 

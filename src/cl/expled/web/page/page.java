@@ -109,7 +109,7 @@ public class page {
 	}
 	//constructor de toda la pagina
 		@RequestMapping(value= "/pageAdm/{id:.+}", method = { RequestMethod.GET })
-		public ModelAndView mainAdm(Model model, @PathVariable("id") String id, HttpSession httpSession) {
+		public ModelAndView mainAdm(Model model, @PathVariable("id") String id,@RequestParam(value = "id", required=false) String idEspecie, HttpSession httpSession) {
 			session ses = new session(httpSession);
 			if (ses.isValid()) {
 				return new ModelAndView("redirect:/webApp/login");
@@ -124,14 +124,19 @@ public class page {
 				e.printStackTrace();
 			}
 			
+			System.out.println(id+":::idEspecie:"+idEspecie);
+			if (idEspecie==null)
+				idEspecie="7";
+			
 			model.addAttribute("content", id);
-			model.addAttribute("controller", "adm/"+id.replace(".", "_"));
+			model.addAttribute("controller", "adm/"+id.replace(".", "_")+"?id="+idEspecie);
 			model.addAttribute("javaScriptPage", id.replace(".", "/"));
 			model.addAttribute("rand", ThreadLocalRandom.current().nextInt(10000, 99999 + 1));
 			
 			
 			return new ModelAndView("layout/_main");
 		}
+		
 	@RequestMapping("/content/{id:.+}")
 	public ModelAndView contentDefault(Model model, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
 		session ses = new session(httpSession);

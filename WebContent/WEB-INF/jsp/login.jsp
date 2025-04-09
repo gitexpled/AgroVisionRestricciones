@@ -61,7 +61,7 @@ License: You must have a valid license purchased only from themeforest(the above
         <!-- BEGIN LOGIN -->
         <div class="content">
             <!-- BEGIN LOGIN FORM -->
-            <form class="login-form" id="form1"  method="post">
+            <form class="login-form" id="form1"  method="post" action="login">
                 <h3 class="form-title">Ingresar</h3>
                 <div class="alert alert-danger display-hide">
                     <button class="close" data-close="alert"></button>
@@ -70,7 +70,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 
                  <div class="alert alert-danger ${alerta}">
                     <button class="close" data-close="alert"></button>
-                    <span> Error en el ingreso de usuario/contraseña </span>
+                    <span> ${mensaje}  </span>
                 </div>
                 <div class="form-group">
                     <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
@@ -92,14 +92,14 @@ License: You must have a valid license purchased only from themeforest(the above
                 
                 <div class="forget-password">
                    
-                  <!--    <p> 
-                        <a href="javascript:;" id="forget-password"> Recuperar Contraseña </a> </p>-->
+                      <p> 
+                        <a href="javascript:;" id="forget-password" style="color:white;"> Recuperar Contraseña </a> </p>
                 </div>
                 
             </form>
             <!-- END LOGIN FORM -->
             <!-- BEGIN FORGOT PASSWORD FORM -->
-            <form class="forget-form" action="index.html" method="post">
+            <form class="forget-form" action="recupera" method="post">
               <h3>Receuperar Contraseña!</h3>
                 <p> Ingrese su e-Mail y le enviaremos como  recuperarla </p>
                 <div class="form-group">

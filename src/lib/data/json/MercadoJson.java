@@ -39,7 +39,37 @@ public class MercadoJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "mercado";break;
+		case "1":colum = "mercado2";break;
+		case "2":colum = "pf";break;
+		case "3":colum = "regla";break;
+		case "4":colum = "cliente";break;
+		case "5":colum = "sap";break;
+		case "6":colum = "creado";break;
+		case "7":colum = "modificado";break;
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -67,7 +97,7 @@ public class MercadoJson {
 
 		ArrayList<Mercado> datas;
 		try {
-			datas = MercadoDB.getMercado(filter, "", start, length);
+			datas = MercadoDB.getMercado(filter, order, start, length);
 
 			Iterator<Mercado> f = datas.iterator();
 			data.setRecordsFiltered(MercadoDB.getMercadosAll(filter));

@@ -15,6 +15,7 @@ import lib.struc.Temporada;
 import lib.struc.alarmaProductor;
 import lib.struc.cargaManual;
 import lib.struc.cargaManualDetalle;
+import lib.struc.especie;
 import lib.struc.filterSql;
 
 public class alarmaProductorDB {
@@ -32,9 +33,10 @@ public class alarmaProductorDB {
 			sql = "Select * from `vw_faltanProductores` where     ";
 			sql+="  codProductor='"+ids[0]+"'";
 			sql+=" and codParcela='"+ids[1]+"'";
-			sql+=" and codTurno='"+ids[2]+"'";
-			sql+=" and idVariedad='"+ids[3]+"'";
-			sql+=" and REPLACE(proyecto, '/ ', '')='"+ids[4]+"'";
+			sql+=" and codCampo='"+ids[2]+"'";
+			sql+=" and codTurno='"+ids[3]+"'";
+			sql+=" and idVariedad='"+ids[4]+"'";
+			
 			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			if(rs.next())
@@ -44,7 +46,7 @@ public class alarmaProductorDB {
 				o.setCodParcela(rs.getString("codParcela"));
 				o.setCodTurno(rs.getString("codTurno"));
 				o.setIdVariedad(rs.getString("idVariedad"));
-				o.setProyecto(rs.getString("proyecto"));
+				o.setCodCampo(rs.getString("codCampo"));
 			
 				
 				
@@ -70,33 +72,35 @@ public class alarmaProductorDB {
 			db.conn.setAutoCommit(false);
 
 			
-			sql = "update  mailExcel set codProductor=? , codParcela=?  , turno=?  , variedad=? where ";
+			sql = "update  resultadoDet set productor=? , etapa=?  , campo=? , turno=?  , variedad=? where ";
 			String[] ids=o.getKeyID().split("_");
-			sql+="  codProductor='"+ids[0]+"'";
-			sql+=" and codParcela='"+ids[1]+"'";
-			sql+=" and turno='"+ids[2]+"'";
-			sql+=" and variedad='"+ids[3]+"'";
-			sql+=" and REPLACE(proyecto, '/ ', '')='"+ids[4]+"'";
+			sql+="  productor='"+ids[0]+"'";
+			sql+=" and etapa='"+ids[1]+"'";
+			sql+=" and campo='"+ids[2]+"'";
+			sql+=" and turno='"+ids[3]+"'";
+			sql+=" and variedad='"+ids[4]+"' and carga='A' and dfa='N'";
 			
 			
+			o.setIdVariedadNew(o.getIdVariedadNew().replace("@", "'"));
 			System.out.println(sql);
 			ps = db.conn.prepareStatement(sql);
 			int i=0;
 			ps.setString(++i,o.getCodProductorNew());
 			ps.setString(++i,o.getCodParcelaNew());
+			ps.setString(++i,o.getCodCampoNew());
 			ps.setString(++i,o.getCodTurnoNew());
-			ps.setString(++i,o.getIdVariedadNew());
-			
-			
-			
+			ps.setString(++i,o.getIdVariedadNew().replace("@", "'"));
 
-			
 			ps.executeUpdate();
-			System.out.println(o.getCodProductorNew()+"|"+o.getCodParcelaNew()+"|"+o.getCodTurnoNew()+"|"+o.getIdVariedadNew());
+			System.out.println("SQL: " + ps.toString());
 			db.conn.commit();
-			Temporada temp=TemporadaDB.getMaxTemprada();
-			procesosDB.setRestriciones(temp.getIdTemporada());
 			db.conn.close();
+			String especie=ids[5];
+			especie espe= especieDB.getByCodLab(especie);
+			TemporadaDB temp=new TemporadaDB();
+			String idTemporada=temp.getMaxTemprada(espe.getPf())+"";
+			
+			cargaManualDB.setVigente(idTemporada, o.getCodProductorNew(), o.getCodParcelaNew(), o.getCodCampoNew(), o.getCodTurnoNew(), o.getIdVariedadNew(), especie,"N");
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -217,8 +221,9 @@ public class alarmaProductorDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by "+order;
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {
@@ -231,10 +236,12 @@ public class alarmaProductorDB {
 			
 				o.setCodProductor(rs.getString("codProductor"));
 				o.setCodParcela(rs.getString("codParcela"));
+				o.setCodCampo(rs.getString("codCampo"));
 				o.setCodTurno(rs.getString("codTurno"));
 				o.setIdVariedad(rs.getString("idVariedad"));
 				o.setCantidad(rs.getInt("cantidad"));
 				o.setProyecto(rs.getString("proyecto"));
+				o.setEspecie(rs.getString("especie"));
 				
 				arr.add(o);
 			}

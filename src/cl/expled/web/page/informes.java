@@ -38,6 +38,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import lib.db.MercadoDB;
@@ -86,16 +87,16 @@ public class informes {
 	}
 	
 		@RequestMapping("/adm/informe_estadoProductor")
-		public ModelAndView estadoProductorContent(Model model, HttpSession httpSession) {
+		public ModelAndView estadoProductorContent(Model model,@RequestParam(value = "id", required=false) String idEspecie, HttpSession httpSession) {
 			session ses = new session(httpSession);
 			if (ses.isValid()) {
 				return new ModelAndView("redirect:/webApp/login");
 			}
 			ArrayList<Mercado> mer= null;
 			try {
-				ArrayList<filterSql> filter = new ArrayList<filterSql>();
 				
-				mer=MercadoDB.getMercado(filter, "idMercado", 0, 9999);
+				
+				mer=MercadoDB.getMercadoJSP(idEspecie);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,15 +133,14 @@ public class informes {
 		
 		
 		@RequestMapping("/adm/informe_estadoProductor2")
-		public ModelAndView estadoProductorContent2(Model model, HttpSession httpSession) {
+		public ModelAndView estadoProductorContent2(Model model,@RequestParam(value = "id", required=false) String idEspecie, HttpSession httpSession) {
 			session ses = new session(httpSession);
 			if (ses.isValid()) {
 				return new ModelAndView("redirect:/webApp/login");
 			}
 			ArrayList<Mercado> mer= null;
 			try {
-				ArrayList<filterSql> filter = new ArrayList<filterSql>();
-				mer=MercadoDB.getMercado(filter, "idMercado", 0, 9999);
+				mer=MercadoDB.getMercadoJSP(idEspecie);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

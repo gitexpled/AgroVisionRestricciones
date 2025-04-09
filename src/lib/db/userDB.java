@@ -75,6 +75,7 @@ public class userDB {
 				o.setBaja(rs.getDate("baja"));
 				o.setEstado(rs.getInt("estado"));
 				o.setMail(rs.getString("mail"));
+				o.setIdPerfil(rs.getInt("idPerfil"));
 			} else {
 				o= null;
 			}
@@ -147,7 +148,7 @@ public class userDB {
 		try {
 			db.conn.setAutoCommit(false);
 
-			sql = "update  user set nombre=?,apellido=?,user=?,baja=?,password=?,estado=?, mail=? where idUser='" + u.getId()
+			sql = "update  user set nombre=?,apellido=?,user=?,baja=?,password=?,estado=?, mail=?, idPerfil=? where idUser='" + u.getId()
 					+ "'";
 
 			ps = db.conn.prepareStatement(sql);
@@ -166,6 +167,7 @@ public class userDB {
 
 			ps.setInt(6, u.getEstado());
 			ps.setString(7, u.getMail());
+			ps.setInt(8, u.getIdPerfil());
 
 			ps.executeUpdate();
 			db.conn.commit();
@@ -295,8 +297,9 @@ public class userDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {

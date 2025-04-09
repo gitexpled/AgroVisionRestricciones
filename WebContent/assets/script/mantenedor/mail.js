@@ -1,108 +1,15 @@
-$.fn.serializeObject = function()
-{
-	
-   var o = {};
-   var a = this.serializeArray();
- 
-   $.each(a, function() {
-       if (o[this.name]) {
-           if (!o[this.name].push) {
-               o[this.name] = [o[this.name]];
-           }
-           o[this.name].push(this.value || '');
-       } else {
-           o[this.name] = this.value || '';
-       }
-   });
-   return o;
-};
-var controllerPage = function() {
-	 var ID;
-	var populateForm = function()
-	{
-		
-		
-		$.ajax({
-			url : "/AgroVisionRestricciones/"+"json/productor/getAllOutFilter",
-			type : "GET",
-			data : "",
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader("Accept",
-						"application/json");
-				xhr.setRequestHeader("Content-Type",
-						"application/json");
-			},
-
-			success : function(data, textStatus, jqXHR) {
-				var options = "";
-				
-				$(data).each(function(key, val){
-					options += "<option value='"+val.codigo+"'>"+val.codigo+" | "+val.nombre+"</option>";
-				})
-				
-				$('.codProductor').append(options);
-			},
-			error : function(jqXHR, textStatus,
-					errorThrown) {
-			}
-		});
-		
-		$.ajax({
-			url : "/AgroVisionRestricciones/"+"json/mercado/getAllOutFilter",
-			type : "GET",
-			data : "",
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader("Accept",
-						"application/json");
-				xhr.setRequestHeader("Content-Type",
-						"application/json");
-			},
-
-			success : function(data, textStatus, jqXHR) {
-				var options = "";
-				$(data).each(function(key, val){
-					options += "<option value='"+val.idMercado+"'>"+val.mercado+"</option>";
-				})
-				$('.mercado').append(options);
-			},
-			error : function(jqXHR, textStatus,
-					errorThrown) {
-			}
-		});
-		
-		
-		$.ajax({
-			url : "/AgroVisionRestricciones/"+"json/especie/getAllOutFilter",
-			type : "GET",
-			data : "",
-			beforeSend : function(xhr) {
-				xhr.setRequestHeader("Accept",
-						"application/json");
-				xhr.setRequestHeader("Content-Type",
-						"application/json");
-			},
-
-			success : function(data, textStatus, jqXHR) {
-				var options = "";
-				
-				$(data).each(function(key, val){
-					options += "<option value='"+val.idEspecie+"'>"+val.especie+"</option>";
-				})
-			
-				$('.especie').append(options);
-			},
-			error : function(jqXHR, textStatus,
-					errorThrown) {
-			}
-		});
-	}
-	var getView = function() {
+var TableDatatablesAjax = function() {
+	var handleDemo1 = function() {
 
 		var grid = new Datatable();
 
 		grid.init({
 					src : $("#datatable_ajax"),
-					onSuccess : function(grid, response) {},
+					onSuccess : function(grid, response) {
+						// grid: grid object
+						// response: json object of server side ajax response
+						// execute some code after table records loaded
+					},
 					onError : function(grid) {
 						// execute some code on network or other general error
 					},
@@ -111,48 +18,41 @@ var controllerPage = function() {
 					},
 					loadingMessage : 'Loading...',
 					dataTable : { 
-						"responsive": false,
-						"bStateSave" : true, 
-						"lengthMenu" : [ [ 10, 20, 50, 100, 150, -1 ],[ 10, 20, 50, 100, 150, "All" ] ],
+
+						"bStateSave" : true, // save datatable
+												// state(pagination, sort, etc)
+												// in cookie.
+					
+						"lengthMenu" : [ [ 10, 20, 50, 100, 150, -1 ],
+								[ 10, 20, 50, 100, 150, "All" ] // change per
+																// page values
+																// here
+						],
 						"pageLength" : 20, // default record count per page
-						"ajax" : {"url" : "/AgroVisionRestricciones/"+"json/bloqueoOp/view"},
+						"ajax" : {
+							"url" : "/AgroVisionRestricciones/"+"json/mail/view", // ajax
+																				// source
+						},
 						"columnDefs" : [
-						        { "visible": false, "targets": [0] },  
-						        {
-									"targets" : [ 4],
-									"render" : function(data, type, full) {
-										var html = ""
-											
-										if (full[4]=='N')
-										{
-											html="No Exporta";
-										}
-										else
-										{
-											html="Exporta";
-										}
-
-										return html;
-
-									}
-								},
 								{
-									"targets" : [ -1 ],
+									"targets" : [ 1 ],
 									"render" : function(data, type, full) {
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
-
-										html += "<a class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
-												+ full[0]
-												+ "' href='#modal-update'><i class='fa fa-pencil-square'></i></a> ";
+										html += "<a onclick='' class='col-md-6 btn red btn-table pull-right button-grilla-elimina-cuenta changeStatus'   data-id='"
+												+ full[2]
+												+ "' data-toggle='modal'><i class='fa fa-trash-o'></i></a>";
+										html += "<a  class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
+												+ full[2]
+												+ "' href='#modal-modifica-fuente'><i class='fa fa-pencil-square'></i></a> ";
 
 										html += "</div>";
 
 										return html;
-
 									}
-								}],
-						"order" : [ [ 1, "des" ] ]
+								} ],
+						"order" : [ [ 1, "asc" ] ]
+					// set first column as a default sort by asc
 
 					}
 				});
@@ -194,57 +94,50 @@ var controllerPage = function() {
 
 
 	
-	var getId = function() {
-		$("#modal-update").on(
+	var obtener = function() {
+		$("#modal-modifica-fuente").on(
 				'show.bs.modal',
 				function(e) {
 
 					var button = $(e.relatedTarget);// Button which is clicked
 					var id = button.data('id');// Get id of the button
 					ID=id;
-					
 					$.ajax({
 						type : 'GET',
-						url : "/AgroVisionRestricciones/json/bloqueoOp/" + id,
+						url : "/AgroVisionRestricciones/json/mail/" + id,
 						data : "",
 						success : function(data) {
-							
-						
-							
-							for (var k in data) {
-						       //alert(k  +" ->" +data[k]);
-						       $("#"+k+"u").val(data[k]);
-						    }
+							console.log(data)
+							$("#updateMail").val(data.mail);
 
 						}
 					});
 				});
 	}
 
-	var update = function() {
+	var editar = function() {
 
 		var row = {};
-		var form1 = $('#form-update');
+
+		var form1 = $('#modifica-cuenta-form');
 
 		form1.validate({
 					errorElement : 'span', 
 					errorClass : 'help-block help-block-error',
 					focusInvalid : true, 
 					rules : {
-						updateTipoProducto : {
-							required : true,
-							rangelength : [ 5, 50 ],
-							alfanumerico : true
+						UpdateMail:{
+							required: true,
+							email: true
 						}
 
 					},
 
 					messages : {
 
-						updateTipoProducto : {
-							required : "Este campo es obligatorio",
-							rangelength : "Debe ser mayor a 5 y menor a 50",
-							alfanumerico : "Ingrese sólo valores alfanumericos"
+						UpdateMail:{
+							required: "Este campo es obligatorio",
+							email: "Debe ingresar un correo valido"
 						}
 
 					},
@@ -314,16 +207,12 @@ var controllerPage = function() {
 
 						// parametrosCuenta.Cuenta = cuenta;
 
-						var obj = $('#form-update').serializeObject();
-						obj.idBloqueo=ID;
-						var search = JSON.stringify(obj);
-						 
-						
-						console.log(search);
+						row.mail = $('#updateMail').val();
+						row.idMail = ID;
 						$.ajax({
-									url : "/AgroVisionRestricciones/"+"json/bloqueoOp/put",
+									url : "/AgroVisionRestricciones/"+"json/mail/put",
 									type : "PUT",
-									data : search,
+									data : JSON.stringify(row),
 									beforeSend : function(xhr) {
 										xhr.setRequestHeader("Accept",
 												"application/json");
@@ -332,13 +221,12 @@ var controllerPage = function() {
 									},
 
 									success : function(data, textStatus, jqXHR) {
-										$('#modal-update').modal("toggle");
+										$('#modal-modifica-fuente').modal("toggle");
 										swal({
-											  title: 'Tipo Producto Modificada exitosamente!',
+											  title: 'Fuente Modificada exitosamente!',
 											  animation: true,
 											  customClass: 'animated tada'
 											})
-											
 										var table = $('#datatable_ajax')
 												.DataTable({
 													bRetrieve : true
@@ -348,6 +236,13 @@ var controllerPage = function() {
 									},
 									error : function(jqXHR, textStatus,
 											errorThrown) {
+											$('#modal-modifica-fuente').modal("toggle");
+												swal({
+											  title: 'Error Mail Duplicado',
+											  animation: true,
+											  customClass: 'animated tada'
+											})
+										
 									}
 								});
 
@@ -356,39 +251,54 @@ var controllerPage = function() {
 				});
 
 	}
-	
-	var insert = function(){
+	var setEstado = function(){
+		$("body").on("click",".changeStatus",function(e){
+			var id = $(this).data("id");
+			$.ajax({
+				type : 'GET',
+				url : "/AgroVisionRestricciones/"+"json/mail/delete",
+				data : {
+					id: id
+				},
+				success : function(data) {
+					swal({
+						  title: 'Mail Eliminado!',
+						  animation: true,
+						  customClass: 'animated tada'
+						})
+					var table = $('#datatable_ajax').DataTable({
+								bRetrieve : true
+					});
+					table.ajax.reload();
+				}
+			});
+		})
+	}
+	var insertFuente = function(){
 		var row = {};
 
 		
 		
-		
-		
-		var form1 = $('#form-new');
+		var form1 = $('#form-InsertFuente');
 
 		form1.validate({
 					errorElement : 'span', 
 					errorClass : 'help-block help-block-error',
 					focusInvalid : true, 
 					rules : {
-						codProductor : {required : true},
-						idMercado : {required : true},
-						idEspecie : {required : true},
-						
-						b : {required : true},
-						activo : {required : true},
-						
+						regMail:{
+							required: true,
+							email: true
+						}
 
 					},
 
 					messages : {
 
-						codProductor : {required: "Este campo es obligatorio"},
-						idMercado : {required: "Este campo es obligatorio"},
-						idEspecie : {required: "Este campo es obligatorio"},
-						b : {required: "Este campo es obligatorio"},
-						activo : {required: "Este campo es obligatorio"},
-						
+						regMail:{
+							required: "Este campo es obligatorio",
+							email: "Debe ingresar un mail valido"
+						}
 
 					},
 
@@ -437,23 +347,13 @@ var controllerPage = function() {
 
 					submitHandler : function(form) {
 
-						row.tipoProducto = $('#regTipoProducto').val();
-						row.idUser = "asasas";
-						
-						
-						
-						
-						
-						var obj = $('#form-new').serializeObject();
-							
-						
-						var search = JSON.stringify(obj);
-						 console.log(search);
-						
+						row.mail = $('#regMail').val();
+						console.log(row);
+
 						$.ajax({
-									url : "/AgroVisionRestricciones/"+"json/bloqueoOp/add",
+									url : "/AgroVisionRestricciones/"+"json/mail/insertMail",
 									type : "PUT",
-									data : search,
+									data : JSON.stringify(row),
 									beforeSend : function(xhr) {
 										xhr.setRequestHeader("Accept",
 												"application/json");
@@ -462,16 +362,13 @@ var controllerPage = function() {
 									},
 
 									success : function(data, textStatus, jqXHR) {
-										$('#modal-insert').modal('toggle');
+										$('#modal-newFuente').modal('toggle');
+										$('#regMail').val("");
 									swal({
-										  title: 'Bloqueo de productor realizado exitosamente',
+										  title: 'Mail agregado exitosamente!',
 										  animation: true,
 										  customClass: 'animated tada'
 										})
-										$( ".form-control" ).each(function( index ) {
-											$( this ).val("");
-											});
-										$("#activo").val("Y");
 										var table = $('#datatable_ajax')
 												.DataTable({
 													bRetrieve : true
@@ -480,6 +377,7 @@ var controllerPage = function() {
 									},
 									error : function(jqXHR, textStatus,
 											errorThrown) {
+											
 										console.log("error");
 
 									}
@@ -487,35 +385,23 @@ var controllerPage = function() {
 					}
 
 				});
-		
 	}
 
 	return {
 
 		// main function to initiate the module
 		init : function() {
-			populateForm();//recarga los select, check box, radio
-			getView(); //metodo encargado trabajo con la grilla
-			
-			insert();//metodo de validacion y envio a funcion de insercion
-			
-			getId();//obtiene los datos atraves de ajax para su edicion
-			update();//metodo de validaciob y envio a funcion de edicion
-			
-			
-			//Agregar metodos de validacion a libreria
+
+			handleDemo1();
+			insertFuente();
+			editar();
+			obtener();
+			setEstado();
 			jQuery.validator.addMethod("alfanumerico",
 					function(value, element) {
 						return this.optional(element)
 								|| /^[a-zA-Z0-9._-]+$/.test(value);
 					}, "solo números ddddd");
-			
-			$.validator.addMethod("repetidos", function(value, element) {
-				return !this.optional(element) && !this.optional($(element).parent().prev().children("select")[0]);
-			}, "Please select both the item and its amount.");
-			
-			//fin de metodos de validacion
-
 		}
 
 	};
@@ -523,5 +409,5 @@ var controllerPage = function() {
 }();
 
 jQuery(document).ready(function() {
-	controllerPage.init();
+	TableDatatablesAjax.init();
 });

@@ -141,7 +141,7 @@ public class TemporadaDB {
 
 		return tem;
 	}
-
+	
 	public static Temporada getTemporada(String idTemporada) throws Exception {
 
 		Temporada o = null;
@@ -159,6 +159,9 @@ public class TemporadaDB {
 				o = new Temporada();
 				o.setIdTemporada(rs.getInt("idTemporada"));
 				o.setTemporada(rs.getString("temporada"));
+				o.setIdEspecie(rs.getString("idEspecie"));
+				o.setDesde(rs.getString("desde"));
+				o.setHasta(rs.getString("hasta"));
 				o.setCreado(rs.getDate("creacion"));
 				o.setIdUser(rs.getInt("idUser"));
 				o.setUsuario(rs.getString("user"));
@@ -288,8 +291,9 @@ public class TemporadaDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {
@@ -337,7 +341,7 @@ public class TemporadaDB {
 			stmt = db.conn.createStatement();
 			resp = stmt.execute(sql);
 			stmt.close();
-			setCreateRestriciones();
+			
 			
 		}catch(Exception ex)
 		{
@@ -357,11 +361,12 @@ public class TemporadaDB {
 		try {
 			db.conn.setAutoCommit(false);
 
-			sql = "update  temporada set temporada=? where idTemporada='" + temp.getIdTemporada()
-					+ "'";
-
+			sql = "update  temporada set temporada=?,  idEspecie=? , desde='"+temp.getDesde()+"',  hasta='"+temp.getHasta()+"'  where idTemporada='" + temp.getIdTemporada()+ "'";
+			
 			ps = db.conn.prepareStatement(sql);
 			ps.setString(1, temp.getTemporada());
+			ps.setString(2, temp.getIdEspecie());
+			
 
 
 			ps.executeUpdate();
@@ -385,32 +390,5 @@ public class TemporadaDB {
 	}
 	
 	
-	public static void setCreateRestriciones() throws Exception {
-		ConnectionDB db = new ConnectionDB();
-		 Statement stmt = null;
-		String sql = "";
-		try {
-
-			 stmt = db.conn.createStatement();
-
-			sql = "{CALL sp_createTemporada() }";
-			
-			// ResultSet rs = stmt.executeQuery(sql);
-			ResultSet rs = stmt.executeQuery(sql);
-
-			
-			rs.close();
-			stmt.close();
-			db.conn.close();
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error: " + e.getMessage());
-			System.out.println("sql: " + sql);
-			throw new Exception("getEstadoProductor: " + e.getMessage());
-		} finally {
-			db.close();
-		}
-
-	}
+	
 }

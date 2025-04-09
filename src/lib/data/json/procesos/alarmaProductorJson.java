@@ -28,7 +28,7 @@ public class alarmaProductorJson {
 	public @ResponseBody mesajesJson drop(HttpServletRequest request,HttpSession httpSession) throws Exception {
 		String id = request.getParameter("id");
 		session ses = new session(httpSession);
-		boolean estado=false;
+		
 		mesajesJson msn = new mesajesJson();
 		if (ses.isValid()) {
 			
@@ -37,7 +37,8 @@ public class alarmaProductorJson {
 			return msn;
 		}
 		System.out.println("DROP::::::::::::::::::::::::::::"+id);
-		String mensaje=mailDB.deleteTurnoVariedad(id);
+		resultadoDB res= new resultadoDB();
+		String mensaje=res.deleteResultadoDet(id);
 		msn.setEstado("OK");
 		msn.setMensaje(mensaje);
 		return msn;
@@ -55,7 +56,36 @@ public class alarmaProductorJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "codProductor";break;
+		case "1":colum = "codParcela";break;
+		case "2":colum = "codCampo";break;
+		case "3":colum = "codTurno";break;
+		case "4":colum = "idVariedad";break;
+		case "5":colum = "cantidad";break;
+		
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -83,7 +113,7 @@ public class alarmaProductorJson {
 
 		ArrayList<alarmaProductor> datas;
 		try {
-			datas = alarmaProductorDB.getAll(filter, "", start, length);
+			datas = alarmaProductorDB.getAll(filter, order, start, length);
 
 			Iterator<alarmaProductor> f = datas.iterator();
 
@@ -92,7 +122,7 @@ public class alarmaProductorJson {
 
 			while (f.hasNext()) {
 				alarmaProductor row = f.next();
-				String[] d = { row.getCodProductor(),row.getCodParcela(),row.getCodTurno(),row.getIdVariedad(),row.getProyecto(),row.getCantidad()+"" };
+				String[] d = { row.getCodProductor(),row.getCodParcela(),row.getCodCampo(),row.getCodTurno(),row.getIdVariedad(),row.getCantidad()+"",row.getEspecie() };
 
 				data.setData(d);
 

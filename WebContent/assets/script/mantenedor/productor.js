@@ -29,8 +29,7 @@ var TableDatatablesAjax = function() {
 						],
 						"pageLength" : 20, // default record count per page
 						"ajax" : {
-							"url" : "/AgroVisionRestricciones/"+"json/productor/view", // ajax
-																				// source
+							"url" : "/AgroVisionRestricciones/"+"json/productor/view2", // ajax
 						},
 						"columnDefs" : [
 								{

@@ -80,7 +80,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
+					<!-- 	<div class="form-group">
 							<label class="col-md-4 control-label">Mat. Máximos: </label>
 							<div class="col-md-8">
 								<div class="input-icon right">
@@ -90,7 +90,7 @@
 										value="" class="form-control"> <br />
 								</div>
 							</div>
-						</div>
+						</div> -->
 						<div class="clearfix"></div>
 
 					</div>
@@ -127,10 +127,10 @@
                                         <span class="input-group-addon" id="sizing-addon1">@</span>
                                         <input name="regFuente" id="regFuente" type="text" class="form-control" placeholder="Fuente"> 
                                       </div>
-                                       <div class="input-group">
+                                      <!--  <div class="input-group">
                                         <span class="input-group-addon" id="sizing-addon1">Mat. máximos</span>
                                         <input name="regFuentes" placeholder="Cant. Materiales max." id="regFuentess" type="text" class="form-control" placeholder="Fuente"> 
-                                      </div>
+                                      </div> -->
                                 </div>
                             </div>
                         </div>

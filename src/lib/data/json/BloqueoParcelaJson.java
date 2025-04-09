@@ -63,7 +63,37 @@ public class BloqueoParcelaJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "idBloqueo";break;
+		case "1":colum = "codProductor";break;
+		case "2":colum = "codParcela";break;
+		case "3":colum = "idVariedad";break;
+		case "4":colum = "idMercado";break;
+		case "5":colum = "comentario";break;
+		case "6":colum = "creado";break;
+		case "7":colum = "estado";break;
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -90,7 +120,7 @@ public class BloqueoParcelaJson {
 
 		ArrayList<BloqueoParcela> datas;
 		try {
-			datas = BloqueoParcelaDB.getAll(filter, "", start, length);
+			datas = BloqueoParcelaDB.getAll(filter, order, start, length);
 
 			Iterator<BloqueoParcela> f = datas.iterator();
 

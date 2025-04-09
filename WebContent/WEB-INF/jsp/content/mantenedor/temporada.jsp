@@ -29,23 +29,23 @@
 					id="datatable_ajax">
 					<thead>
 						<tr role="row" class="heading">
-							<th width="40%">Temporada</th>
-							<th width="40%">Creado</th>
-							<th width="40%">Especie</th>
-							<th width="40%">Desde</th>
-							<th width="40%">Hasta</th>
+							<th width="20%">Temporada</th>
+							<th width="20%">Creado</th>
+							<th width="20%">Especie</th>
+							<th width="20%">Desde</th>
+							<th width="20%">Hasta</th>
 							<th width="30%">Actions</th>
 						</tr>
 						<tr role="row" class="filter">
 							<td><input type="text"
-								class="form-control form-filter input-sm" name="vw_nomTemporada">
+								class="form-control form-filter input-sm" name="vw_temporada">
 							</td>
 
 							<td><input type="text"
-								class="form-control form-filter input-sm" name="vw_creado">
+								class="form-control form-filter input-sm" name="vw_creacion">
 							</td>
 							<td><input type="text"
-								class="form-control form-filter input-sm" name="vw_especie">
+								class="form-control form-filter input-sm" name="vw_idEspecie">
 							</td>
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_desde">
@@ -98,6 +98,40 @@
 										class="fa fa-info-circle tooltips"></i> <input type="text"
 										id="updateTemporada" name="updateTemporada"
 										value="" class="form-control"> <br />
+								</div>
+							</div>
+						</div>
+		
+						<div class="form-group">
+							<label class="col-md-4 control-label">Especie: </label>
+							<div class="col-md-8">
+								<div class="input-icon right">
+									<i data-container="body" data-original-title="Usuario"
+										class="fa fa-info-circle tooltips"></i> 
+										<select name="updateEspecie" id="updateEspecie" class="form-control"></select>
+										 <br />
+								</div>
+							</div>
+						</div>
+					
+						<div class="form-group">
+							<label class="col-md-4 control-label">Desde: </label>
+							<div class="col-md-8">
+								<div class="input-icon right">
+									<i data-container="body" data-original-title="Usuario"
+										class="fa fa-info-circle tooltips"></i> 
+ 									<input name="updateDesde" id="updateDesde" type="date" class="form-control" placeholder="Desde"> <br />
+								</div>
+							</div>
+						</div>
+				
+						<div class="form-group">
+							<label class="col-md-4 control-label">Hasta: </label>
+							<div class="col-md-8">
+								<div class="input-icon right">
+									<i data-container="body" data-original-title="Usuario"
+										class="fa fa-info-circle tooltips"></i> 
+										<input name="updateHasta" id="updateHasta" type="date" class="form-control" placeholder="Hasta"> <br />
 								</div>
 							</div>
 						</div>

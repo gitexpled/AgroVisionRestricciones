@@ -146,7 +146,7 @@ License: You must have a valid license purchased only from themeforest(the above
                         <div class="page-bar">
                             <ul class="page-breadcrumb">
                                 <li>
-                                    <a href="/restPesticida/webApp/page/homePage">Home</a>
+                                    <a href="/AgroVisionRestricciones/webApp/page/homePage">Home</a>
                                    
                                 </li>
                                 <c:if test="${not empty proceso}">

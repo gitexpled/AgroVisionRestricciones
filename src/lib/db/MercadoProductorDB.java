@@ -38,7 +38,9 @@ public class MercadoProductorDB {
 				o = new MercadoProductor();
 				o.setId(rs.getInt("id"));
 				o.setCodProductor(rs.getString("codProductor"));
-				o.setCodParcela(rs.getString("codParcela"));
+				o.setCodEtapa(rs.getString("etapa"));
+				o.setCodCampo(rs.getString("campo"));
+				o.setCodTurno(rs.getString("turno"));
 				o.setIdVariedad(rs.getString("idVariedad"));
 				o.setIdMercado(rs.getString("idMercado"));
 				o.setCreado(rs.getDate("creado"));
@@ -77,12 +79,13 @@ public class MercadoProductorDB {
 		try {
 			db.conn.setAutoCommit(false);
 
-			sql = "update  mercadoProductor set codParcela=?,idVariedad=?, modificado='" + d
-					+ "' where id='" + o.getId() + "'";
+			sql = "update  mercadoProductor set etapa=?,campo=?,turno=?,idVariedad=?, modificado='" + d	+ "' where id='" + o.getId() + "'";
 			System.out.println("sql: " + sql);
 			ps = db.conn.prepareStatement(sql);
-			ps.setString(1, o.getCodParcela());
-			ps.setString(2, o.getIdVariedad());
+			ps.setString(1, o.getCodEtapa());
+			ps.setString(2, o.getCodCampo());
+			ps.setString(3, o.getCodTurno());
+			ps.setString(4, o.getIdVariedad());
 			//ps.setInt(3, o.getIdUser());
 		
 
@@ -157,9 +160,10 @@ public class MercadoProductorDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT count(1) FROM mercadoProductor pv "
-					+ "left join variedad v on (v.cod=pv.idVariedad) "
-					+ "  left join mercado m on (m.idMercado=pv.idMercado)";
+			sql = "SELECT  count(1) FROM mercadoProductor pv"
+					+ " inner join mercado m on (m.idMercado=pv.idMercado) "
+					+ "   inner join  jerarquias r on (r.productor=pv.productor and   r.etapa=pv.etapa  and r.campo=pv.campo and r.Turno=pv.turno   and r.VariedadDenomina=pv.idVariedad) ";
+
 
 			if (filter.size() > 0) {
 				String andSql = "";
@@ -182,9 +186,11 @@ public class MercadoProductorDB {
 						} else
 						{
 							if (row.getCampo().equals("cod"))
-								sql += andSql + "v."+row.getCampo() + " like '%" + row.getValue() + "%'";
+								sql += andSql + "v.nombre like '%" + row.getValue() + "%'";
 							else if (row.getCampo().equals("mercado"))
 								sql += andSql + "m."+row.getCampo() + " like '%" + row.getValue() + "%'";
+							else if (row.getCampo().equals("codVariedad"))
+								sql += andSql + "v.nombre  like '%" + row.getValue() + "%'";
 							else 
 								sql += andSql + "pv."+row.getCampo() + " like '%" + row.getValue() + "%'";
 						}
@@ -224,9 +230,9 @@ public class MercadoProductorDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT DISTINCT pv.*,v.cod,m.mercado FROM mercadoProductor pv"
-					+ " left join variedad v on (v.cod=pv.idVariedad) "
-					+ "  left join mercado m on (m.idMercado=pv.idMercado)";
+			sql = "SELECT  pv.*,m.mercado FROM mercadoProductor pv"
+					+ " inner join mercado m on (m.idMercado=pv.idMercado)  "
+					+ "   inner join  jerarquias r on (r.productor=pv.productor  and r.etapa=pv.etapa and r.Turno=pv.turno  and r.campo=pv.campo   and r.VariedadDenomina=pv.idVariedad) ";
 
 			if (filter.size() > 0) {
 				String andSql = "";
@@ -249,10 +255,13 @@ public class MercadoProductorDB {
 									+ sqlDate.format(formatter.parse(row.getValue())) + "'";
 						} else
 						{
+							System.out.println(row.getCampo());
 							if (row.getCampo().equals("cod"))
-								sql += andSql + "v."+row.getCampo() + " like '%" + row.getValue() + "%'";
+								sql += andSql + "v.nombre like '%" + row.getValue() + "%'";
 							else if (row.getCampo().equals("mercado"))
 								sql += andSql + "m."+row.getCampo() + " like '%" + row.getValue() + "%'";
+							else if (row.getCampo().equals("codVariedad"))
+								sql += andSql + "v.nombre  like '%" + row.getValue() + "%'";
 							else 
 								sql += andSql + "pv."+row.getCampo() + " like '%" + row.getValue() + "%'";
 						}
@@ -261,8 +270,9 @@ public class MercadoProductorDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {
@@ -274,11 +284,12 @@ public class MercadoProductorDB {
 				MercadoProductor row = new MercadoProductor();
 				
 				row.setId(rs.getInt("id"));
-				row.setCodProductor(rs.getString("codProductor"));
-				row.setCodParcela(rs.getString("codParcela"));
-				row.setCodTurno(rs.getString("codTurno"));
+				row.setCodProductor(rs.getString("productor"));
+				row.setCodEtapa(rs.getString("etapa"));
+				row.setCodCampo(rs.getString("campo"));
+				row.setCodTurno(rs.getString("turno"));
 				row.setIdVariedad(rs.getString("idVariedad"));
-				row.setCodVariedad(rs.getString("cod"));
+				row.setCodVariedad(rs.getString("idVariedad"));
 				row.setMercado(rs.getString("mercado"));
 				row.setCreado(rs.getDate("creado"));
 				row.setModificado(rs.getDate("modificado"));
@@ -310,8 +321,8 @@ public class MercadoProductorDB {
 		String sql = "";
 		try {
 
-			sql = "INSERT INTO mercadoProductor(codProductor,codParcela,codTurno,idVariedad,idMercado,creado,modificado,idUser) Values ('"
-					+ o.getCodProductor()+ "','"+ o.getCodParcela()+ "','" + o.getCodTurno() + "','" + o.getIdVariedad()+ "','" + o.getIdMercado()+ "','" + d + "','" + d + "',"
+			sql = "INSERT INTO mercadoProductor(productor,etapa,campo,turno,idVariedad,idMercado,creado,modificado,idUser) Values ('"
+					+ o.getCodProductor()+ "','"+ o.getCodEtapa()+ "','" + o.getCodCampo()+ "','" + o.getCodTurno() + "','" + o.getIdVariedad()+ "','" + o.getIdMercado()+ "','" + d + "','" + d + "',"
 					+ o.getIdUser() + ")";
 			stmt = db.conn.createStatement();
 			resp = stmt.execute(sql);

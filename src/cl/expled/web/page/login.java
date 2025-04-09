@@ -22,13 +22,58 @@ import lib.struc.*;
 
 @Controller
 public class login {
+	
+	
+	@RequestMapping(value = "/recupera", method = { RequestMethod.POST, RequestMethod.GET })
+	public ModelAndView recupera(Model model, HttpServletRequest request, HttpSession httpSession) {
+		Map<String, String[]> parameters = request.getParameterMap();
+		model.addAttribute("mensaje", "se envio correo con inturcciones para restablecer contraseña");
+		
+		try {
+			System.out.println("login IN--->"+parameters.get("email")[0]);
+			for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+			    String clave = entry.getKey();
+			    String[] valores = entry.getValue();
+
+			    System.out.print(clave + ": ");
+			    for (String valor : valores) {
+			        System.out.print(valor + " ");
+			    }
+			    System.out.println(); // salto de línea
+			}
+		    System.out.println(); // salto de línea
+	
+			
+				return new ModelAndView("login");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			model.addAttribute("alerta", "display-hide");
+			
+			return new ModelAndView("login");
+		}
+	}
 
 	@RequestMapping(value = "/login", method = { RequestMethod.POST, RequestMethod.GET })
 	public ModelAndView loginPage(Model model, HttpServletRequest request, HttpSession httpSession) {
 		Map<String, String[]> parameters = request.getParameterMap();
-
+		model.addAttribute("mensaje", "Error en el ingreso de usuario/contraseña");
 		
 		try {
+			
+			for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+			    String clave = entry.getKey();
+			    String[] valores = entry.getValue();
+
+			    System.out.print(clave + ": ");
+			    for (String valor : valores) {
+			        System.out.print(valor + " ");
+			    }
+			    System.out.println(); // salto de línea
+			}
+		    System.out.println(); // salto de línea
 			System.out.println("login IN--->"+parameters.get("username")[0] +","+ parameters.get("password")[0]);
 			if ( userDB.validateUser(parameters.get("username")[0] , parameters.get("password")[0]) ) {
 				System.out.println("login IN--->"+parameters.get("username")[0] +","+ parameters.get("password")[0]);
@@ -75,6 +120,7 @@ public class login {
 	public ModelAndView exit(Model model, HttpSession httpSession) {
 		lib.security.session  ses= new lib.security.session(httpSession);
 		ses.close();
+		System.out.println("SALIENDO SISTEMA");
 		return new ModelAndView("redirect:/webApp/login");
 	}
 

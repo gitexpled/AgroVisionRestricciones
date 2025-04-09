@@ -158,13 +158,15 @@ public class FuenteDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {
 				sql += " limit " + start + "," + length + " ";
 			}
+			System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				Fuente o = new Fuente();

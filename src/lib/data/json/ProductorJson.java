@@ -52,7 +52,7 @@ public class ProductorJson {
 	
 	
 	@RequestMapping(value = "/productor/view", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody dataTable getShopInJSON(HttpServletRequest request,HttpSession httpSession)  {
+	public @ResponseBody dataTable view(HttpServletRequest request,HttpSession httpSession)  {
 		
 		session ses = new session(httpSession);
 		dataTable data = new dataTable();
@@ -62,7 +62,34 @@ public class ProductorJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "codProductor";break;
+		case "1":colum = "nombre";break;
+		case "2":colum = "creado";break;
+		case "3":colum = "modificado";break;
+		
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -89,7 +116,7 @@ public class ProductorJson {
 
 		ArrayList<Productor> datas;
 		try {
-			datas = ProductorDB.getProductor(filter, "", start, length);
+			datas = ProductorDB.getProductor(filter,order, start, length);
 
 			Iterator<Productor> f = datas.iterator();
 
@@ -98,8 +125,96 @@ public class ProductorJson {
 
 			while (f.hasNext()) {
 				Productor row = f.next();
-				String fsma = "NO";
-				String habilitado = "NO";
+				
+				
+				String[] d = { row.getCodigo()+"",row.getNombre(),row.getCreado()+"",row.getModificado()+"" };
+
+				data.setData(d);
+
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return data;
+
+	}
+	@RequestMapping(value = "/productor/view2", method = { RequestMethod.POST, RequestMethod.GET })
+	public @ResponseBody dataTable view2(HttpServletRequest request,HttpSession httpSession)  {
+		
+		session ses = new session(httpSession);
+		dataTable data = new dataTable();
+		if (ses.isValid()) {
+			
+			data.setDraw(0);
+			data.init();
+			return data;
+		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
+
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "codProductor";break;
+		case "1":colum = "nombre";break;
+		case "2":colum = "creado";break;
+		case "3":colum = "modificado";break;
+		
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
+		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
+		Map<String, String[]> parameters = request.getParameterMap();
+		ArrayList<filterSql> filter = new ArrayList<filterSql>();
+		for (String key : parameters.keySet()) {
+			//System.out.println(key);
+			if (key.startsWith("vw_")) {
+				String[] vals = parameters.get(key);
+				for (String val : vals) {
+					filterSql fil = new filterSql();
+					fil.setCampo(key.substring(3));
+					fil.setValue(val);
+					filter.add(fil);
+				}
+			}
+		}
+
+		
+		data.setDraw(0);
+		data.init();
+
+		int start = Integer.parseInt(parameters.get("start")[0]);
+		int length = Integer.parseInt(parameters.get("length")[0]);
+		;
+
+		ArrayList<Productor> datas;
+		try {
+			datas = ProductorDB.getProductorAll(filter, order, start, length);
+
+			Iterator<Productor> f = datas.iterator();
+
+			data.setRecordsFiltered(ProductorDB.getProductoresAll(filter));
+			data.setRecordsTotal(ProductorDB.getProductoresAll(filter));
+
+			while (f.hasNext()) {
+				Productor row = f.next();
+				
 				
 				String[] d = { row.getCodigo()+"",row.getNombre(),row.getCreado()+"",row.getModificado()+"" };
 

@@ -236,8 +236,9 @@ public class DiccionarioDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {
@@ -478,8 +479,9 @@ public class DiccionarioDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {

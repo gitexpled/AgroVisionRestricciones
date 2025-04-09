@@ -19,18 +19,25 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.poi.hssf.record.cf.Threshold;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.ConditionalFormattingRule;
+import org.apache.poi.ss.usermodel.ConditionalFormattingThreshold;
+import org.apache.poi.ss.usermodel.ConditionalFormattingThreshold.RangeType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IconMultiStateFormatting;
+import org.apache.poi.ss.usermodel.IconMultiStateFormatting.IconSet;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -76,7 +83,8 @@ public class procesos {
 
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaCvs/{id}", method = { RequestMethod.GET })
-	public void exportaCsv(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
+	public void exportaCsv(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession)
+			throws Exception {
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
 			String errorMessage = "Session terminada ";
@@ -86,7 +94,7 @@ public class procesos {
 				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
 				outputStream.close();
 			} catch (IOException e) {
-				// 
+				//
 				e.printStackTrace();
 			}
 
@@ -106,7 +114,8 @@ public class procesos {
 
 		while (rest.hasNext()) {
 			String[] array = rest.next();
-			String res = Arrays.toString(array).replace("[", "").replace("]", "").replace("null", "").replace(", ", ",").replace(",", ";");
+			String res = Arrays.toString(array).replace("[", "").replace("]", "").replace("null", "").replace(", ", ",")
+					.replace(",", ";");
 			html += res + "\n";
 		}
 		OutputStream outputStream;
@@ -115,7 +124,7 @@ public class procesos {
 			outputStream.write(html.getBytes(Charset.forName("UTF-8")));
 			outputStream.close();
 		} catch (IOException e) {
-			// 
+			//
 			e.printStackTrace();
 		}
 
@@ -125,7 +134,8 @@ public class procesos {
 
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaExcelParcela/{id}", method = { RequestMethod.GET })
-	public void exportaExcelParcela(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
+	public void exportaExcelParcela(HttpServletResponse response, @PathVariable("id") String id,
+			HttpSession httpSession) throws Exception {
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
 			String errorMessage = "Session terminada ";
@@ -135,7 +145,7 @@ public class procesos {
 				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
 				outputStream.close();
 			} catch (IOException e) {
-				// 
+				//
 				e.printStackTrace();
 			}
 
@@ -146,7 +156,8 @@ public class procesos {
 		System.out.println("mimetype : " + mimeType);
 		//
 		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("inline; filename=\"EstadoProductorParcela_ExcelNormal.xlsx\""));
+		response.setHeader("Content-Disposition",
+				String.format("inline; filename=\"EstadoProductorParcela_ExcelNormal.xlsx\""));
 
 		// Workbook book=WorkbookFactory.create(in);
 		Workbook book = new XSSFWorkbook();
@@ -157,7 +168,7 @@ public class procesos {
 			ArrayList<filterSql> filter = new ArrayList<filterSql>();
 			esp = especieDB.getAll(filter, "idEspecie", 0, 9999);
 		} catch (Exception e) {
-			// 
+			//
 			e.printStackTrace();
 		}
 
@@ -199,8 +210,8 @@ public class procesos {
 			int i = 0;
 			int a = 0;
 			int x = 0;
-			ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorB(ses.getIdTemporada(), es.getIdEspecie(), "", "","", true);
-//			ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorB(ses.getIdTemporada(), es.getIdEspecie(), "", "","","", true, "");
+			ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorB(ses.getIdTemporada(), es.getIdEspecie(), "","", "", true);
+
 			Iterator<String[]> rest = pp.iterator();
 
 			while (rest.hasNext()) {
@@ -218,9 +229,9 @@ public class procesos {
 
 						// System.out.println(es.getIdEspecie()+"-->"+r.length+":::"+i);
 					} catch (Exception e) {
-						
+
 					}
-					
+
 				}
 				a++;
 				x++;
@@ -246,7 +257,8 @@ public class procesos {
 
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaExcelParcelaSapOld/{id}/{tipo}", method = { RequestMethod.GET })
-	public void exportaExcelParcelaSapoOld(HttpServletResponse response, @PathVariable("id") String id,@PathVariable("tipo") String tipo, HttpSession httpSession) throws Exception {
+	public void exportaExcelParcelaSapoOld(HttpServletResponse response, @PathVariable("id") String id,
+			@PathVariable("tipo") String tipo, HttpSession httpSession) throws Exception {
 		session ses = new session(httpSession);
 //		if (ses.isValid()) {
 //			String errorMessage = "Session terminada ";
@@ -267,10 +279,10 @@ public class procesos {
 		System.out.println("mimetype : " + mimeType);
 		//
 		response.setContentType(mimeType);
-		String fileName="EstadoProductorParcela_Mercado";
+		String fileName = "EstadoProductorParcela_Mercado";
 		if (tipo.equals("Y"))
-			fileName="EstadoProductorParcela_Cliente";
-		response.setHeader("Content-Disposition", String.format("inline; filename=\""+fileName+".xlsx\""));
+			fileName = "EstadoProductorParcela_Cliente";
+		response.setHeader("Content-Disposition", String.format("inline; filename=\"" + fileName + ".xlsx\""));
 
 		// Workbook book=WorkbookFactory.create(in);
 		Workbook book = new XSSFWorkbook();
@@ -285,7 +297,6 @@ public class procesos {
 			e.printStackTrace();
 		}
 
-		
 		Sheet sheet = book.createSheet("SAP");
 		System.out.println("..");
 		CellStyle tituloEstilo = book.createCellStyle();
@@ -317,19 +328,16 @@ public class procesos {
 		datoStyle.setBorderRight(BorderStyle.THIN);
 		datoStyle.setBorderTop(BorderStyle.THIN);
 		Iterator<especie> ff = esp.iterator();
-		boolean swTitulos=true;
+		boolean swTitulos = true;
 		int x = 0;
 		int a = 0;
 		while (ff.hasNext()) {
 			especie es = ff.next();
 
-			
-
 			int i = 0;
-			
-			
-			
-			ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorC(2, es.getIdEspecie(), "", "",tipo, swTitulos);
+
+			ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorC(2, es.getIdEspecie(), "", "", tipo,
+					swTitulos);
 			Iterator<String[]> rest = pp.iterator();
 
 			while (rest.hasNext()) {
@@ -348,7 +356,7 @@ public class procesos {
 				}
 				a++;
 				x++;
-				swTitulos=false;
+				swTitulos = false;
 			}
 
 		}
@@ -368,9 +376,11 @@ public class procesos {
 		file.delete();
 
 	}
+
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaExcelParcelaSap/{id}/{tipo}", method = { RequestMethod.GET })
-	public void exportaExcelParcelaSap(HttpServletResponse response, @PathVariable("id") String id,@PathVariable("tipo") String tipo, HttpSession httpSession) throws Exception {
+	public void exportaExcelParcelaSap(HttpServletResponse response, @PathVariable("id") String id,
+			@PathVariable("tipo") String tipo, HttpSession httpSession) throws Exception {
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
 			String errorMessage = "Session terminada ";
@@ -380,7 +390,7 @@ public class procesos {
 				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
 				outputStream.close();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 
@@ -391,10 +401,10 @@ public class procesos {
 		System.out.println("mimetype : " + mimeType);
 		//
 		response.setContentType(mimeType);
-		String fileName="EstadoProductorParcela_Mercado";
+		String fileName = "EstadoProductorParcela_Mercado";
 		if (tipo.equals("Y"))
-			fileName="EstadoProductorParcela_Cliente";
-		response.setHeader("Content-Disposition", String.format("inline; filename=\""+fileName+".xlsx\""));
+			fileName = "EstadoProductorParcela_Cliente";
+		response.setHeader("Content-Disposition", String.format("inline; filename=\"" + fileName + ".xlsx\""));
 
 		// Workbook book=WorkbookFactory.create(in);
 		Workbook book = new XSSFWorkbook();
@@ -409,7 +419,6 @@ public class procesos {
 			e.printStackTrace();
 		}
 
-		
 		Sheet sheet = book.createSheet("SAP");
 		System.out.println("..");
 		CellStyle tituloEstilo = book.createCellStyle();
@@ -441,35 +450,35 @@ public class procesos {
 		datoStyle.setBorderRight(BorderStyle.THIN);
 		datoStyle.setBorderTop(BorderStyle.THIN);
 		Iterator<especie> ff = esp.iterator();
-		boolean swTitulos=true;
+		boolean swTitulos = true;
 		int x = 0;
 		int a = 0;
-		estadoProductorNewDB dataDB=new estadoProductorNewDB();
-		String json = dataDB.getRestricionesParcelaTurnoExcel(ses.getIdTemporada(), 7, "", "",tipo, swTitulos);
+		estadoProductorNewDB dataDB = new estadoProductorNewDB();
+		String json = dataDB.getRestricionesParcelaTurnoExcel(ses.getIdTemporada(), 7, "", "", tipo, swTitulos);
 		JSONObject j = new JSONObject(json);
 		System.out.println(j);
 		JSONArray columns = j.getJSONArray("columns");
 		JSONArray data = j.getJSONArray("data");
 		int i = 1;
-		
+
 		Row fila = sheet.createRow(0);
 		for (int e = 0; e < columns.length(); ++e) {
-            String header = columns.getString(e);
-            Cell cell = fila.createCell(e);
-            cell.setCellStyle(datoStyle);
-            cell.setCellValue(header.toString().toUpperCase());
-        }
+			String header = columns.getString(e);
+			Cell cell = fila.createCell(e);
+			cell.setCellStyle(datoStyle);
+			cell.setCellValue(header.toString().toUpperCase());
+		}
 		for (int e = 0; e < data.length(); ++e) {
 			JSONArray ex = data.getJSONArray(e);
-        	Row dataRow = sheet.createRow(i);
-			for(int d = 0; d < ex.length(); d++){
+			Row dataRow = sheet.createRow(i);
+			for (int d = 0; d < ex.length(); d++) {
 				String header = String.valueOf(ex.get(d));
-	            Cell cell = dataRow.createCell(d);
-	            cell.setCellStyle(datoStyle);
-	            cell.setCellValue(header.toString().toUpperCase());
+				Cell cell = dataRow.createCell(d);
+				cell.setCellStyle(datoStyle);
+				cell.setCellValue(header.toString().toUpperCase());
 			}
-            i++;
-        }
+			i++;
+		}
 
 		UUID uuid = UUID.randomUUID();
 		String fileStr = "/tmp/__" + uuid.toString() + ".xlsx";
@@ -486,9 +495,11 @@ public class procesos {
 		file.delete();
 
 	}
+
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaExcelOld/{id}", method = { RequestMethod.GET })
-	public void exportaExcelOl(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
+	public void exportaExcelOl(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession)
+			throws Exception {
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
 			String errorMessage = "Session terminada ";
@@ -519,7 +530,7 @@ public class procesos {
 			ArrayList<filterSql> filter = new ArrayList<filterSql>();
 			esp = especieDB.getAll(filter, "idEspecie", 0, 9999);
 		} catch (Exception e) {
-			// 
+			//
 			e.printStackTrace();
 		}
 
@@ -527,90 +538,92 @@ public class procesos {
 		while (ff.hasNext()) {
 			especie es = ff.next();
 			ArrayList<String> tipoMercado = new ArrayList<String>();
-			
-				tipoMercado.add("N");
-				tipoMercado.add("Y");
-				for (String tipoM : tipoMercado) {
-					String cliente = "";
-					if (tipoM.equals("Y"))
-						cliente = " - CLIENTE";
-					
-					Sheet sheet = book.createSheet(es.getEspecie() + cliente);
-					System.out.println("..");
-					CellStyle tituloEstilo = book.createCellStyle();
-					tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
-					tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
-					Font fuenteTitulo = book.createFont();
-					fuenteTitulo.setBold(true);
-					fuenteTitulo.setFontHeightInPoints((short) 14);
-					tituloEstilo.setFont(fuenteTitulo);
 
-					CellStyle headerStyle = book.createCellStyle();
-					headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-					headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-					headerStyle.setBorderBottom(BorderStyle.THIN);
-					headerStyle.setBorderLeft(BorderStyle.THIN);
-					headerStyle.setBorderRight(BorderStyle.THIN);
-					headerStyle.setBorderTop(BorderStyle.THIN);
+			tipoMercado.add("N");
+			tipoMercado.add("Y");
+			for (String tipoM : tipoMercado) {
+				String cliente = "";
+				if (tipoM.equals("Y"))
+					cliente = " - CLIENTE";
 
-					Font font = book.createFont();
-					font.setFontName("Arial");
-					font.setBold(true);
-					font.setColor(IndexedColors.WHITE.getIndex());
-					headerStyle.setFont(font);
+				Sheet sheet = book.createSheet(es.getEspecie() + cliente);
+				System.out.println("..");
+				CellStyle tituloEstilo = book.createCellStyle();
+				tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
+				tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
+				Font fuenteTitulo = book.createFont();
+				fuenteTitulo.setBold(true);
+				fuenteTitulo.setFontHeightInPoints((short) 14);
+				tituloEstilo.setFont(fuenteTitulo);
 
-					// INGRESAMOS LA DATA DEL EXCEL
-					CellStyle datoStyle = book.createCellStyle();
-					datoStyle.setBorderBottom(BorderStyle.THIN);
-					datoStyle.setBorderLeft(BorderStyle.THIN);
-					datoStyle.setBorderRight(BorderStyle.THIN);
-					datoStyle.setBorderTop(BorderStyle.THIN);
+				CellStyle headerStyle = book.createCellStyle();
+				headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+				headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+				headerStyle.setBorderBottom(BorderStyle.THIN);
+				headerStyle.setBorderLeft(BorderStyle.THIN);
+				headerStyle.setBorderRight(BorderStyle.THIN);
+				headerStyle.setBorderTop(BorderStyle.THIN);
 
-					int i = 0;
-					int a = 0;
-					int x = 0;
-					//ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorA(ses.getIdTemporada(), es.getIdEspecie(), "", "","","", true, tipoM);
-					ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorB(ses.getIdTemporada(), es.getIdEspecie(), "", "","", true);
-					Iterator<String[]> rest = pp.iterator();
+				Font font = book.createFont();
+				font.setFontName("Arial");
+				font.setBold(true);
+				font.setColor(IndexedColors.WHITE.getIndex());
+				headerStyle.setFont(font);
 
-					while (rest.hasNext()) {
-						String[] r = rest.next();
-						sheet.autoSizeColumn((short) x);
-						Row filas = sheet.createRow(a);
+				// INGRESAMOS LA DATA DEL EXCEL
+				CellStyle datoStyle = book.createCellStyle();
+				datoStyle.setBorderBottom(BorderStyle.THIN);
+				datoStyle.setBorderLeft(BorderStyle.THIN);
+				datoStyle.setBorderRight(BorderStyle.THIN);
+				datoStyle.setBorderTop(BorderStyle.THIN);
+
+				int i = 0;
+				int a = 0;
+				int x = 0;
+				// ArrayList<String[]> pp =
+				// estadoProductorDB.getEstadoProductorA(ses.getIdTemporada(),
+				// es.getIdEspecie(), "", "","","", true, tipoM);
+				ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorB(ses.getIdTemporada(), es.getIdEspecie(),
+						"", "", "", true);
+				Iterator<String[]> rest = pp.iterator();
+
+				while (rest.hasNext()) {
+					String[] r = rest.next();
+					sheet.autoSizeColumn((short) x);
+					Row filas = sheet.createRow(a);
 //						System.out.println(es.getIdEspecie() + "-->" + r.length);
-						for (i = 0; i < r.length; i++) {
-							try {
-								Cell col = filas.createCell(i);
+					for (i = 0; i < r.length; i++) {
+						try {
+							Cell col = filas.createCell(i);
 
-								col.setCellStyle(datoStyle);
+							col.setCellStyle(datoStyle);
 
-								col.setCellValue(r[i].toString().toUpperCase());
+							col.setCellValue(r[i].toString().toUpperCase());
 
-							} catch (Exception e) {
-								
-								System.out.println(e.getMessage());
-								e.printStackTrace();
-							}
-							// System.out.println(es.getIdEspecie()+"-->"+r.length+":::"+i);
+						} catch (Exception e) {
+
+							System.out.println(e.getMessage());
+							e.printStackTrace();
 						}
-						a++;
-						x++;
+						// System.out.println(es.getIdEspecie()+"-->"+r.length+":::"+i);
 					}
+					a++;
+					x++;
+				}
 
-				} // FIN FOREACH
-			
+			} // FIN FOREACH
 
 		}
 		// FIN DE EXCEL
-		
+
 		try {
 			UUID uuid = UUID.randomUUID();
 			String fileStr = "/tmp/" + uuid.toString() + ".xlsx";
-	
+
 			FileOutputStream fileout = new FileOutputStream(fileStr);
 			book.write(fileout);
 			fileout.close();
-	
+
 			File file = new File(fileStr);
 			FileInputStream fis = new FileInputStream(file);
 			FileCopyUtils.copy(fis, response.getOutputStream());
@@ -618,7 +631,7 @@ public class procesos {
 			System.out.println(file.getAbsolutePath());
 			file.delete();
 		} catch (Exception e) {
-			
+
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
@@ -627,7 +640,8 @@ public class procesos {
 
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaExcel/{id}", method = { RequestMethod.GET })
-	public void exportaExcel(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
+	public void exportaExcel(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession)
+			throws Exception {
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
 			String errorMessage = "Session terminada ";
@@ -637,7 +651,7 @@ public class procesos {
 				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
 				outputStream.close();
 			} catch (IOException e) {
-				// 
+				//
 				e.printStackTrace();
 			}
 
@@ -659,106 +673,122 @@ public class procesos {
 			ArrayList<filterSql> filter = new ArrayList<filterSql>();
 			esp = especieDB.getAll(filter, "idEspecie", 0, 9999);
 		} catch (Exception e) {
-			// 
+			//
 			e.printStackTrace();
 		}
-		
+
 		Iterator<especie> ff = esp.iterator();
 		while (ff.hasNext()) {
 			especie es = ff.next();
 			ArrayList<String> tipoMercado = new ArrayList<String>();
-			estadoProductorNewDB dataDB=new estadoProductorNewDB();
-			String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(),es.getIdEspecie(),"", "", "","","", true);
+			estadoProductorNewDB dataDB = new estadoProductorNewDB();
+			String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(), es.getIdEspecie(), "", "", "", "", "",true);
 			System.out.println(ses.getIdTemporada());
 			JSONObject j = new JSONObject(json);
 			System.out.println(j);
 			JSONArray columns = j.getJSONArray("columns");
 			JSONArray data = j.getJSONArray("data");
-			
-				tipoMercado.add("N");
-				tipoMercado.add("Y");
-				for (String tipoM : tipoMercado) {
-					String cliente = "";
-					if (tipoM.equals("Y"))
-						cliente = " - CLIENTE";
+
+			Sheet sheet = book.createSheet(es.getEspecie());
+			System.out.println("-------------------------------------------------");
+			CellStyle tituloEstilo = book.createCellStyle();
+			tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
+			tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
+			Font fuenteTitulo = book.createFont();
+			fuenteTitulo.setBold(true);
+			fuenteTitulo.setFontHeightInPoints((short) 14);
+			tituloEstilo.setFont(fuenteTitulo);
+
+			CellStyle headerStyle = book.createCellStyle();
+			headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderBottom(BorderStyle.THIN);
+			headerStyle.setBorderLeft(BorderStyle.THIN);
+			headerStyle.setBorderRight(BorderStyle.THIN);
+			headerStyle.setBorderTop(BorderStyle.THIN);
+
+			Font font = book.createFont();
+			font.setFontName("Arial");
+			font.setBold(true);
+			font.setColor(IndexedColors.WHITE.getIndex());
+			headerStyle.setFont(font);
+
+			// INGRESAMOS LA DATA DEL EXCEL
+			CellStyle datoStyle = book.createCellStyle();
+			datoStyle.setBorderBottom(BorderStyle.THIN);
+			datoStyle.setBorderLeft(BorderStyle.THIN);
+			datoStyle.setBorderRight(BorderStyle.THIN);
+			datoStyle.setBorderTop(BorderStyle.THIN);
+
+			int i = 1;
+			int a = 0;
+			int x = 0;
+			Row fila = sheet.createRow(0);
+			for (int e = 0; e < columns.length(); ++e) {
+				String header = columns.getString(e);
+				Cell cell = fila.createCell(e);
+				cell.setCellStyle(datoStyle);
+				cell.setCellValue(header.toString().toUpperCase());
+			}
+			String espe = "";
+			for (int e = 0; e < data.length(); ++e) {
+				JSONArray ex = data.getJSONArray(e);
+				for (int d = 0; d < ex.length(); d++) {
+					if (ex.getString(d).equals(es.getPf())) {
+						espe = ex.getString(d);
+					}
+				}
+			}
+			for (int e = 0; e < data.length(); ++e) {
+				JSONArray ex = data.getJSONArray(e);
+				Row dataRow = sheet.createRow(i);
+				for (int d = 0; d < ex.length(); d++) {
+					if (ex.getString(3).toUpperCase().equals(es.getPf().toUpperCase())) {
+						String header = ex.getString(d);
+						Cell cell = dataRow.createCell(d);
+						cell.setCellStyle(datoStyle);
 					
-					Sheet sheet = book.createSheet(es.getEspecie() + cliente);
-					System.out.println("..");
-					CellStyle tituloEstilo = book.createCellStyle();
-					tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
-					tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
-					Font fuenteTitulo = book.createFont();
-					fuenteTitulo.setBold(true);
-					fuenteTitulo.setFontHeightInPoints((short) 14);
-					tituloEstilo.setFont(fuenteTitulo);
-
-					CellStyle headerStyle = book.createCellStyle();
-					headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-					headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-					headerStyle.setBorderBottom(BorderStyle.THIN);
-					headerStyle.setBorderLeft(BorderStyle.THIN);
-					headerStyle.setBorderRight(BorderStyle.THIN);
-					headerStyle.setBorderTop(BorderStyle.THIN);
-
-					Font font = book.createFont();
-					font.setFontName("Arial");
-					font.setBold(true);
-					font.setColor(IndexedColors.WHITE.getIndex());
-					headerStyle.setFont(font);
-
-					// INGRESAMOS LA DATA DEL EXCEL
-					CellStyle datoStyle = book.createCellStyle();
-					datoStyle.setBorderBottom(BorderStyle.THIN);
-					datoStyle.setBorderLeft(BorderStyle.THIN);
-					datoStyle.setBorderRight(BorderStyle.THIN);
-					datoStyle.setBorderTop(BorderStyle.THIN);
-
-					int i = 1;
-					int a = 0;
-					int x = 0;
-					Row fila = sheet.createRow(0);
-					for (int e = 0; e < columns.length(); ++e) {
-			            String header = columns.getString(e);
-			            Cell cell = fila.createCell(e);
-			            cell.setCellStyle(datoStyle);
-			            cell.setCellValue(header.toString().toUpperCase());
-			        }
-					String espe = "";
-					for (int e = 0; e < data.length(); ++e) {
-						JSONArray ex = data.getJSONArray(e);
-						for(int d = 0; d < ex.length(); d++){
-							if(ex.getString(d).equals(es.getPf())){
-								espe = ex.getString(d);
-							}
-						}
-			        }
-					for (int e = 0; e < data.length(); ++e) {
-						JSONArray ex = data.getJSONArray(e);
-			        	Row dataRow = sheet.createRow(i);
-						for(int d = 0; d < ex.length(); d++){
-							if(ex.getString(2).toUpperCase().equals(es.getPf().toUpperCase())){
-								String header = ex.getString(d);
-					            Cell cell = dataRow.createCell(d);
-					            cell.setCellStyle(datoStyle);
-					            cell.setCellValue(header.toString().toUpperCase());
-							}
-						}
-			            i++;
-			        }
-				} // FIN FOREACH
-			
-
+						if (header.toString().toUpperCase().equals("SI."))
+							cell.setCellValue("LC");
+						else
+							cell.setCellValue(header.toString().toUpperCase());	
+					}
+				}
+				i++;
+			}
+			  SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
+			//generamos seteo de Hoja
+			 CellRangeAddress[] regiones = {
+			            CellRangeAddress.valueOf("I2:DA500")
+			        };
+			 ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
+			 IconMultiStateFormatting iconFmt = rule.getMultiStateFormatting();
+			 iconFmt.setIconSet(IconSet.GREY_3_ARROWS);
+			 iconFmt.setIconOnly(true);
+		        
+		        iconFmt.setIconOnly(true);
+		        
+		        ConditionalFormattingThreshold[] thresholds = iconFmt.getThresholds();
+		        
+		        // threshold[0] -> Valor >= 1 => ya no muestra la cruz roja sino algo mejor
+		        thresholds[0].setRangeType(RangeType.NUMBER);
+		        thresholds[0].setValue(1.0);
+		        
+		        // threshold[1] -> Valor >= 2 => check verde
+		        thresholds[1].setRangeType(RangeType.NUMBER);
+		        thresholds[1].setValue(2.0);
 		}
 		// FIN DE EXCEL
 		
+
 		try {
 			UUID uuid = UUID.randomUUID();
 			String fileStr = "/tmp/" + uuid.toString() + ".xlsx";
-	
+
 			FileOutputStream fileout = new FileOutputStream(fileStr);
 			book.write(fileout);
 			fileout.close();
-	
+
 			File file = new File(fileStr);
 			FileInputStream fis = new FileInputStream(file);
 			FileCopyUtils.copy(fis, response.getOutputStream());
@@ -774,7 +804,8 @@ public class procesos {
 	}
 
 	@RequestMapping(value = "/caExcel/{id}", method = { RequestMethod.GET })
-	public void getExcel(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
+	public void getExcel(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession)
+			throws Exception {
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
 			String errorMessage = "Session terminada ";
@@ -784,7 +815,7 @@ public class procesos {
 				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
 				outputStream.close();
 			} catch (IOException e) {
-				// 
+				//
 				e.printStackTrace();
 			}
 
@@ -796,26 +827,24 @@ public class procesos {
 		//
 
 		/*
-		 * "Content-Disposition : attachment" will be directly download, may provide save as popup, based on your browser setting
+		 * "Content-Disposition : attachment" will be directly download, may provide
+		 * save as popup, based on your browser setting
 		 */
 		// response.setHeader("Content-Disposition", String.format("attachment;
 		// filename=\"%s\"", file.getName()));
 
 		// response.setContentLength((int) file.length());
-		mail archivos = mailDB.getMailFile(id);
-		InputStream inputStream = archivos.getFile();
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("inline; filename=\"" + archivos.getArchivo() + "\""));
+		
 
 		// Copy bytes from source to destination(outputstream in this example),
 		// closes both streams.
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
-		inputStream.close();
+		
 
 	}
 
 	@RequestMapping(value = "/caData/{id}", method = { RequestMethod.GET })
-	public void getData(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
+	public void getData(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession)
+			throws Exception {
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
 			String errorMessage = "Session terminada ";
@@ -825,26 +854,35 @@ public class procesos {
 				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
 				outputStream.close();
 			} catch (IOException e) {
-				// 
+				//
 				e.printStackTrace();
 			}
 
 			return;
 		}
 		/*
-		 * mail archivos = mailDB.getMailFile(id); InputStream inputStream = archivos.getFile();
+		 * mail archivos = mailDB.getMailFile(id); InputStream inputStream =
+		 * archivos.getFile();
 		 * 
-		 * Workbook workbook = new XSSFWorkbook(inputStream); Sheet datatypeSheet = workbook.getSheetAt(0); Iterator<Row> iterator = datatypeSheet.iterator(); String errorMessage =
-		 * "<table border=1> "; errorMessage +=
-		 * "<tr><td>especie</td><td>codigo</td><td>productor</td><td>fecha ingreso</td><td>fecha muestra</td><td>fecha emision</td><td>resultado</td> </tr>" ; while (iterator.hasNext()) {
-		 * errorMessage += "<tr> "; Row currentRow = iterator.next(); Iterator<Cell> cellIterator = currentRow.iterator();
+		 * Workbook workbook = new XSSFWorkbook(inputStream); Sheet datatypeSheet =
+		 * workbook.getSheetAt(0); Iterator<Row> iterator = datatypeSheet.iterator();
+		 * String errorMessage = "<table border=1> "; errorMessage +=
+		 * "<tr><td>especie</td><td>codigo</td><td>productor</td><td>fecha ingreso</td><td>fecha muestra</td><td>fecha emision</td><td>resultado</td> </tr>"
+		 * ; while (iterator.hasNext()) { errorMessage += "<tr> "; Row currentRow =
+		 * iterator.next(); Iterator<Cell> cellIterator = currentRow.iterator();
 		 * 
-		 * errorMessage += "<td>"+currentRow.getCell(5)+"</td>"; errorMessage += "<td>"+currentRow.getCell(8)+"</td>"; errorMessage += "<td>"+currentRow.getCell(9)+"</td>"; errorMessage +=
-		 * "<td>"+currentRow.getCell(10)+"</td>"; errorMessage += "<td>"+currentRow.getCell(11)+"</td>"; errorMessage += "<td>"+currentRow.getCell(12)+"</td>"; errorMessage +=
-		 * "<td>"+currentRow.getCell(19)+"</td>"; // errorMessage += "<td>"+currentRow.getCell(9)+"</td>";
+		 * errorMessage += "<td>"+currentRow.getCell(5)+"</td>"; errorMessage +=
+		 * "<td>"+currentRow.getCell(8)+"</td>"; errorMessage +=
+		 * "<td>"+currentRow.getCell(9)+"</td>"; errorMessage +=
+		 * "<td>"+currentRow.getCell(10)+"</td>"; errorMessage +=
+		 * "<td>"+currentRow.getCell(11)+"</td>"; errorMessage +=
+		 * "<td>"+currentRow.getCell(12)+"</td>"; errorMessage +=
+		 * "<td>"+currentRow.getCell(19)+"</td>"; // errorMessage +=
+		 * "<td>"+currentRow.getCell(9)+"</td>";
 		 * 
 		 * 
-		 * errorMessage += "</tr> "; } errorMessage += "</table> "; System.out.println();
+		 * errorMessage += "</tr> "; } errorMessage += "</table> ";
+		 * System.out.println();
 		 * 
 		 * 
 		 */
@@ -856,15 +894,13 @@ public class procesos {
 			outputStream2.write(errorMessage.getBytes(Charset.forName("iso-8859-1")));
 			outputStream2.close();
 		} catch (IOException e) {
-			// 
+			//
 			e.printStackTrace();
 		}
 
 		return;
 
 	}
-
-	
 
 	@RequestMapping("/adm/proceso_cargaManual")
 	public ModelAndView estadoProductorContent(Model model, HttpSession httpSession) {
@@ -877,7 +913,7 @@ public class procesos {
 
 			mer = DiccionarioDB.getSelect();
 		} catch (Exception e) {
-			// 
+			//
 			e.printStackTrace();
 		}
 
@@ -899,7 +935,7 @@ public class procesos {
 
 			mer = DiccionarioDB.getSelect();
 		} catch (Exception e) {
-			// 
+			//
 			e.printStackTrace();
 		}
 
@@ -910,380 +946,4 @@ public class procesos {
 		return new ModelAndView("content/proceso/cargaManual2");
 	}
 
-	@RequestMapping(value = "/exportaExcelDB/{id}", method = { RequestMethod.GET })
-	public void exportaExcelDB(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
-		session ses = new session(httpSession);
-		if (ses.isValid()) {
-			String errorMessage = "Session terminada ";
-			OutputStream outputStream;
-			try {
-				outputStream = response.getOutputStream();
-				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
-				outputStream.close();
-			} catch (IOException e) {
-				// 
-				e.printStackTrace();
-			}
-
-			return;
-		}
-
-		String mimeType = "application/octet-stream";
-		System.out.println("mimetype : " + mimeType);
-		//
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("inline; filename=\"EstadoProductorTurno.xlsx\""));
-
-		// Workbook book=WorkbookFactory.create(in);
-		Workbook book = new XSSFWorkbook();
-		System.out.println("comienzo excel");
-
-		Sheet sheet = book.createSheet("DATA");
-		System.out.println("..");
-		CellStyle tituloEstilo = book.createCellStyle();
-		tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
-		tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
-		Font fuenteTitulo = book.createFont();
-		fuenteTitulo.setBold(true);
-		fuenteTitulo.setFontHeightInPoints((short) 14);
-		tituloEstilo.setFont(fuenteTitulo);
-
-		Row filaTitulo = sheet.createRow(0);
-		Cell celdaTitulo = filaTitulo.createCell(0);
-		celdaTitulo.setCellStyle(tituloEstilo);
-		celdaTitulo.setCellValue("DB INFORMES");
-		sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 15));
-
-		mail dd = mailDB.getMailMax();
-		Row filaTitulo2 = sheet.createRow(2);
-		Cell celdaTitulo2 = filaTitulo2.createCell(0);
-		// celdaTitulo2.setCellStyle(tituloEstilo2);
-		celdaTitulo2.setCellValue("Fecha " + dd.getFechaCarga());
-
-		CellStyle headerStyle = book.createCellStyle();
-		headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		headerStyle.setBorderBottom(BorderStyle.THIN);
-		headerStyle.setBorderLeft(BorderStyle.THIN);
-		headerStyle.setBorderRight(BorderStyle.THIN);
-		headerStyle.setBorderTop(BorderStyle.THIN);
-
-		Font font = book.createFont();
-		font.setFontName("Arial");
-		font.setBold(true);
-		font.setColor(IndexedColors.WHITE.getIndex());
-		headerStyle.setFont(font);
-
-		Row filaEncabezado = sheet.createRow(3);
-
-		Cell celdaEncabezado0 = filaEncabezado.createCell(0);
-		celdaEncabezado0.setCellStyle(headerStyle);
-		celdaEncabezado0.setCellValue("COD. PRODUCTOR");
-		
-		Cell celdaEncabezado8 = filaEncabezado.createCell(1);
-		celdaEncabezado8.setCellStyle(headerStyle);
-		celdaEncabezado8.setCellValue("COD. PARCELA");
-		
-		Cell celdaEncabezado9 = filaEncabezado.createCell(2);
-		celdaEncabezado9.setCellStyle(headerStyle);
-		celdaEncabezado9.setCellValue("COD. TURNO");
-
-		Cell celdaEncabezado1 = filaEncabezado.createCell(3);
-		celdaEncabezado1.setCellStyle(headerStyle);
-		celdaEncabezado1.setCellValue("PRODUCTOR");
-
-		Cell celdaEncabezado10 = filaEncabezado.createCell(4);
-		celdaEncabezado10.setCellStyle(headerStyle);
-		celdaEncabezado10.setCellValue("FECHA INGRESO");
-		
-		Cell celdaEncabezado11 = filaEncabezado.createCell(5);
-		celdaEncabezado11.setCellStyle(headerStyle);
-		celdaEncabezado11.setCellValue("FECHA CARGA");
-
-		Cell celdaEncabezado2 = filaEncabezado.createCell(6);
-		celdaEncabezado2.setCellStyle(headerStyle);
-		celdaEncabezado2.setCellValue("INGR. ACTIVO");
-
-		Cell celdaEncabezado3 = filaEncabezado.createCell(7);
-		celdaEncabezado3.setCellStyle(headerStyle);
-		celdaEncabezado3.setCellValue("RESULTADO");
-
-		Cell celdaEncabezado4 = filaEncabezado.createCell(8);
-		celdaEncabezado4.setCellStyle(headerStyle);
-		celdaEncabezado4.setCellValue("VARIEDAD");
-
-		Cell celdaEncabezado5 = filaEncabezado.createCell(9);
-		celdaEncabezado5.setCellStyle(headerStyle);
-		celdaEncabezado5.setCellValue("ESPECIE");
-
-		Cell celdaEncabezado6 = filaEncabezado.createCell(10);
-		celdaEncabezado6.setCellStyle(headerStyle);
-		celdaEncabezado6.setCellValue("MUESTRA");
-
-		Cell celdaEncabezado7 = filaEncabezado.createCell(11);
-		celdaEncabezado7.setCellStyle(headerStyle);
-		celdaEncabezado7.setCellValue("AUTOMATICA");
-
-		sheet.setAutoFilter(CellRangeAddress.valueOf("A4:I4"));
-
-		// INGRESAMOS LA DATA DEL EXCEL
-		CellStyle datoStyle = book.createCellStyle();
-		datoStyle.setBorderBottom(BorderStyle.THIN);
-		datoStyle.setBorderLeft(BorderStyle.THIN);
-		datoStyle.setBorderRight(BorderStyle.THIN);
-		datoStyle.setBorderTop(BorderStyle.THIN);
-
-		CellStyle siStyle = book.createCellStyle();
-		siStyle.setBorderBottom(BorderStyle.THIN);
-		siStyle.setBorderLeft(BorderStyle.THIN);
-		siStyle.setBorderRight(BorderStyle.THIN);
-		siStyle.setBorderTop(BorderStyle.THIN);
-
-		Font font2 = book.createFont();
-		font2.setFontName("Arial");
-
-		font2.setColor(IndexedColors.BLUE.getIndex());
-		siStyle.setFont(font2);
-
-		CellStyle noStyle = book.createCellStyle();
-		noStyle.setBorderBottom(BorderStyle.THIN);
-		noStyle.setBorderLeft(BorderStyle.THIN);
-		noStyle.setBorderRight(BorderStyle.THIN);
-		noStyle.setBorderTop(BorderStyle.THIN);
-
-		Font font3 = book.createFont();
-		font3.setFontName("Arial");
-
-		font3.setColor(IndexedColors.RED.getIndex());
-		noStyle.setFont(font3);
-		ArrayList<filterSql> filter = new ArrayList<filterSql>();
-		ArrayList<restriccion> datas;
-		try {
-			datas = estadoProductorDB.getAllRest(filter, "", 0, 99999);
-			Iterator<restriccion> f = datas.iterator();
-
-			int a = 4;
-			int x = 0;
-			while (f.hasNext()) {
-				restriccion row = f.next();
-				String[] r = { row.getCodProductor(), row.getCodParcela(), row.getCodTurno() ,row.getNomProductor(), row.getFecha(),row.getFechaCarga() ,row.getCodProducto(), row.getLimite(), (row.getVariedad() + "").replace("null", ""), row.getEspecie(), row.getnMuestra(),
-						row.getAutomatica() };
-
-				sheet.autoSizeColumn((short) x);
-				Row filas = sheet.createRow(a);
-				// System.out.println(es.getIdEspecie()+"-->"+r.length);
-				int i = 0;
-				for (i = 0; i < r.length; i++) {
-					Cell col = filas.createCell(i);
-
-					col.setCellStyle(datoStyle);
-					col.setCellValue(r[i].toString());
-
-					// System.out.println(a+"-->"+r[i].toString()+":::"+i);
-				}
-				a++;
-				x++;
-
-			}
-
-		} catch (Exception e) {
-			// 
-			e.printStackTrace();
-		}
-		// FIN DE EXCEL
-
-		FileOutputStream fileout = new FileOutputStream("/eDte/hf/Reporte.xlsx");
-		book.write(fileout);
-		fileout.close();
-
-		File file = new File("/eDte/hf/Reporte.xlsx");
-		FileInputStream fis = new FileInputStream(file);
-		FileCopyUtils.copy(fis, response.getOutputStream());
-		fis.close();
-
-	}
-
-	@RequestMapping(value = "/exportaExcelProduccion/{id}", method = { RequestMethod.GET })
-	public void exportaExcelProduccion(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession) throws Exception {
-		session ses = new session(httpSession);
-		if (ses.isValid()) {
-			String errorMessage = "Session terminada ";
-			OutputStream outputStream;
-			try {
-				outputStream = response.getOutputStream();
-				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
-				outputStream.close();
-			} catch (IOException e) {
-				// 
-				e.printStackTrace();
-			}
-
-			return;
-		}
-
-		String mimeType = "application/octet-stream";
-		System.out.println("mimetype : " + mimeType);
-		//
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("inline; filename=\"estado_productor_producion.xlsx\""));
-
-		// Workbook book=WorkbookFactory.create(in);
-		Workbook book = new XSSFWorkbook();
-		System.out.println("comienzo excel");
-
-		ArrayList<especie> esp = null;
-		try {
-			ArrayList<filterSql> filter = new ArrayList<filterSql>();
-			esp = especieDB.getAll(filter, "idEspecie", 0, 9999);
-		} catch (Exception e) {
-			// 
-			e.printStackTrace();
-		}
-
-		Iterator<especie> ff = esp.iterator();
-		while (ff.hasNext()) {
-			especie es = ff.next();
-
-			Sheet sheet = book.createSheet(es.getEspecie());
-			System.out.println("..");
-			CellStyle tituloEstilo = book.createCellStyle();
-			tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
-			tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
-			Font fuenteTitulo = book.createFont();
-			fuenteTitulo.setBold(true);
-			fuenteTitulo.setFontHeightInPoints((short) 14);
-			tituloEstilo.setFont(fuenteTitulo);
-
-			Row filaTitulo = sheet.createRow(0);
-			Cell celdaTitulo = filaTitulo.createCell(0);
-			celdaTitulo.setCellStyle(tituloEstilo);
-			celdaTitulo.setCellValue("Habilitación ".toUpperCase() + es.getEspecie());
-			sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 15));
-
-			mail dd = mailDB.getMailMax();
-			Row filaTitulo2 = sheet.createRow(2);
-			Cell celdaTitulo2 = filaTitulo2.createCell(0);
-			// celdaTitulo2.setCellStyle(tituloEstilo2);
-			celdaTitulo2.setCellValue("Fecha " + dd.getFechaCarga());
-
-			CellStyle headerStyle = book.createCellStyle();
-			headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderBottom(BorderStyle.THIN);
-			headerStyle.setBorderLeft(BorderStyle.THIN);
-			headerStyle.setBorderRight(BorderStyle.THIN);
-			headerStyle.setBorderTop(BorderStyle.THIN);
-
-			Font font = book.createFont();
-			font.setFontName("Arial");
-			font.setBold(true);
-			font.setColor(IndexedColors.WHITE.getIndex());
-			headerStyle.setFont(font);
-
-			Row filaEncabezado = sheet.createRow(3);
-
-			Cell celdaEncabezado0 = filaEncabezado.createCell(0);
-			celdaEncabezado0.setCellStyle(headerStyle);
-			celdaEncabezado0.setCellValue("COD. PRODUCTOR");
-
-			Cell celdaEncabezado1 = filaEncabezado.createCell(1);
-			celdaEncabezado1.setCellStyle(headerStyle);
-			celdaEncabezado1.setCellValue("PRODUCTOR");
-
-			Cell celdaEncabezado2 = filaEncabezado.createCell(2);
-			celdaEncabezado2.setCellStyle(headerStyle);
-			celdaEncabezado2.setCellValue("GGN");
-
-			ArrayList<Mercado> mer = null;
-			try {
-				ArrayList<filterSql> filter = new ArrayList<filterSql>();
-				mer = MercadoDB.getMercado(filter, "idMercado", 0, 9999);
-			} catch (Exception e) {
-				// 
-				e.printStackTrace();
-			}
-
-			Iterator<Mercado> f = mer.iterator();
-			int i = 3;
-			while (f.hasNext()) {
-				Mercado r = f.next();
-				Cell celdaEncabezado = filaEncabezado.createCell(i);
-				celdaEncabezado.setCellStyle(headerStyle);
-				celdaEncabezado.setCellValue(r.getMercado().toUpperCase());
-				++i;
-			}
-
-			// INGRESAMOS LA DATA DEL EXCEL
-			CellStyle datoStyle = book.createCellStyle();
-			datoStyle.setBorderBottom(BorderStyle.THIN);
-			datoStyle.setBorderLeft(BorderStyle.THIN);
-			datoStyle.setBorderRight(BorderStyle.THIN);
-			datoStyle.setBorderTop(BorderStyle.THIN);
-
-			CellStyle siStyle = book.createCellStyle();
-			siStyle.setBorderBottom(BorderStyle.THIN);
-			siStyle.setBorderLeft(BorderStyle.THIN);
-			siStyle.setBorderRight(BorderStyle.THIN);
-			siStyle.setBorderTop(BorderStyle.THIN);
-
-			Font font2 = book.createFont();
-			font2.setFontName("Arial");
-
-			font2.setColor(IndexedColors.BLUE.getIndex());
-			siStyle.setFont(font2);
-
-			CellStyle noStyle = book.createCellStyle();
-			noStyle.setBorderBottom(BorderStyle.THIN);
-			noStyle.setBorderLeft(BorderStyle.THIN);
-			noStyle.setBorderRight(BorderStyle.THIN);
-			noStyle.setBorderTop(BorderStyle.THIN);
-
-			Font font3 = book.createFont();
-			font3.setFontName("Arial");
-
-			font3.setColor(IndexedColors.RED.getIndex());
-			noStyle.setFont(font3);
-
-			int a = 4;
-			int x = 0;
-			ArrayList<String[]> pp = estadoProductorDB.getEstadoProductorPro(ses.getIdTemporada(), es.getIdEspecie(), "", "");
-			Iterator<String[]> rest = pp.iterator();
-
-			while (rest.hasNext()) {
-				String[] r = rest.next();
-				sheet.autoSizeColumn((short) x);
-				Row filas = sheet.createRow(a);
-				System.out.println(es.getIdEspecie() + "-->" + r.length);
-				for (i = 0; i < r.length; i++) {
-					Cell col = filas.createCell(i);
-
-					if (r[i].toString().equals("Y")) {
-						col.setCellStyle(siStyle);
-						col.setCellValue("SI");
-					} else if (r[i].toString().equals("N")) {
-						col.setCellStyle(noStyle);
-						col.setCellValue("NO");
-					} else {
-						col.setCellStyle(datoStyle);
-						col.setCellValue(r[i].toString());
-					}
-
-					System.out.println(es.getIdEspecie() + "-->" + r.length + ":::" + i);
-				}
-				a++;
-				x++;
-			}
-
-		}
-		// FIN DE EXCEL
-
-		FileOutputStream fileout = new FileOutputStream("/eDte/hf/Reporte.xlsx");
-		book.write(fileout);
-		fileout.close();
-
-		File file = new File("/eDte/hf/Reporte.xlsx");
-		FileInputStream fis = new FileInputStream(file);
-		FileCopyUtils.copy(fis, response.getOutputStream());
-		fis.close();
-	}
 }

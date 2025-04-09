@@ -282,7 +282,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Registro de nuevo Analisis</h4>
+                <h4 class="modal-title">Registro de Analisis Manual</h4>
             </div>
             <div class="modal-body">
                 <div class="scroller" style="height:400px; " data-always-visible="1" data-rail-visible1="1">
@@ -342,7 +342,7 @@
 									<div class="col-md-3">
 										<div class="form-group">
 											<label class="control-label">Campo</label> 
-												<select name="campoUpdate" class="campo form-control" id="campoUpdate">
+												<select name="campoUpdate" class="campoUpdate form-control" id="campoUpdate">
                                        		<option value="">Seleccionar</option>
                                       </select>
 
@@ -414,7 +414,7 @@
 					</div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn dark btn-outline">Cancelar</button>
-                <button type="button" class="btn green" onclick='javascript: actualizar();'>Actualizar</button>
+              <!--  <button type="button" class="btn green" onclick='javascript: actualizar();'>Actualizar</button> --> 
             </div>
         </div>
         </div>

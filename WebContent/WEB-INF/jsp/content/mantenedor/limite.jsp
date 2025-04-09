@@ -36,7 +36,7 @@
 							<th width="10%">Especie</th>
 							<th width="10%">LMR</th>
 							<th width="10%">Ingr. Activo</th>
-							<th width="10%">Tipo</th>
+							
 							<th width="10%">Fuente</th>
 							<th width="10%">Creacion</th>
 							<th width="10%">Modificación</th>
@@ -47,7 +47,7 @@
 							<td><select name="vw_l.idEspecie" class="form-control form-filter input-sm especies"><option value="">Seleccionar</option></select></td>
 							<td>&nbsp;</td>
 							<td><select name="vw_l.codProducto" class="form-control form-filter input-sm productos"><option value="">Seleccionar</option></select></td>
-							<td><select name="vw_l.idTipoProducto" class="form-control form-filter input-sm tiposProductos"><option value="">Seleccionar</option></select></td>
+							
 							<td><select name="vw_l.idFuente" class="form-control form-filter input-sm fuentes"><option value="">Seleccionar</option></select></td>
 							<td>
 								<div class="input-group date date-picker margin-bottom-5"

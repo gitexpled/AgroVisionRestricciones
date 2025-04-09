@@ -1,17 +1,11 @@
 package lib.data.json.informes;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -22,41 +16,33 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lib.data.json.dataTable;
-import lib.db.CertificacionDB;
+
 import lib.db.MercadoDB;
-import lib.db.ProductorCertificacionDB;
 import lib.db.ProductorDB;
 import lib.db.TemporadaDB;
-import lib.db.bloqueadoDB;
-import lib.db.bloqueadoOpDB;
+
 import lib.db.especieDB;
 import lib.db.estadoProductorDB;
 import lib.db.estadoProductorNewDB;
 import lib.db.informesDB;
 import lib.db.jerarquiaDB;
-import lib.db.mailDB;
+
 import lib.sap.Sync;
 import lib.security.session;
 import lib.struc.Mercado;
 import lib.struc.Productor;
-import lib.struc.ProductorCertificacion;
-import lib.struc.bloqueo;
+
 import lib.struc.especie;
 import lib.struc.filterSql;
-import lib.struc.mail;
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+
 
 @Controller
 public class estadoProductorJson {
@@ -94,6 +80,7 @@ public class estadoProductorJson {
 		TemporadaDB temp=new TemporadaDB();
 		int idTemporada=temp.getMaxTemprada(espe.getPf());
 		Mercado m =MercadoDB.getMercadoByName(mercado);
+		variedad=variedad.replace("@", "'");
 		html+="<table  width='65%'><tr><td width='70%' valign='top'>";
 		html+="<b style='font-size:18px'>"+productor+": "+p.getNombre() +"</b>";
 		html+="<table>";
@@ -148,7 +135,7 @@ public class estadoProductorJson {
 		
 		estadoProductorNewDB dataDB=new estadoProductorNewDB();
 		exporta=dataDB.getEstadoProductor(idTemporada,espe.getIdEspecie(),variedad.trim(),mercado,productor,etapa,campo,turno);
-		if (exporta.equals("SI"))
+		if (exporta.equals("SI") || exporta.equals("SI."))
 			html+="<tr><td>Habilitado</td><td bgcolor='green' align='center'>SI</td></tr>";
 		else
 			html+="<tr><td>Habilitado</td><td bgcolor='red' align='center'>NO</td></tr>";
@@ -158,6 +145,24 @@ public class estadoProductorJson {
 		
 		html+="</table>";
 		html+="</td></tr></table><br><br><br>";
+		
+		ArrayList<ArrayList<String>> habilitacionComercial= dataDB.getHabilitadoComercial(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, turno);
+		
+		if (!habilitacionComercial.isEmpty())
+			html+="<b>Habilitacion Comercial</b><br>";
+		
+		ArrayList<ArrayList<String>> habilitacionManual= dataDB.getHabilitadoManual(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, turno);
+		
+		if (!habilitacionManual.isEmpty())
+			html+="<b>Habilitacion Manual</b><br>";
+		
+		
+		ArrayList<ArrayList<String>> bkCLP= dataDB.getBloqueoClp(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, turno);
+		
+		if (!bkCLP.isEmpty())
+			html+="<b>Bloqueado CLP</b><br>";
+		
+		
 		
 		ArrayList<ArrayList<String>> parcela= dataDB.getBloackParcela(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, turno);
 		
@@ -235,6 +240,10 @@ public class estadoProductorJson {
 		int idTemporada=temp.getMaxTemprada(espe.getPf());
 		
 		Mercado m =MercadoDB.getMercadoByName(mercado);
+		
+		variedad=variedad.replace("@", "'");
+		
+		
 		html+="<table  width='65%'><tr><td width='70%' valign='top'>";
 		html+="<b style='font-size:18px'>"+productor+": "+p.getNombre() +"</b>";
 		html+="<table>";
@@ -284,7 +293,7 @@ public class estadoProductorJson {
 		estadoProductorNewDB dataDB=new estadoProductorNewDB();
 		
 		exporta=dataDB.getEstadoProductor(idTemporada,espe.getIdEspecie(),variedad.trim(),m.getMercado(),productor,etapa, campo,"");
-		if (exporta.equals("SI"))
+		if (exporta.equals("SI") || exporta.equals("SI."))
 			html+="<tr><td>Habilitado</td><td bgcolor='green' align='center'>SI</td></tr>";
 		else
 			html+="<tr><td>Habilitado</td><td bgcolor='red' align='center'>NO</td></tr>";
@@ -294,6 +303,26 @@ public class estadoProductorJson {
 		
 		html+="</table>";
 		html+="</td></tr></table><br><br><br>";
+		
+		
+		ArrayList<ArrayList<String>> habilitacionComercial= dataDB.getHabilitadoComercial(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, "");
+		
+		if (!habilitacionComercial.isEmpty())
+			html+="<b>Habilitacion Comercial</b><br>";
+		
+		
+		ArrayList<ArrayList<String>> habilitacionManual= dataDB.getHabilitadoManual(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, "");
+		
+		if (!habilitacionManual.isEmpty())
+			html+="<b>Habilitacion Manual</b><br>";
+		
+		
+		ArrayList<ArrayList<String>> bkCLP= dataDB.getBloqueoClp(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, "");
+		
+		if (!bkCLP.isEmpty())
+			html+="<b>Bloqueado CLP</b><br>";
+		
+		
 		
 		ArrayList<ArrayList<String>> parcela= dataDB.getBloackParcela(idTemporada, espe.getIdEspecie(), variedad.trim(), mercado, productor, etapa, campo, "");
 		
@@ -360,8 +389,8 @@ public class estadoProductorJson {
 		return data;
 	}
 
-	@RequestMapping(value = "/estadoProductor/view", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody dataTable view(HttpServletRequest request,HttpSession httpSession)  {
+	@RequestMapping(value = "/estadoProductor/view/{especie}", method = { RequestMethod.POST, RequestMethod.GET })
+	public @ResponseBody dataTable view(HttpServletRequest request,@PathVariable("especie") String idCultivo,HttpSession httpSession)  {
 	
 		dataTable data = new dataTable();
 		
@@ -373,6 +402,9 @@ public class estadoProductorJson {
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
 		int idEspecie=7;
+		if (!idCultivo.isEmpty())
+			idEspecie=Integer.parseInt(idCultivo);
+		
 		String productor = "";
 		
 		String etapa = "";
@@ -385,7 +417,7 @@ public class estadoProductorJson {
 			if (key.startsWith("vw_")) {
 				String[] vals = parameters.get(key);
 				for (String val : vals) {
-				//	System.out.println(key+" -> " + val);
+					System.out.println(key+" -> " + val);
 					filterSql fil = new filterSql();
 					fil.setCampo(key.substring(3));
 					fil.setValue(val);
@@ -464,8 +496,8 @@ public class estadoProductorJson {
 
 	}
 	
-	@RequestMapping(value = "/estadoProductor/view2", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody dataTable view2(HttpServletRequest request,HttpSession httpSession)  {
+	@RequestMapping(value = "/estadoProductor/view2/{especie}", method = { RequestMethod.POST, RequestMethod.GET })
+	public @ResponseBody dataTable view2(HttpServletRequest request,@PathVariable("especie") String idCultivo,HttpSession httpSession)  {
 	
 		dataTable data = new dataTable();
 		
@@ -478,6 +510,8 @@ public class estadoProductorJson {
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
 		int idEspecie=7;
+		if (!idCultivo.isEmpty())
+			idEspecie=Integer.parseInt(idCultivo);
 		String productor = "";
 		String etapa = "";
 		String campo = "";

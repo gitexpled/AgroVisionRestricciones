@@ -30,7 +30,7 @@ import lib.struc.mesajesJson;
 public class FuenteJson {
 
 	@RequestMapping(value = "/fuente/view", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody dataTable getShopInJSON(HttpServletRequest request,HttpSession httpSession)  {
+	public @ResponseBody dataTable view(HttpServletRequest request,HttpSession httpSession)  {
 		
 		session ses = new session(httpSession);
 		dataTable data = new dataTable();
@@ -40,6 +40,33 @@ public class FuenteJson {
 			data.init();
 			return data;
 		}
+	
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
+
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "nombre";break;
+		case "1":colum = "nombre";break;
+	
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
@@ -68,7 +95,7 @@ public class FuenteJson {
 
 		ArrayList<Fuente> datas;
 		try {
-			datas = FuenteDB.getFuente(filter, "", start, length);
+			datas = FuenteDB.getFuente(filter, order, start, length);
 
 			Iterator<Fuente> f = datas.iterator();
 			data.setRecordsFiltered(FuenteDB.getFuenteAll(filter));
@@ -128,7 +155,9 @@ public class FuenteJson {
 			fuentes = null;
 			return fuentes;
 		}
+		
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
+		
 		fuentes = FuenteDB.getFuente(filter, "", 0, 1000);
 		return fuentes;
 	}

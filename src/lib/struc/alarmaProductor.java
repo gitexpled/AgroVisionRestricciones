@@ -8,9 +8,12 @@ public class alarmaProductor {
 	private String codParcelaNew;
 	private String codTurno;
 	private String codTurnoNew;
+	private String codCampo;
+	private String codCampoNew;
 	private String idVariedad;
 	private String idVariedadNew;
 	private String proyecto;
+	private String especie;
 	private String keyID;
 	private int cantidad;
 	public String getCodProductor() {
@@ -79,6 +82,24 @@ public class alarmaProductor {
 	}
 	public void setKeyID(String keyID) {
 		this.keyID = keyID;
+	}
+	public String getCodCampo() {
+		return codCampo;
+	}
+	public void setCodCampo(String codCampo) {
+		this.codCampo = codCampo;
+	}
+	public String getCodCampoNew() {
+		return codCampoNew;
+	}
+	public void setCodCampoNew(String codCampoNew) {
+		this.codCampoNew = codCampoNew;
+	}
+	public String getEspecie() {
+		return especie;
+	}
+	public void setEspecie(String especie) {
+		this.especie = especie;
 	}
 	
 	

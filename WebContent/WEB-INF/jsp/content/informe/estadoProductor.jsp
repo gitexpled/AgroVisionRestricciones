@@ -16,21 +16,21 @@
 					
 				</ul>
 			</div>
-			<div class="btn-group" style="float: right;">
+		<!-- 	<div class="btn-group" style="float: right;">
 				<a class="btn red btn-outline btn-circle" onclick="syncDatos()"> Sync Datos </a>
-			</div>
-			<div class="btn-group" style="float: right;">
+			</div> -->
+		 	<div class="btn-group" style="float: right;">
 				<a class="btn red btn-outline btn-circle" href="javascript:;"
 					data-toggle="dropdown"> <i class="fa fa-share"></i> <span
 					class="hidden-xs">Sync SAP </span> <i class="fa fa-angle-down"></i>
 				</a>
 				<ul class="dropdown-menu pull-right">
-					<li><a href="/AgroVisionRestricciones/json/SyncSAP/1" target="_blank">MERCADO</a></li>
-					<li><a href="/AgroVisionRestricciones/json/SyncSAP/2" target="_blank">CLIENTE</a></li>
+					<li><a href="/AgroVisionRestricciones/json/SyncSAP/1" target="_blank">ENVIO SAP</a></li>
+					<!--   <li><a href="/AgroVisionRestricciones/json/SyncSAP/2" target="_blank">CLIENTE</a></li>-->
 					
 				</ul>
 			</div>
-		</div>
+		</div> 
 
 		<div class="portlet-body">
 			<div class="table-container">
@@ -58,13 +58,14 @@
 							<th width="15%">Campo</th>
 							<th width="15%">Turno</th>
 							<th width="15%">Variedad</th>
+							<th width="5%">CLP</th>
 							
 							<c:forEach var="r" items="${th}">
 								<th>${r.mercado}</th>
 							</c:forEach>
 							<!-- ${thMercado} -->
 
-							<th width="120px">Actions</th>
+							
 						</tr>
 						<tr role="row" class="filter" id="filtroMVL">
 						
@@ -83,11 +84,12 @@
 								</div></td>
 							<td></td>
 							<td></td>
-							<td><input  type="text" class="form-control form-filter2 input-sm" name="vw_productor" style="width: 50px"  id="vw_productor"></td>
+							<td></td>
 							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_etapa" style="width: 50px"  id="vw_etapa"></td>
 							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_campo"  style="width: 50px" id="vw_campo"></td>
 							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_turno"  style="width: 50px" id="vw_turno"></td>
-							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_variedad"  style="width: 50px" id="vw_variedad"></td>
+							<td><input type="text" class="form-control form-filter2 input-sm" name="vw_variedad"  style="width: 100px" id="vw_variedad"></td>
+							<td></td>
 							<c:forEach var="r" items="${th}">
 								<td></td>
 							</c:forEach>

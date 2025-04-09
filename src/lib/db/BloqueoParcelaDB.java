@@ -27,10 +27,10 @@ public class BloqueoParcelaDB {
 			db.conn.setAutoCommit(false);
 			BloqueoParcela bp = get(id);
 			String estado = "1";
-			resp = "Se activó el registro";
+			resp = "Se activï¿½ el registro";
 			if(bp.getEstado() == "Activo"){
 				estado = "2";
-				resp = "Se desactivó el registro";
+				resp = "Se desactivï¿½ el registro";
 			}
 			
 			sql = "update  bloqueoParcela set estado = '"+estado+"' where idBloqueo='" + id + "';";
@@ -258,8 +258,9 @@ public class BloqueoParcelaDB {
 				}
 
 			}
-			if (!order.equals("")) {
-				sql += " order by ";
+			if (order.contains(":")) {
+				String[] ord=order.split(":");
+				sql += " order by "+ord[0] +" "+ord[1];
 			}
 
 			if (length > 0) {
@@ -269,10 +270,6 @@ public class BloqueoParcelaDB {
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				BloqueoParcela o = new BloqueoParcela();
-				System.out.println("######");
-				System.out.println(rs.getString("codParcela"));
-				System.out.println("######");
-				
 				o.setIdBloqueo(rs.getInt("idBloqueo"));
 				o.setCodParcela(rs.getString("codParcela"));
 				o.setCodProductor(rs.getString("codProductor"));
@@ -317,7 +314,7 @@ public class BloqueoParcelaDB {
 			System.out.println(sql);
 			resp = stmt.execute(sql);
 			stmt.close();
-			TemporadaDB.setCreateRestriciones();
+			
 
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());

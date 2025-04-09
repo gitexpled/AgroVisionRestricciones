@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lib.db.MercadoProductorDB;
-import lib.db.ParcelaVariedadDB;
 
-import lib.db.userDB;
+
+
 import lib.security.session;
 import lib.struc.MercadoProductor;
-import lib.struc.ParcelaVariedad;
+
 import lib.struc.filterSql;
 import lib.struc.mesajesJson;
-import lib.struc.user;
+
 
 @Controller
 public class MercadoProductorJson {
@@ -62,7 +62,38 @@ public class MercadoProductorJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "pv.id";break;
+		case "1":colum = "pv.productor";break;
+		case "2":colum = "pv.etapa";break;
+		case "3":colum = "pv.campo";break;
+		case "4":colum = "pv.turno";break;
+		case "5":colum = "pv.idVariedad";break;
+		case "6":colum = "m.mercado";break;
+		case "7":colum = "pv.creado";break;
+		case "8":colum = "pv.modificado";break;
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -89,7 +120,7 @@ public class MercadoProductorJson {
 
 		ArrayList<MercadoProductor> datas;
 		try {
-			datas = MercadoProductorDB.getAll(filter, "", start, length);
+			datas = MercadoProductorDB.getAll(filter, order, start, length);
 
 			Iterator<MercadoProductor> f = datas.iterator();
 
@@ -100,7 +131,7 @@ public class MercadoProductorJson {
 				MercadoProductor row = f.next();
 				
 			
-				String[] d = { row.getId()+"",row.getCodProductor(), row.getCodParcela(),row.getCodTurno(),row.getCodVariedad(),row.getMercado(),row.getCreado()+"",row.getModificado()+""};
+				String[] d = { row.getId()+"",row.getCodProductor(), row.getCodEtapa(), row.getCodCampo(),row.getCodTurno(),row.getCodVariedad(),row.getMercado(),row.getCreado()+"",row.getModificado()+""};
 
 				data.setData(d);
 

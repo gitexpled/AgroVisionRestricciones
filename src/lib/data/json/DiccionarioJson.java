@@ -29,7 +29,7 @@ import lib.struc.mesajesJson;
 public class DiccionarioJson {
 
 	@RequestMapping(value = "/diccionario/view", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody dataTable getShopInJSON(HttpServletRequest request,HttpSession httpSession)  {
+	public @ResponseBody dataTable view(HttpServletRequest request,HttpSession httpSession)  {
 		
 		session ses = new session(httpSession);
 		dataTable data = new dataTable();
@@ -39,7 +39,34 @@ public class DiccionarioJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "codProducto";break;
+		case "1":colum = "codRemplazo";break;
+		case "2":colum = "creado";break;
+		case "3":colum = "modificado";break;
+
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -67,7 +94,7 @@ public class DiccionarioJson {
 
 		ArrayList<Diccionario> datas;
 		try {
-			datas = DiccionarioDB.getDiccionario(filter, "", start, length);
+			datas = DiccionarioDB.getDiccionario(filter, order, start, length);
 
 			Iterator<Diccionario> f = datas.iterator();
 
@@ -182,6 +209,31 @@ public class DiccionarioJson {
 			data.init();
 			return data;
 		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
+
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+
+		case "0":colum = "codProducto";break;
+
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
@@ -210,7 +262,7 @@ public class DiccionarioJson {
 
 		ArrayList<Diccionario> datas;
 		try {
-			datas = DiccionarioDB.getDiccionarioEqual(filter, "", start, length);
+			datas = DiccionarioDB.getDiccionarioEqual(filter, order, start, length);
 
 			Iterator<Diccionario> f = datas.iterator();
 

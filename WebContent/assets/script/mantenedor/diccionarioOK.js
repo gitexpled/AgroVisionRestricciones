@@ -274,7 +274,7 @@ var TableDatatablesAjax = function() {
 		
 		
 		var form1 = $('#form-InsertDiccionario');
-		debugger;
+		
 		form1.validate({
 					errorElement : 'span', 
 					errorClass : 'help-block help-block-error',

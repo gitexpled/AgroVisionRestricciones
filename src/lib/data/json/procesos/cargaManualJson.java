@@ -30,13 +30,44 @@ public class cargaManualJson {
 		
 		session ses = new session(httpSession);
 		dataTable data = new dataTable();
-//		if (ses.isValid()) {
-//			
-//			data.setDraw(0);
-//			data.init();
-//			return data;
-//		}
+		if (ses.isValid()) {
+			
+			data.setDraw(0);
+			data.init();
+			return data;
+		}
+		String order, colum = "", dir = "";
+		Map<String, String[]> param = request.getParameterMap();
+		for (String key : param.keySet()) {
 
+			if (key.startsWith("order[0]")) {
+				String[] vals = param.get(key);
+
+				for (String val : vals) {
+					if (key.contains("column"))
+						colum = val;
+					if (key.contains("dir"))
+						dir = val;
+				}
+
+			}
+		}
+		switch (colum) {
+
+		case "0":colum = "id";break;
+		case "1":colum = "productor";break;
+		case "2":colum = "especie";break;
+		case "3":colum = "etapa";break;
+		case "4":colum = "turno";break;
+		case "5":colum = "variedad";break;
+		case "6":colum = "creado";break;
+		case "7":colum = "userLab";break;
+		case "8":colum = "code";break;
+		
+		}
+		
+		order = colum + ":" + dir;
+		System.out.println(order);
 		System.out.println("GET:::::::::::::::::::::::::::::::::::::::: ");
 		Map<String, String[]> parameters = request.getParameterMap();
 		ArrayList<filterSql> filter = new ArrayList<filterSql>();
@@ -64,7 +95,7 @@ public class cargaManualJson {
 
 		ArrayList<cargaManual> datas;
 		try {
-			datas = cargaManualDB.getAll(filter, "", start, length);
+			datas = cargaManualDB.getAll(filter,order, start, length);
 
 			Iterator<cargaManual> f = datas.iterator();
 
