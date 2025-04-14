@@ -141,54 +141,72 @@ public class userDB {
 	}
 
 	public static void updateUser(user u) throws Exception {
+	    PreparedStatement ps = null;
+	    StringBuilder sql = new StringBuilder();
+	    ConnectionDB db = new ConnectionDB();
 
-		PreparedStatement ps = null;
-		String sql = "";
-		ConnectionDB db = new ConnectionDB();
-		try {
-			db.conn.setAutoCommit(false);
+	    try {
+	        db.conn.setAutoCommit(false);
+	        sql.append("UPDATE user SET ");
+	        sql.append("nombre = ?, ");
+	        sql.append("apellido = ?, ");
+	        sql.append("user = ?, ");
+	        sql.append("baja = ?, ");
+	        sql.append("password = ?, ");
+	        sql.append("estado = ?, ");
+	        sql.append("mail = ?, ");
+	        sql.append("idPerfil = ?");
+	        sql.append(", passTemporal = ?");
+	        sql.append(", fechaSolicitudModificacion = ?");
 
-			sql = "update  user set nombre=?,apellido=?,user=?,baja=?,password=?,estado=?, mail=?, idPerfil=? where idUser='" + u.getId()
-					+ "'";
+	        sql.append(" WHERE idUser = ?");
 
-			ps = db.conn.prepareStatement(sql);
-			ps.setString(1, u.getNombre());
-			ps.setString(2, u.getApellido());
-			ps.setString(3, u.getUser());
+	        ps = db.conn.prepareStatement(sql.toString());
 
-			Date now = new Date();
-			java.sql.Date sqlDateBaja = new java.sql.Date(now.getTime());
-			if (u.getEstado() == 1)
-				ps.setDate(4, sqlDateBaja);
-			else
-				ps.setNull(4, 0);
+	        int index = 1;
+	        ps.setString(index++, u.getNombre());
+	        ps.setString(index++, u.getApellido());
+	        ps.setString(index++, u.getUser());
+	        if (u.getEstado() == 1) {
+	            ps.setTimestamp(index++, new java.sql.Timestamp(new java.util.Date().getTime()));
+	        } else {
+	            ps.setNull(index++, java.sql.Types.TIMESTAMP);
+	        }
 
-			ps.setString(5, u.getPassword());
+	        ps.setString(index++, u.getPassword());
+	        int estadoFinal = (u.getFechaSolicitudModificacion() != null) ? 0 : u.getEstado();
+	        ps.setInt(index++, estadoFinal);
 
-			ps.setInt(6, u.getEstado());
-			ps.setString(7, u.getMail());
-			ps.setInt(8, u.getIdPerfil());
+	        ps.setString(index++, u.getMail());
+	        ps.setInt(index++, u.getIdPerfil());
 
-			ps.executeUpdate();
-			db.conn.commit();
-			db.conn.close();
-			System.out.println("ok");
-			System.out.println("ok");
+	        if (u.getPassTemporal() != null) {
+	            ps.setString(index++, u.getPassTemporal());
+	        } else {
+	            ps.setNull(index++, java.sql.Types.VARCHAR);
+	        }
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Error: " + e.getMessage());
-			System.out.println("sql: " + sql);
-			throw new Exception("sepPfx: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error2: " + e.getMessage());
-			throw new Exception("sepPfx: " + e.getMessage());
-
-		} finally {
-			db.close();
-		}
-
+	        if (u.getFechaSolicitudModificacion() != null) {
+	            ps.setTimestamp(index++, new java.sql.Timestamp(u.getFechaSolicitudModificacion().getTime()));
+	        } else {
+	            ps.setNull(index++, java.sql.Types.TIMESTAMP);
+	        }
+	        ps.setInt(index++, u.getId());
+	        ps.executeUpdate();
+	        db.conn.commit();
+	        db.conn.close();
+	        System.out.println("Usuario actualizado correctamente.");
+	    } catch (SQLException e) {
+	        System.out.println("Error: " + e.getMessage());
+	        System.out.println("sql: " + sql);
+	        throw new Exception("sepPfx: " + e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("Error2: " + e.getMessage());
+	        throw new Exception("sepPfx: " + e.getMessage());
+	    } finally {
+	        db.close();
+	    }
 	}
 
 	public static int getUsersAll(ArrayList<filterSql> filter) throws Exception {
@@ -430,6 +448,46 @@ public class userDB {
 			System.out.println("getAllUsers: "+ex.getMessage());
 		}
 		return users;
+	}
+	
+	public static user getUserByMail(String mail) throws Exception {
+		user u = null;
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		String sql = "";
+		try {
+			stmt = db.conn.createStatement();
+			sql = "SELECT * FROM user WHERE mail = '" + mail + "'";
+			ResultSet rs = stmt.executeQuery(sql);
+	
+			if (rs.next()) {
+				u = new user();
+				u.setId(rs.getInt("idUser"));
+				u.setNombre(rs.getString("nombre"));
+				u.setApellido(rs.getString("apellido"));
+				u.setUser(rs.getString("user"));
+				u.setPassword(rs.getString("password"));
+				u.setCreacion(rs.getDate("creacion"));
+				u.setBaja(rs.getDate("baja"));
+				u.setEstado(rs.getInt("estado"));
+				u.setIdPerfil(rs.getInt("idPerfil"));
+				u.setMail(rs.getString("mail"));
+				u.setPassTemporal(rs.getString("passTemporal"));;
+				u.setFechaSolicitudModificacion(rs.getTimestamp("fechaSolicitudModificacion"));
+			}
+	
+			rs.close();
+			stmt.close();
+			db.conn.close();
+			System.out.println(u);
+		} catch (SQLException e) {
+			System.out.println("Error: " + e.getMessage());
+			throw new Exception("getUserByMail: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+	
+		return u;
 	}
 	
 }

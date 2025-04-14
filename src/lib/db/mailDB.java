@@ -6,10 +6,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Random;
 
 import lib.struc.mail;
+import lib.struc.user;
+import lib.mail.MailService;
+import lib.mail.templates.MailTemplateBuilder;
+import lib.struc.MailRequest;
 import lib.struc.TipoProducto;
 import lib.struc.filterSql;
 
@@ -281,4 +288,40 @@ public class mailDB {
 		}
 
 	}
+
+
+    public String generarClaveTemporal(String correo) {
+        try {
+            user u = userDB.getUserByMail(correo);
+            if (u == null)
+                return "No se encontró el correo registrado.";
+
+            String claveTemporal = generarPasswordAleatoria(5);
+            u.setPassTemporal(claveTemporal);
+            u.setFechaSolicitudModificacion(new Date());
+            u.setEstado(0);
+
+            userDB.updateUser(u);
+
+            String cuerpo = MailTemplateBuilder.buildRecoveryTemplate(correo, claveTemporal);
+            MailRequest mail = new MailRequest(correo, "Recuperación de contraseña", cuerpo, true);
+            new MailService().sendEmail(mail);
+
+            return "Correo enviado con éxito. Revisa tu bandeja de entrada.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error interno al generar clave temporal.";
+        }
+    }
+
+
+    private String generarPasswordAleatoria(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random rnd = new Random();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
 }
