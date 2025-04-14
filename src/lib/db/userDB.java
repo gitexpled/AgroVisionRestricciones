@@ -8,7 +8,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import lib.struc.filterSql;
 import lib.struc.user;
@@ -95,7 +97,35 @@ public class userDB {
 
 		return o;
 	}
-	
+	public static ArrayList<Map<String, Object>> getRoles() throws Exception {
+	    ConnectionDB db = new ConnectionDB();
+	    Statement stmt = null;
+	    String sql = "SELECT id, name FROM role_user";
+	    ArrayList<Map<String, Object>> roles = new ArrayList<>();
+
+	    try {
+	        stmt = db.conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(sql);
+
+	        while (rs.next()) {
+	            Map<String, Object> role = new HashMap<>();
+	            role.put("id", rs.getInt("id"));
+	            role.put("name", rs.getString("name"));
+	            roles.add(role);
+	        }
+
+	        rs.close();
+	        stmt.close();
+	        db.conn.close();
+	    } catch (SQLException e) {
+	        System.out.println("Error al obtener roles: " + e.getMessage());
+	        throw new Exception("getRoles: " + e.getMessage());
+	    } finally {
+	        db.close();
+	    }
+
+	    return roles;
+	}
 	public static user getUserByUser(String user) throws Exception {
 
 		user o = null;

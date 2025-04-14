@@ -1,16 +1,22 @@
 package lib.data.json;
 
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,21 +53,80 @@ public class userJson {
 
 	}
 
-	@RequestMapping(value = "/user/{id}", method = { RequestMethod.GET })
-	public @ResponseBody user getUserId(@PathVariable int id,HttpSession httpSession) throws Exception {
-		
-		session ses = new session(httpSession);
-		
-		if (ses.isValid()) {
-			user row=null;
-			return row;
-		}
+	@RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Object> getUserId(@PathVariable int id, HttpSession httpSession) {
+	    Map<String, Object> response = new HashMap<>();
 
-		user row = userDB.getUser(id);
+	    try {
+	        session ses = new session(httpSession);
+	        System.out.println("httpSession: " + ses.isValid());
+	        if (ses.isValid()) {
+	            response.put("error", "Sesión no válida.");
+	            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	        }
 
-		return row;
+	        user usuario = userDB.getUser(id);
+	        if (usuario == null) {
+	            response.put("error", "Usuario no encontrado.");
+	            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	        }
 
+	        response.put("id", usuario.getId());
+	        response.put("nombre", usuario.getNombre());
+	        response.put("apellido", usuario.getApellido());
+	        response.put("user", usuario.getUser());
+	        response.put("mail", usuario.getMail());
+	        response.put("creacion", usuario.getCreacion());
+	        response.put("baja", usuario.getBaja());
+	        response.put("estado", usuario.getEstado());
+	        response.put("idPerfil", usuario.getIdPerfil());
+
+	        List<Map<String, Object>> roles = userDB.getRoles();
+	        response.put("roles", roles);
+	        return new ResponseEntity<>(response, HttpStatus.OK);
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        response.put("error", "Error de base de datos.");
+	        response.put("message", e.getMessage());
+	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.put("error", "Se produjo un error inesperado.");
+	        response.put("message", e.getMessage());
+	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 	}
+	
+	@GetMapping("/roles")
+    public ResponseEntity<Object> getRoles() {
+        try {
+            List<Map<String, Object>> roles = userDB.getRoles();
+
+            if (roles == null || roles.isEmpty()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "No se encontraron roles disponibles.");
+                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(roles, HttpStatus.OK);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error de base de datos al obtener los roles.");
+            error.put("message", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Se produjo un error inesperado al obtener los roles.");
+            error.put("message", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 	@RequestMapping(value = "/user/view", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody dataTable view(HttpServletRequest request,HttpSession httpSession)  {
