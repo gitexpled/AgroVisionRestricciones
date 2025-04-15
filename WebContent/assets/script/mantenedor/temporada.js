@@ -196,7 +196,7 @@ var TableDatatablesAjax = function() {
 						} else if (element.attr("data-error-container")) {
 							error
 									.appendTo(element
-											.attr("data-error-container"));
+									.attr("data-error-container"));
 						} else if (element.parents('.radio-list').size() > 0) {
 							error.appendTo(element.parents('.radio-list').attr(
 									"data-error-container"));
@@ -254,8 +254,8 @@ var TableDatatablesAjax = function() {
 						
 						row.temporada = $('#updateTemporada').val();
 						row.idEspecie = $('#updateEspecie').val();
-						row.desde = $('#updateHasta').val();
-						row.hasta = $('#updateDesde').val();
+						row.desde = $('#updateDesde').val();
+						row.hasta = $('#updateHasta').val();
 						row.idUser = $("#idUserPefil").val();
 						row.idTemporada = ID;
 						console.log(row);
@@ -271,17 +271,33 @@ var TableDatatablesAjax = function() {
 									},
 
 									success : function(data, textStatus, jqXHR) {
-										$('#modal-modifica-temporada').modal("toggle");
-										swal({
-											  title: 'Temporada Modificada exitosamente!',
-											  animation: true,
-											  customClass: 'animated tada'
-											})
-										var table = $('#datatable_ajax')
-												.DataTable({
-													bRetrieve : true
-												});
-										table.ajax.reload();
+										console.log(data);
+										if(data.estado =="ok"){
+											$('#modal-modifica-temporada').modal("toggle");
+											swal({
+												  title: 'Temporada Modificada exitosamente!',
+												  animation: true,
+												  customClass: 'animated tada'
+												})
+											var table = $('#datatable_ajax')
+													.DataTable({
+														bRetrieve : true
+													});
+											table.ajax.reload();
+										} else {
+											$('#modal-modifica-temporada').modal("toggle");
+											swal({
+												  title: data.mensaje,
+												  animation: true,
+												  customClass: 'animated tada'
+												})
+											var table = $('#datatable_ajax')
+													.DataTable({
+														bRetrieve : true
+													});
+											table.ajax.reload();
+										}
+										
 										
 									},
 									error : function(jqXHR, textStatus,
@@ -376,6 +392,8 @@ var TableDatatablesAjax = function() {
 						row.desde = $('#desde').val();
 						row.hasta = $('#hasta').val();
 						console.log(row);
+						
+						
 
 						$.ajax({
 									url : "/AgroVisionRestricciones/"+"json/temporada/insertTemporada",
@@ -389,10 +407,14 @@ var TableDatatablesAjax = function() {
 									},
 
 									success : function(data, textStatus, jqXHR) {
+										var mensaje = 'Temporada ingresada exitosamente!';
+										if(data.estado != "ok"){
+											mensaje = data.mensaje;
+										}
 										$('#modal-newTemporada').modal('toggle');
 										$('#regTemporada').val("");
-									swal({
-										  title: 'Temporada ingresada exitosamente!',
+										swal({
+										  title: mensaje,
 										  animation: true,
 										  customClass: 'animated tada'
 										})

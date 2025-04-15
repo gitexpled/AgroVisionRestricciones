@@ -389,6 +389,75 @@ public class TemporadaDB {
 
 	}
 	
+	public static String compareFecha(String desde, String hasta, String topeAnterior) {
+		
+		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+		String response = "ok";
+
+        try {
+            Date fechaDesde = formato.parse(desde);
+            Date fechaHasta = formato.parse(hasta);
+            Date tope = formato.parse(topeAnterior);
+
+            System.out.println(topeAnterior);
+            System.out.println(desde);
+            
+            if (topeAnterior == "") {
+            	//response = true;
+                System.out.println("No hay Fecha tope");
+            }            
+            if (fechaDesde.after(fechaHasta)) {
+            	response = "La fecha 'desde' es posterior a 'hasta'";
+                System.out.println("La fecha 'desde' es posterior a 'hasta'");
+            }  
+            if (fechaDesde.before(tope)) {
+            	response = "La fecha 'desde' es inferior a 'hasta' periodo anterior";
+                System.out.println("La fecha 'desde' es inferior a 'hasta' periodo anterior");
+            }            
+          
+        } catch (ParseException e) {
+        	response = "Error al convertir fechas: " + e.getMessage();
+            System.out.println("Error al convertir fechas: " + e.getMessage());
+        }
+        
+        return response;
+		
+	}
+	
+	public static String getTopeTemporadaAnterior(String temporada, String especie) throws Exception {
+
+		ConnectionDB db = new ConnectionDB();
+		Statement stmt = null;
+		String sql = "";
+		String tope = "";
+		try {
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT hasta FROM temporada  where temporada = '"+temporada+"'-101 and idEspecie = '"+especie+"'";
+			
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				tope = rs.getString("hasta");
+			} 
+
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getTemporadas: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return tope;
+	}
+	
+	
 	
 	
 }

@@ -1,6 +1,5 @@
 package lib.data.json;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -117,15 +116,32 @@ public class TemporadaJson {
 	}
 	
 	@RequestMapping(value = "/temporada/insertTemporada" , method= {RequestMethod.PUT}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody boolean insertTemporada(@RequestBody Temporada row,HttpSession httpSession) throws ParseException
+	public @ResponseBody mesajesJson insertTemporada(@RequestBody Temporada row,HttpSession httpSession) throws Exception
 	{
 		boolean resp = false;
+		mesajesJson mensaje = new mesajesJson();
 		session ses = new session(httpSession);
 		if (ses.isValid()) {
-			return resp;
+			mensaje.setEstado("error");
+			mensaje.setMensaje("Session terminada");
+			return mensaje;
 		}
-		row.setIdUser(ses.getIdUser());
-		resp = TemporadaDB.insertTemporada(row);
+		
+		String tope = TemporadaDB.getTopeTemporadaAnterior(row.getTemporada(),row.getIdEspecie());
+		String r = TemporadaDB.compareFecha(row.getDesde(), row.getHasta(), tope);
+		
+		if(r == "ok") {
+			mensaje.setEstado("ok");
+			mensaje.setMensaje("Guardado con exito");
+			row.setIdUser(ses.getIdUser());
+			resp = TemporadaDB.insertTemporada(row);
+
+		} else {
+			mensaje.setEstado("nok");
+			mensaje.setMensaje(r);
+		}
+		
+		
 		
 		Temporada t;
 		try {
@@ -138,8 +154,29 @@ public class TemporadaJson {
 		}
 		
 		
-		return resp;		
+		return mensaje;		
 	}
+	
+	/*@RequestMapping(value = "/temporada/validaTemporada" , method= {RequestMethod.PUT}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody boolean validaTemporada(@RequestBody Temporada row,HttpSession httpSession) throws Exception
+	{
+		boolean resp = false;
+		session ses = new session(httpSession);
+		if (ses.isValid()) {
+			return resp;
+		}
+		
+		try {
+
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return resp;		
+	}*/
 	
 	@RequestMapping(value = "/temporada/{codigo}", method = { RequestMethod.GET })
 	public @ResponseBody Temporada getTemporada(@PathVariable String codigo,HttpSession httpSession) throws Exception {
@@ -168,12 +205,24 @@ public class TemporadaJson {
 			return mensaje;
 		}
 		System.out.println("PUT::::::::::::::::::::::::::::");
+		
+		String tope = TemporadaDB.getTopeTemporadaAnterior(row.getTemporada(),row.getIdEspecie());
+		String r = TemporadaDB.compareFecha(row.getDesde(), row.getHasta(), tope);
+		
+		if(r == "ok") {
+			TemporadaDB.updateTemporada(row);
+			mensaje.setEstado("ok");
+			mensaje.setMensaje("Guardado con exito");
 
-		TemporadaDB.updateTemporada(row);
+		} else {
+			mensaje.setEstado("nok");
+			mensaje.setMensaje(r);
+		}
+
+		
 		
 
-		mensaje.setEstado("ok");
-		mensaje.setMensaje("Guardado con exito");
+		
 
 		return mensaje;
 
