@@ -7,7 +7,25 @@ var TableDatatablesAjax = function() {
 			autoclose : true
 		});
 	}
-
+	function cargarRoles(selector, selectedId = null) {
+	    $.ajax({
+	        url: "/AgroVisionRestricciones/json/roles",
+	        type: "GET",
+	        dataType: "json",
+	        success: function (data) {
+	            $(selector).empty().append('<option value="">Seleccionar</option>');
+	            $.each(data, function (i, role) {
+	                const selected = role.id == selectedId ? 'selected' : '';
+	                $(selector).append(`<option value="${role.id}" ${selected}>${role.name}</option>`);
+	            });
+	        },
+	        error: function (jqXHR, textStatus, errorThrown) {
+	            console.error("Error al cargar los roles:", textStatus, errorThrown);
+	            swal("Error", "No se pudieron cargar los perfiles. Intente nuevamente.", "error");
+	        }
+	    });
+	}
+	cargarRoles("#regPerfil");
 	var handleDemo1 = function() {
 
 		var grid = new Datatable();
@@ -154,6 +172,7 @@ var TableDatatablesAjax = function() {
 						url : "/AgroVisionRestricciones/json/user/" + id,
 						data : "",
 						success : function(data) {
+							console.log("data===>",data)
 							$("#update_usuario_nombre").val(data.nombre);
 							$("#update_usuario_usuario").val(data.user);
 							$("#update_usuario_apellido").val(data.apellido);
@@ -164,10 +183,10 @@ var TableDatatablesAjax = function() {
 							$("#update_usuario_estado").append('<option value="1">Desactivado</option>');
 							$("#update_usuario_estado option[value='"+ data.estado + "']").attr("selected", "selected");
 
-
 							$('#update_regPerfil').children('option:not(:first)').remove();
-							$("#update_regPerfil").append('<option value="1">Administrador</option>');
-							$("#update_regPerfil").append('<option value="3">Usuario</option>');
+							data.roles.forEach(item=>{
+								$("#update_regPerfil").append('<option value="'+item.id+'">'+item.name+'</option>');
+							})
 							$("#update_regPerfil option[value='"+ data.idPerfil + "']").attr("selected", "selected");
 							
 							

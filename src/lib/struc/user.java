@@ -14,7 +14,24 @@ public class user {
 	private int estado;
 	private int idPerfil;
 	private String mail;
+	private String passTemporal;
+	private Date fechaSolicitudModificacion;
 
+	public String getPassTemporal() {
+		return passTemporal;
+	}
+
+	public void setPassTemporal(String passTemporal) {
+		this.passTemporal = passTemporal;
+	}
+
+	public Date getFechaSolicitudModificacion() {
+		return fechaSolicitudModificacion;
+	}
+
+	public void setFechaSolicitudModificacion(Date fechaSolicitudModificacion) {
+		this.fechaSolicitudModificacion = fechaSolicitudModificacion;
+	}
 
 	public int getId() {
 		return id;

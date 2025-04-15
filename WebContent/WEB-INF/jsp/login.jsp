@@ -1,4 +1,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <!-- 
 Template Name: Metronic - Responsive Admin Dashboard Template build with Twitter Bootstrap 3.3.6
@@ -68,10 +69,20 @@ License: You must have a valid license purchased only from themeforest(the above
                     <span> Ingresar usuario y contraseña. </span>
                 </div>
                 
-                 <div class="alert alert-danger ${alerta}">
-                    <button class="close" data-close="alert"></button>
-                    <span> ${mensaje}  </span>
-                </div>
+                 <c:if test="${not empty mensaje}">
+				    <div class="alert alert-success">
+				        <button class="close" data-close="alert"></button>
+				        <span>${mensaje}</span>
+				    </div>
+				</c:if>
+				
+				<c:if test="${not empty alerta}">
+				    <div class="alert alert-danger">
+				        <button class="close" data-close="alert"></button>
+				        <span>${alerta}</span>
+				    </div>
+				</c:if>
+
                 <div class="form-group">
                     <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                     <label class="control-label visible-ie8 visible-ie9">Usuario</label>
