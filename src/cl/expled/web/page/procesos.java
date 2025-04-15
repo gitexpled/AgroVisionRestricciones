@@ -689,14 +689,14 @@ public class procesos {
 
 	        CellStyle greenStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_GREEN);
 	        CellStyle redStyle = cloneWithColor(book, baseStyle, IndexedColors.ROSE);
+	        CellStyle yellowStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_YELLOW);
 
 	        CellStyle piStyle = book.createCellStyle();
-	        piStyle.cloneStyleFrom(baseStyle);
+	        piStyle.cloneStyleFrom(yellowStyle);
 	        Font piFont = book.createFont();
-	        piFont.setColor(IndexedColors.RED.getIndex());
+	        piFont.setColor(IndexedColors.BLACK.getIndex());
 	        piFont.setBold(true);
 	        piStyle.setFont(piFont);
-
 	        Row headerRow = sheet.createRow(0);
 	        for (int i = 0; i < columns.length(); ++i) {
 	            String header = columns.getString(i);
@@ -704,44 +704,42 @@ public class procesos {
 	            cell.setCellStyle(headerStyle);
 	            cell.setCellValue(header.toUpperCase());
 	        }
+
+	        // Data
 	        int rowIndex = 1;
 	        for (int e = 0; e < data.length(); ++e) {
 	            JSONArray row = data.getJSONArray(e);
 	            if (!row.getString(3).equalsIgnoreCase(es.getPf())) continue;
+
 	            Row dataRow = sheet.createRow(rowIndex++);
 	            for (int d = 0; d < row.length(); d++) {
 	                String value = row.getString(d).trim().toUpperCase();
-	                String columnName = columns.getString(d).trim().toUpperCase();
 	                Cell cell = dataRow.createCell(d);
 
-	                if (columnName.equals("CLP")) {
-	                    cell.setCellValue(value);
-	                    cell.setCellStyle(baseStyle);
-	                } else {
-	                    switch (value) {
-	                        case "SI":
-	                        case "SI.":
-	                            cell.setCellValue("✔️");
-	                            cell.setCellStyle(greenStyle);
-	                            break;
-	                        case "NO":
-	                        case "NO.":
-	                            cell.setCellValue("❌");
-	                            cell.setCellStyle(redStyle);
-	                            break;
-	                        case "PI":
-	                        case "PI.":
-	                            cell.setCellValue("PI❗");
-	                            cell.setCellStyle(piStyle);
-	                            break;
-	                        default:
-	                            cell.setCellValue(value);
-	                            cell.setCellStyle(baseStyle);
-	                            break;
-	                    }
+	                switch (value) {
+	                    case "SI":
+	                    case "SI.":
+	                        cell.setCellValue("✔️");
+	                        cell.setCellStyle(greenStyle);
+	                        break;
+	                    case "NO":
+	                    case "NO.":
+	                        cell.setCellValue("❌");
+	                        cell.setCellStyle(redStyle);
+	                        break;
+	                    case "PI":
+	                    case "PI.":
+	                        cell.setCellValue("PI❗");
+	                        cell.setCellStyle(piStyle);
+	                        break;
+	                    default:
+	                        cell.setCellValue(value);
+	                        cell.setCellStyle(baseStyle);
+	                        break;
 	                }
 	            }
 	        }
+
 	        SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
 	        CellRangeAddress[] regiones = {
 	            CellRangeAddress.valueOf("I2:DA500")
@@ -757,6 +755,7 @@ public class procesos {
 	        thresholds[1].setValue(2.0);
 	        sheetCF.addConditionalFormatting(regiones, rule);
 	    }
+
 	    try {
 	        UUID uuid = UUID.randomUUID();
 	        String fileStr = "/tmp/" + uuid + ".xlsx";
