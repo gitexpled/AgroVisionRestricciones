@@ -641,166 +641,137 @@ public class procesos {
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaExcel/{id}", method = { RequestMethod.GET })
 	public void exportaExcel(HttpServletResponse response, @PathVariable("id") String id, HttpSession httpSession)
-			throws Exception {
-		session ses = new session(httpSession);
-		if (ses.isValid()) {
-			String errorMessage = "Session terminada ";
-			OutputStream outputStream;
-			try {
-				outputStream = response.getOutputStream();
-				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
-				outputStream.close();
-			} catch (IOException e) {
-				//
-				e.printStackTrace();
-			}
+	        throws Exception {
+	    session ses = new session(httpSession);
+	    if (ses.isValid()) {
+	        String errorMessage = "Session terminada ";
+	        try (OutputStream outputStream = response.getOutputStream()) {
+	            outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	        return;
+	    }
 
-			return;
-		}
+	    response.setContentType("application/octet-stream");
+	    response.setHeader("Content-Disposition", "inline; filename=\"archivo.xlsx\"");
+	    Workbook book = new XSSFWorkbook();
 
-		String mimeType = "application/octet-stream";
-		System.out.println("mimetype : " + mimeType);
-		//
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("inline; filename=\"archivo.xlsx\""));
+	    ArrayList<especie> esp = especieDB.getAll(new ArrayList<>(), "idEspecie", 0, 9999);
 
-		// Workbook book=WorkbookFactory.create(in);
-		Workbook book = new XSSFWorkbook();
-		System.out.println("comienzo excel");
+	    for (especie es : esp) {
+	        estadoProductorNewDB dataDB = new estadoProductorNewDB();
+	        String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(), es.getIdEspecie(), "", "", "", "", "", true);
+	        JSONObject j = new JSONObject(json);
+	        JSONArray columns = j.getJSONArray("columns");
+	        JSONArray data = j.getJSONArray("data");
 
-		ArrayList<especie> esp = null;
-		try {
-			ArrayList<filterSql> filter = new ArrayList<filterSql>();
-			esp = especieDB.getAll(filter, "idEspecie", 0, 9999);
-		} catch (Exception e) {
-			//
-			e.printStackTrace();
-		}
+	        Sheet sheet = book.createSheet(es.getEspecie());
 
-		Iterator<especie> ff = esp.iterator();
-		while (ff.hasNext()) {
-			especie es = ff.next();
-			ArrayList<String> tipoMercado = new ArrayList<String>();
-			estadoProductorNewDB dataDB = new estadoProductorNewDB();
-			String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(), es.getIdEspecie(), "", "", "", "", "",true);
-			System.out.println(ses.getIdTemporada());
-			JSONObject j = new JSONObject(json);
-			System.out.println(j);
-			JSONArray columns = j.getJSONArray("columns");
-			JSONArray data = j.getJSONArray("data");
+	        CellStyle headerStyle = book.createCellStyle();
+	        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+	        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	        headerStyle.setBorderBottom(BorderStyle.THIN);
+	        headerStyle.setBorderLeft(BorderStyle.THIN);
+	        headerStyle.setBorderRight(BorderStyle.THIN);
+	        headerStyle.setBorderTop(BorderStyle.THIN);
+	        Font headerFont = book.createFont();
+	        headerFont.setFontName("Arial");
+	        headerFont.setBold(true);
+	        headerFont.setColor(IndexedColors.WHITE.getIndex());
+	        headerStyle.setFont(headerFont);
 
-			Sheet sheet = book.createSheet(es.getEspecie());
-			System.out.println("-------------------------------------------------");
-			CellStyle tituloEstilo = book.createCellStyle();
-			tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
-			tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
-			Font fuenteTitulo = book.createFont();
-			fuenteTitulo.setBold(true);
-			fuenteTitulo.setFontHeightInPoints((short) 14);
-			tituloEstilo.setFont(fuenteTitulo);
+	        CellStyle baseStyle = book.createCellStyle();
+	        baseStyle.setBorderBottom(BorderStyle.THIN);
+	        baseStyle.setBorderLeft(BorderStyle.THIN);
+	        baseStyle.setBorderRight(BorderStyle.THIN);
+	        baseStyle.setBorderTop(BorderStyle.THIN);
 
-			CellStyle headerStyle = book.createCellStyle();
-			headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderBottom(BorderStyle.THIN);
-			headerStyle.setBorderLeft(BorderStyle.THIN);
-			headerStyle.setBorderRight(BorderStyle.THIN);
-			headerStyle.setBorderTop(BorderStyle.THIN);
+	        CellStyle greenStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_GREEN);
+	        CellStyle redStyle = cloneWithColor(book, baseStyle, IndexedColors.ROSE);
 
-			Font font = book.createFont();
-			font.setFontName("Arial");
-			font.setBold(true);
-			font.setColor(IndexedColors.WHITE.getIndex());
-			headerStyle.setFont(font);
+	        CellStyle piStyle = book.createCellStyle();
+	        piStyle.cloneStyleFrom(baseStyle);
+	        Font piFont = book.createFont();
+	        piFont.setColor(IndexedColors.RED.getIndex());
+	        piFont.setBold(true);
+	        piStyle.setFont(piFont);
 
-			// INGRESAMOS LA DATA DEL EXCEL
-			CellStyle datoStyle = book.createCellStyle();
-			datoStyle.setBorderBottom(BorderStyle.THIN);
-			datoStyle.setBorderLeft(BorderStyle.THIN);
-			datoStyle.setBorderRight(BorderStyle.THIN);
-			datoStyle.setBorderTop(BorderStyle.THIN);
+	        Row headerRow = sheet.createRow(0);
+	        for (int i = 0; i < columns.length(); ++i) {
+	            String header = columns.getString(i);
+	            Cell cell = headerRow.createCell(i);
+	            cell.setCellStyle(headerStyle);
+	            cell.setCellValue(header.toUpperCase());
+	        }
+	        int rowIndex = 1;
+	        for (int e = 0; e < data.length(); ++e) {
+	            JSONArray row = data.getJSONArray(e);
+	            if (!row.getString(3).equalsIgnoreCase(es.getPf())) continue;
+	            Row dataRow = sheet.createRow(rowIndex++);
+	            for (int d = 0; d < row.length(); d++) {
+	                String value = row.getString(d).trim().toUpperCase();
+	                String columnName = columns.getString(d).trim().toUpperCase();
+	                Cell cell = dataRow.createCell(d);
 
-			int i = 1;
-			int a = 0;
-			int x = 0;
-			Row fila = sheet.createRow(0);
-			for (int e = 0; e < columns.length(); ++e) {
-				String header = columns.getString(e);
-				Cell cell = fila.createCell(e);
-				cell.setCellStyle(datoStyle);
-				cell.setCellValue(header.toString().toUpperCase());
-			}
-			String espe = "";
-			for (int e = 0; e < data.length(); ++e) {
-				JSONArray ex = data.getJSONArray(e);
-				for (int d = 0; d < ex.length(); d++) {
-					if (ex.getString(d).equals(es.getPf())) {
-						espe = ex.getString(d);
-					}
-				}
-			}
-			for (int e = 0; e < data.length(); ++e) {
-				JSONArray ex = data.getJSONArray(e);
-				Row dataRow = sheet.createRow(i);
-				for (int d = 0; d < ex.length(); d++) {
-					if (ex.getString(3).toUpperCase().equals(es.getPf().toUpperCase())) {
-						String header = ex.getString(d);
-						Cell cell = dataRow.createCell(d);
-						cell.setCellStyle(datoStyle);
-					
-						if (header.toString().toUpperCase().equals("SI."))
-							cell.setCellValue("LC");
-						else
-							cell.setCellValue(header.toString().toUpperCase());	
-					}
-				}
-				i++;
-			}
-			  SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
-			//generamos seteo de Hoja
-			 CellRangeAddress[] regiones = {
-			            CellRangeAddress.valueOf("I2:DA500")
-			        };
-			 ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
-			 IconMultiStateFormatting iconFmt = rule.getMultiStateFormatting();
-			 iconFmt.setIconSet(IconSet.GREY_3_ARROWS);
-			 iconFmt.setIconOnly(true);
-		        
-		        iconFmt.setIconOnly(true);
-		        
-		        ConditionalFormattingThreshold[] thresholds = iconFmt.getThresholds();
-		        
-		        // threshold[0] -> Valor >= 1 => ya no muestra la cruz roja sino algo mejor
-		        thresholds[0].setRangeType(RangeType.NUMBER);
-		        thresholds[0].setValue(1.0);
-		        
-		        // threshold[1] -> Valor >= 2 => check verde
-		        thresholds[1].setRangeType(RangeType.NUMBER);
-		        thresholds[1].setValue(2.0);
-		}
-		// FIN DE EXCEL
-		
+	                if (columnName.equals("CLP")) {
+	                    cell.setCellValue(value);
+	                    cell.setCellStyle(baseStyle);
+	                } else {
+	                    switch (value) {
+	                        case "SI":
+	                        case "SI.":
+	                            cell.setCellValue("✔️");
+	                            cell.setCellStyle(greenStyle);
+	                            break;
+	                        case "NO":
+	                        case "NO.":
+	                            cell.setCellValue("❌");
+	                            cell.setCellStyle(redStyle);
+	                            break;
+	                        case "PI":
+	                        case "PI.":
+	                            cell.setCellValue("PI❗");
+	                            cell.setCellStyle(piStyle);
+	                            break;
+	                        default:
+	                            cell.setCellValue(value);
+	                            cell.setCellStyle(baseStyle);
+	                            break;
+	                    }
+	                }
+	            }
+	        }
+	        SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
+	        CellRangeAddress[] regiones = {
+	            CellRangeAddress.valueOf("I2:DA500")
+	        };
+	        ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
+	        IconMultiStateFormatting iconFmt = rule.getMultiStateFormatting();
+	        iconFmt.setIconSet(IconSet.GREY_3_ARROWS);
+	        iconFmt.setIconOnly(true);
+	        ConditionalFormattingThreshold[] thresholds = iconFmt.getThresholds();
+	        thresholds[0].setRangeType(RangeType.NUMBER);
+	        thresholds[0].setValue(1.0);
+	        thresholds[1].setRangeType(RangeType.NUMBER);
+	        thresholds[1].setValue(2.0);
+	        sheetCF.addConditionalFormatting(regiones, rule);
+	    }
+	    try {
+	        UUID uuid = UUID.randomUUID();
+	        String fileStr = "/tmp/" + uuid + ".xlsx";
+	        FileOutputStream fileout = new FileOutputStream(fileStr);
+	        book.write(fileout);
+	        fileout.close();
 
-		try {
-			UUID uuid = UUID.randomUUID();
-			String fileStr = "/tmp/" + uuid.toString() + ".xlsx";
-
-			FileOutputStream fileout = new FileOutputStream(fileStr);
-			book.write(fileout);
-			fileout.close();
-
-			File file = new File(fileStr);
-			FileInputStream fis = new FileInputStream(file);
-			FileCopyUtils.copy(fis, response.getOutputStream());
-			fis.close();
-			System.out.println(file.getAbsolutePath());
-			file.delete();
-		} catch (Exception e) {
-			// TODO
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-
+	        File file = new File(fileStr);
+	        FileInputStream fis = new FileInputStream(file);
+	        FileCopyUtils.copy(fis, response.getOutputStream());
+	        fis.close();
+	        file.delete();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	@RequestMapping(value = "/caExcel/{id}", method = { RequestMethod.GET })
@@ -945,5 +916,11 @@ public class procesos {
 
 		return new ModelAndView("content/proceso/cargaManual2");
 	}
-
+	private CellStyle cloneWithColor(Workbook book, CellStyle base, IndexedColors color) {
+	    CellStyle style = book.createCellStyle();
+	    style.cloneStyleFrom(base);
+	    style.setFillForegroundColor(color.getIndex());
+	    style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    return style;
+	}
 }
