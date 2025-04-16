@@ -42,6 +42,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.converter.pdf.PdfConverter;
 import org.apache.poi.xwpf.converter.pdf.PdfOptions;
@@ -655,7 +656,7 @@ public class procesos {
 
 	    response.setContentType("application/octet-stream");
 	    response.setHeader("Content-Disposition", "inline; filename=\"archivo.xlsx\"");
-	    Workbook book = new XSSFWorkbook();
+	    XSSFWorkbook book = new XSSFWorkbook();
 
 	    ArrayList<especie> esp = especieDB.getAll(new ArrayList<>(), "idEspecie", 0, 9999);
 
@@ -687,16 +688,18 @@ public class procesos {
 	        baseStyle.setBorderRight(BorderStyle.THIN);
 	        baseStyle.setBorderTop(BorderStyle.THIN);
 
-	        CellStyle greenStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_GREEN);
-	        CellStyle redStyle = cloneWithColor(book, baseStyle, IndexedColors.ROSE);
-	        CellStyle yellowStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_YELLOW);
+	        CellStyle checkStyle = book.createCellStyle();
+	        checkStyle.cloneStyleFrom(baseStyle);
+	        Font checkFont = book.createFont();
+	        checkFont.setColor(IndexedColors.GREEN.getIndex());
+	        checkStyle.setFont(checkFont);
 
-	        CellStyle piStyle = book.createCellStyle();
-	        piStyle.cloneStyleFrom(yellowStyle);
-	        Font piFont = book.createFont();
-	        piFont.setColor(IndexedColors.BLACK.getIndex());
-	        piFont.setBold(true);
-	        piStyle.setFont(piFont);
+	        CellStyle crossStyle = book.createCellStyle();
+	        crossStyle.cloneStyleFrom(baseStyle);
+	        Font crossFont = book.createFont();
+	        crossFont.setColor(IndexedColors.RED.getIndex());
+	        crossStyle.setFont(crossFont);
+
 	        Row headerRow = sheet.createRow(0);
 	        for (int i = 0; i < columns.length(); ++i) {
 	            String header = columns.getString(i);
@@ -705,7 +708,6 @@ public class procesos {
 	            cell.setCellValue(header.toUpperCase());
 	        }
 
-	        // Data
 	        int rowIndex = 1;
 	        for (int e = 0; e < data.length(); ++e) {
 	            JSONArray row = data.getJSONArray(e);
@@ -720,17 +722,27 @@ public class procesos {
 	                    case "SI":
 	                    case "SI.":
 	                        cell.setCellValue("✔️");
-	                        cell.setCellStyle(greenStyle);
+	                        cell.setCellStyle(checkStyle);
 	                        break;
 	                    case "NO":
 	                    case "NO.":
 	                        cell.setCellValue("❌");
-	                        cell.setCellStyle(redStyle);
+	                        cell.setCellStyle(crossStyle);
 	                        break;
 	                    case "PI":
 	                    case "PI.":
-	                        cell.setCellValue("PI❗");
-	                        cell.setCellStyle(piStyle);
+	                        XSSFRichTextString richText = new XSSFRichTextString("PI❗");
+
+	                        Font piFont = book.createFont();
+	                        piFont.setColor(IndexedColors.BLACK.getIndex());
+	                        piFont.setBold(true);
+	                        richText.applyFont(0, 2, piFont);
+	                        Font iconFont = book.createFont();
+	                        iconFont.setColor(IndexedColors.YELLOW.getIndex());
+	                        iconFont.setBold(true);
+	                        richText.applyFont(2, 3, iconFont);
+	                        cell.setCellValue(richText);
+	                        cell.setCellStyle(baseStyle);
 	                        break;
 	                    default:
 	                        cell.setCellValue(value);
@@ -739,7 +751,6 @@ public class procesos {
 	                }
 	            }
 	        }
-
 	        SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
 	        CellRangeAddress[] regiones = {
 	            CellRangeAddress.valueOf("I2:DA500")
@@ -755,7 +766,6 @@ public class procesos {
 	        thresholds[1].setValue(2.0);
 	        sheetCF.addConditionalFormatting(regiones, rule);
 	    }
-
 	    try {
 	        UUID uuid = UUID.randomUUID();
 	        String fileStr = "/tmp/" + uuid + ".xlsx";
@@ -914,12 +924,5 @@ public class procesos {
 		model.addAttribute("optionDiccionario", mer);
 
 		return new ModelAndView("content/proceso/cargaManual2");
-	}
-	private CellStyle cloneWithColor(Workbook book, CellStyle base, IndexedColors color) {
-	    CellStyle style = book.createCellStyle();
-	    style.cloneStyleFrom(base);
-	    style.setFillForegroundColor(color.getIndex());
-	    style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-	    return style;
 	}
 }
