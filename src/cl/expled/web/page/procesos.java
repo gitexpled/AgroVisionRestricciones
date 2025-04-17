@@ -708,6 +708,7 @@ public class procesos {
 	            cell.setCellValue(header.toUpperCase());
 	        }
 
+	        
 	        int rowIndex = 1;
 	        for (int e = 0; e < data.length(); ++e) {
 	            JSONArray row = data.getJSONArray(e);

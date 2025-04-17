@@ -27,7 +27,7 @@ public class userDB {
 		try {
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT * FROM user where user='" + user + "' and password='" + password + "' and estado=0";
+			sql = "SELECT * FROM user where user='" + user + "' and password='" + password + "'";
 
 			ResultSet rs = stmt.executeQuery(sql);
 			System.out.println(sql);

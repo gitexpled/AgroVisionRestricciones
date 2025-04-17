@@ -220,6 +220,7 @@ License: You must have a valid license purchased only from themeforest(the above
         <script src="../assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
         <script src="../assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
         <script src="../assets/global/plugins/sweet-alert2.js" type="text/javascript"></script>
+        <script src="../assets/global/plugins/xlsx-full/xlsx.full.min.js"></script>
         <!-- END CORE PLUGINS -->
         <!-- BEGIN PAGE LEVEL PLUGINS -->
        

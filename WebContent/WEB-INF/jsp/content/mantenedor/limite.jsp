@@ -8,12 +8,12 @@
 
 				<div class="table-actions-wrapper">
 					<div class="btn-group">
-						<!--<button data-toggle="modal" data-target="#modal-newLimite" id="sample_editable_1_new" class="btn green  btn-outline">
+						<button data-toggle="modal" data-target="#modal-newLimite" id="sample_editable_1_new" class="btn green  btn-outline">
 							Agregar Limite <i class="fa fa-plus"></i>
 						</button>
 						<button data-toggle="modal" data-target="#modal-crea-folio" id="sample_editable_1_new" class="btn green  btn-outline">
 							Carga Excel <i class="fa fa-plus"></i>
-						</button>-->
+						</button>
 					</div>
 					<!-- <div class="btn-group">
 						<a class="btn red btn-outline " href="javascript:;"
@@ -333,36 +333,7 @@
 						<h2 class="modal-title"></h2>
 					</div>
 					<div class="form-group">
-							<label class="col-md-4 control-label">Especie</label>
-							<div class="col-md-8">
-								<div class="input-icon right">
-									<select name="excelEspecie" class="especies form-control" id="excelEspecie">
-                                       		<option value="">Seleccionar</option>
-                                      </select> <br />
-								</div>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-md-4 control-label">Tipo</label>
-							<div class="col-md-8">
-								<div class="input-icon right">
-									<select name="excelTipoProducto" class="tiposProductos form-control" id="excelTipoProducto">
-                                      		<option value="">Seleccionar</option>
-                                     </select> <br />
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-md-4 control-label">Fuente</label>
-							<div class="col-md-8">
-								<select name="excelFuente" class="fuentes form-control" id="excelFuente">
-                                 	<option value="">Seleccionar</option>
-                                </select> <br />
-							</div>
-						</div>
-					<div class="form-group">
-						<label class="col-md-4 control-label">Asoex: </label>
+						<label class="col-md-4 control-label">Archivo LMR: </label>
 						<div class="col-md-8">
 							<div class="input-icon right">
 								<i data-container="body" data-original-title="File"
@@ -372,13 +343,15 @@
 							</div>
 						</div>
 
-
-
-
-
 						<div class="clearfix"></div>
 
 					</div>
+					<div id="cargando" style="display: none; text-align: center; padding-bottom: 1rem; font-weight: 700;">
+					  Cargando<span id="puntos">.</span>
+					</div>
+					<div id="excel-error"
+				         class="alert alert-danger"
+				         style="display:none; white-space:pre-wrap"></div>
 					<div class="modal-footer">
 						<button type="button" data-dismiss="modal" class="btn default">
 							Cerrar <i class="fa fa-sign-out"></i>

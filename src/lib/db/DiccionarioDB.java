@@ -526,13 +526,13 @@ public class DiccionarioDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT DISTINCT codProducto, codRemplazo FROM diccionario where codProducto=codRemplazo order by 1 asc";
+			sql = "SELECT DISTINCT idDiccionario, codProducto, codRemplazo FROM diccionario where codProducto=codRemplazo order by 1 asc";
 
 			
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				Diccionario o = new Diccionario();
-				
+				o.setIdDiccionario(rs.getInt("idDiccionario"));
 				o.setCodProducto(rs.getString("codProducto"));
 				o.setCodReemplazo(rs.getString("codRemplazo"));
 				diccionarios.add(o);

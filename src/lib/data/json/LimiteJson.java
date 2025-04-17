@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lib.db.CertificacionDB;
 import lib.db.DiccionarioDB;
@@ -42,12 +46,14 @@ import lib.security.session;
 import lib.struc.Certificacion;
 import lib.struc.Diccionario;
 import lib.struc.Limite;
+import lib.struc.LimiteExcel;
 import lib.struc.Mercado;
 import lib.struc.Productor;
 import lib.struc.ProductorCertificacion;
 import lib.struc.filterSql;
 import lib.struc.mesajesJson;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 @Controller
 public class LimiteJson {
 	private ArrayList<Mercado> listado = new ArrayList<Mercado>();
@@ -86,6 +92,35 @@ public class LimiteJson {
 		return row;
 
 	}
+	
+	@RequestMapping(value = "/limite/delete/{id}", method = RequestMethod.GET)
+	public @ResponseBody Map<String, Object> deleteLMR(@PathVariable String id, HttpSession httpSession) {
+	    Map<String, Object> response = new HashMap<>();
+	    session ses = new session(httpSession);
+
+	    if (ses.isValid()) {
+	        response.put("success", false);
+	        response.put("message", "Sesión no válida.");
+	        return response;
+	    }
+
+	    try {
+	        boolean eliminado = LimiteDB.deleteLimite(id);
+	        if (eliminado) {
+	            response.put("success", true);
+	            response.put("message", "Límite eliminado correctamente.");
+	        } else {
+	            response.put("success", false);
+	            response.put("message", "No se encontró el límite o ya estaba eliminado.");
+	        }
+	    } catch (Exception e) {
+	        response.put("success", false);
+	        response.put("message", "Error al eliminar el límite: " + e.getMessage());
+	    }
+
+	    return response;
+	}
+
 
 	@RequestMapping(value = "/limite/view", method = { RequestMethod.POST, RequestMethod.GET })
 	public @ResponseBody dataTable view(HttpServletRequest request,HttpSession httpSession)  {
@@ -183,6 +218,16 @@ public class LimiteJson {
 		return data;
 
 	}
+	@RequestMapping(value = "/limite/cargaMasiva" , method= {RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody boolean cargaMasiva(@RequestBody ArrayList<LimiteExcel> rows,HttpSession httpSession) throws ParseException
+	{
+		boolean resp = false;
+		session ses = new session(httpSession);
+		if (ses.isValid()) {
+			return resp;
+		}
+		 return LimiteDB.upsertBatchLimites(rows, ses.getIdUser());
+	}
 	
 	@RequestMapping(value = "/limite/insertLimite" , method= {RequestMethod.PUT}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody boolean insertLimite(@RequestBody Limite row,HttpSession httpSession) throws ParseException
@@ -192,7 +237,7 @@ public class LimiteJson {
 		if (ses.isValid()) {
 			return resp;
 		}
-		resp = LimiteDB.insertLimite(row);
+		resp = LimiteDB.insertLimite(row,ses.getIdUser());
 		return resp;		
 	}
 	
@@ -355,10 +400,10 @@ public class LimiteJson {
 							Limite limVal = LimiteDB.validaLimiteExcel(lim);
 							if (limVal == null) {
 
-								LimiteDB.insertLimite(lim);
+								LimiteDB.insertLimite(lim,ses.getIdUser());
 								if (lim.getIdMercado() == 1) {
 									lim.setIdMercado(15);
-									LimiteDB.insertLimite(lim);
+									LimiteDB.insertLimite(lim,ses.getIdUser());
 
 								}
 							} else {
@@ -366,7 +411,7 @@ public class LimiteJson {
 								Limite limVal2 = LimiteDB.validaLimiteExcel2(lim);
 								if (limVal2 == null) {
 									lim.setIdMercado(15);
-									LimiteDB.insertLimite(lim);
+									LimiteDB.insertLimite(lim,ses.getIdUser());
 
 								} else {
 									limVal2.setIdEspecie(idEspecie);
