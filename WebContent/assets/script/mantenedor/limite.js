@@ -139,7 +139,6 @@ var TableDatatablesAjax = function() {
 	            confirmButtonText: "Sí, eliminar",
 	            cancelButtonText: "Cancelar"
 	        }).then(function (result) {
-				debugger
 	            if (result.value) {
 	                $.ajax({
 	                    type: 'GET',

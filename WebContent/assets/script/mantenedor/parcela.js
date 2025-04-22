@@ -473,34 +473,6 @@ var TableDatatablesAjax = function() {
 	};
 
 }();
-
-/*jQuery(document).ready(function() {
-	TableDatatablesAjax.init();
-	$.ajax({
-		url : "/AgroVisionRestricciones/"+"json/productor/getAllOutFilter",
-		type : "GET",
-		data : "",
-		beforeSend : function(xhr) {
-			xhr.setRequestHeader("Accept",
-					"application/json");
-			xhr.setRequestHeader("Content-Type",
-					"application/json");
-		},
-
-		success : function(data, textStatus, jqXHR) {
-			var options = "";
-			
-			$(data).each(function(key, val){
-				options += "<option value='"+val.codigo+"'>"+val.nombre+"</option>";
-			})
-		
-			$('.productor').append(options);
-		},
-		error : function(jqXHR, textStatus,
-				errorThrown) {
-		}
-	});
-});*/
 let tabla;
 const get = {
 	SP: "get_jerarquias"
@@ -513,7 +485,7 @@ callSp(get).then(function(res){
 	}
 	let datos = [];
 	$.each(res.data, function(k,v){
-		let tbl = [v.Sociedad, v.Etapa, v.EtapaDenomina, v.Campo, v.CampoDenomina, v.Turno, v.TurnoDenomina, v.Especie, v.EspecieDenomina, v.Variedad, v.VariedadDenomina, v.Fundo, v.FundoDenomina, v.Productor, v.ProductorNombre]
+		let tbl = [v.Sociedad, v.Etapa, v.EtapaDenomina, v.Campo, v.CampoDenomina, v.Turno, v.TurnoDenomina, v.Especie, v.EspecieDenomina, v.Variedad, v.VariedadDenomina, v.Fundo, v.FundoDenomina, v.Productor, v.ProductorNombre,(v.estado? 'Activo': 'Inactivo') ,""]
 		datos.push(tbl)
 	})
 	
@@ -521,17 +493,84 @@ callSp(get).then(function(res){
 		tabla.destroy();
         $('#tbl_RendimientoVlidadr').empty();
 	}
-	columnas = ["Sociedad", "Etapa", "EtapaDenomina", "Campo", "CampoDenomina", "Turno", "TurnoDenomina", "Especie", "EspecieDenomina", "Variedad", "VariedadDenomina", "Fundo", "FundoDenomina", "Productor", "ProductorNombre"];
+	columnas = ["Sociedad", "Etapa", "EtapaDenomina", "Campo", "CampoDenomina", "Turno", "TurnoDenomina", "Especie", "EspecieDenomina", "Variedad", "VariedadDenomina", "Fundo", "FundoDenomina", "Productor", "ProductorNombre", "Estado"];
 	var finalColumn = [];
 	for(var i = 0; i < columnas.length; i++){
 		finalColumn.push({title: columnas[i]})
 	}
+	finalColumn.push({
+	  title: "Acción",
+	  render: function(data, type, row, meta) {
+	    return `<button class="btn btn-warning btn-sm delete-row" data-index="${meta.row}">
+	              <i class="fa fa-minus-square" aria-hidden="true"></i>
+	            </button>`;
+	  }
+	});
 	tabla = $('#tbl_RendimientoVlidadr').DataTable({
 		data: datos,
 		columns: finalColumn,
 		autoWidth: true,
 		ordering: false
 	});
+	$('#tbl_RendimientoVlidadr tbody').on('click', '.delete-row', function () {
+	  const rowIndex = $(this).data('index');
+	  const row = tabla.row(rowIndex).data();
+	  const {id, estado}=res.data[rowIndex];
+	  console.log(estado)
+	  const accionEstado = !estado? 'Activar': 'Inactivar'
+	  const accionEstadoFinal = !estado? 'ACTIVO': 'INACTIVO'
+	  swal({
+            title: "¿Estás seguro?",
+            text: "Esta acción "+accionEstado+" el límite seleccionado.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sí, Actualizar",
+            cancelButtonText: "Cancelar"
+        }).then(function (result) {
+			console.log(res.data[rowIndex])
+			
+		    if (result.value) {
+				$.ajax({
+				    type: 'PUT',
+				    url: '/AgroVisionRestricciones/json/Jerarquia/deleteJerarquia',
+				    contentType: 'application/json',
+				    data: JSON.stringify({ id, estado:+!estado }),
+				    success: function (data) {
+				      if (data.success) {
+				        swal(
+				          'Estado actualizado',
+				          'El registro fue marcado como '+accionEstadoFinal+'.',
+				          'success'
+				        );
+						row[15] = accionEstadoFinal;
+			            tabla.row(rowIndex).data(row).draw(false);
+				      } else {
+				        swal(
+				          'Error',
+				          data.message || 'No se pudo actualizar la jerarquía.',
+				          'error'
+				        );
+				      }
+
+				      var table = $('#datatable_ajax').DataTable({
+				        bRetrieve: true
+				      });
+				      table.ajax.reload();
+				    },
+				    error: function () {
+				      swal(
+				        'Error',
+				        'Ocurrió un error inesperado al actualizar la jerarquía.',
+				        'error'
+				      );
+				    }
+			  	});
+		    }
+	  });
+	});
+
 	$("#tbl_RendimientoVlidadr_filter").hide();
 	$("#tbl_RendimientoVlidadr_length").hide();
 	
