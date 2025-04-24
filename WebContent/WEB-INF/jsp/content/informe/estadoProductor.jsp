@@ -13,6 +13,10 @@
 				</a>
 				<ul class="dropdown-menu pull-right">
 					<li><a href="/AgroVisionRestricciones/webApp/exportaExcel/1"> Export to Excel </a></li>
+					<!--  <li><a id="exportaExcel" data-target="#modal-fecha-cambio" href="#"> Export to Excel Con Cambios </a></li>-->
+					<li><a data-toggle='modal'  href='#modal-view'>Export to Excel Con Cambios </a></li>		
+					<li><a href="/AgroVisionRestricciones/json/mail/send">ENVIO MAIL</a></li>
+					
 					
 				</ul>
 			</div>
@@ -171,4 +175,49 @@
 		</form>
 	</div>
 </div>
+
+<div id="modal-view" class="modal fade" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog" style="width: 900px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true"></button>
+				<h4 class="modal-title">Reporte Con Cambios despues de:</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-md-4 control-label">Desde: </label>
+					<div class="col-md-8">
+                              <div class="input-inline input-large">
+                                  <div class="input-group">
+                                      <span class="input-group-addon" id="sizing-addon1">@</span>
+                                      <input name="desde" id="desde" type="date" class="form-control" placeholder="Desde"> 
+                                    </div>
+                              </div>
+					</div>
+				</div>
+
+
+				<table
+					class="table table-bordered table-scrollable table-hovertable-striped  table-condensed nowrap"
+					id="tbl_det"></table>
+
+
+				<div class="modal-footer">
+					<button type="button" id='cancelModal' data-dismiss="modal"
+						class="btn dark btn-outline">Cancelar</button>
+					<button type="button" id="exportaExcel" class="btn green">Guardar</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
 
