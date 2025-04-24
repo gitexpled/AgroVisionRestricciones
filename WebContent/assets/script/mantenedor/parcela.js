@@ -521,7 +521,7 @@ callSp(get).then(function(res){
 	  const accionEstadoFinal = !estado? 'ACTIVO': 'INACTIVO'
 	  swal({
             title: "¿Estás seguro?",
-            text: "Esta acción "+accionEstado+" el límite seleccionado.",
+            text: "Se va a "+accionEstado+" el item seleccionado.",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
