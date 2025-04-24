@@ -15,7 +15,7 @@
 					<li><a href="/AgroVisionRestricciones/webApp/exportaExcel/1"> Export to Excel </a></li>
 					<!--  <li><a id="exportaExcel" data-target="#modal-fecha-cambio" href="#"> Export to Excel Con Cambios </a></li>-->
 					<li><a data-toggle='modal'  href='#modal-view'>Export to Excel Con Cambios </a></li>		
-					<li><a href="/AgroVisionRestricciones/json/mail/send">ENVIO MAIL</a></li>
+					<li><a id="envioMail" href="#">ENVIO MAIL</a></li>
 					
 					
 				</ul>
