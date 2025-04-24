@@ -858,16 +858,29 @@ public class procesos {
 		        baseStyle.setBorderRight(BorderStyle.THIN);
 		        baseStyle.setBorderTop(BorderStyle.THIN);
 
-		        CellStyle greenStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_GREEN);
-		        CellStyle redStyle = cloneWithColor(book, baseStyle, IndexedColors.ROSE);
-		        CellStyle yellowStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_YELLOW);
+		        //CellStyle greenStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_GREEN);
+		        //CellStyle redStyle = cloneWithColor(book, baseStyle, IndexedColors.ROSE);
+		        //CellStyle yellowStyle = cloneWithColor(book, baseStyle, IndexedColors.LIGHT_YELLOW);
 
-		        CellStyle piStyle = book.createCellStyle();
-		        piStyle.cloneStyleFrom(yellowStyle);
-		        Font piFont = book.createFont();
-		        piFont.setColor(IndexedColors.BLACK.getIndex());
-		        piFont.setBold(true);
-		        piStyle.setFont(piFont);
+		        //CellStyle piStyle = book.createCellStyle();
+		        //piStyle.cloneStyleFrom(yellowStyle);
+		        //Font piFont = book.createFont();
+		        //piFont.setColor(IndexedColors.BLACK.getIndex());
+		        //piFont.setBold(true);
+		        //piStyle.setFont(piFont);
+		        
+		        CellStyle checkStyle = book.createCellStyle();
+		        checkStyle.cloneStyleFrom(baseStyle);
+		        Font checkFont = book.createFont();
+		        checkFont.setColor(IndexedColors.GREEN.getIndex());
+		        checkStyle.setFont(checkFont);
+
+		        CellStyle crossStyle = book.createCellStyle();
+		        crossStyle.cloneStyleFrom(baseStyle);
+		        Font crossFont = book.createFont();
+		        crossFont.setColor(IndexedColors.RED.getIndex());
+		        crossStyle.setFont(crossFont);
+		        
 		        Row headerRow = sheet.createRow(0);
 		        for (int i = 0; i < columns.length(); ++i) {
 		            String header = columns.getString(i);
@@ -914,25 +927,35 @@ public class procesos {
 			                
 	
 			                switch (value) {
-			                    case "SI":
-			                    case "SI.":
-			                        cell.setCellValue("✔️");
-			                        cell.setCellStyle(greenStyle);
-			                        break;
-			                    case "NO":
-			                    case "NO.":
-			                        cell.setCellValue("❌");
-			                        cell.setCellStyle(redStyle);
-			                        break;
-			                    case "PI":
-			                    case "PI.":
-			                        cell.setCellValue("PI❗");
-			                        cell.setCellStyle(piStyle);
-			                        break;
-			                    default:
-			                        cell.setCellValue(value);
-			                        cell.setCellStyle(baseStyle);
-			                        break;
+		                    case "SI":
+		                    case "SI.":
+		                        cell.setCellValue("✔️");
+		                        cell.setCellStyle(checkStyle);
+		                        break;
+		                    case "NO":
+		                    case "NO.":
+		                        cell.setCellValue("❌");
+		                        cell.setCellStyle(crossStyle);
+		                        break;
+		                    case "PI":
+		                    case "PI.":
+		                        XSSFRichTextString richText = new XSSFRichTextString("PI❗");
+
+		                        Font piFont = book.createFont();
+		                        piFont.setColor(IndexedColors.BLACK.getIndex());
+		                        piFont.setBold(true);
+		                        richText.applyFont(0, 2, piFont);
+		                        Font iconFont = book.createFont();
+		                        iconFont.setColor(IndexedColors.YELLOW.getIndex());
+		                        iconFont.setBold(true);
+		                        richText.applyFont(2, 3, iconFont);
+		                        cell.setCellValue(richText);
+		                        cell.setCellStyle(baseStyle);
+		                        break;
+		                    default:
+		                        cell.setCellValue(value);
+		                        cell.setCellStyle(baseStyle);
+		                        break;
 			                }
 			            }
 			        }

@@ -206,7 +206,7 @@
 				<div class="modal-footer">
 					<button type="button" id='cancelModal' data-dismiss="modal"
 						class="btn dark btn-outline">Cancelar</button>
-					<button type="button" id="exportaExcel" class="btn green">Guardar</button>
+					<button type="button" id="exportaExcel" class="btn green">Exportar</button>
 
 				</div>
 			</div>
