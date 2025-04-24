@@ -1,3 +1,22 @@
+let intervalo;
+
+  function iniciarCarga() {
+    $('#cargando').show();
+    let puntos = 1;
+    intervalo = setInterval(() => {
+      let dots = '.'.repeat(puntos);
+      $('#puntos').text(dots);
+      puntos = (puntos % 3) + 1;
+    }, 500);
+  }
+
+  function detenerCarga() {
+    clearInterval(intervalo);
+    $('#cargando').hide();
+    $('#puntos').text('.');
+  }
+  iniciarCarga();
+  setTimeout(detenerCarga, 5000);
 var TableDatatablesAjax = function() {
 	 var ID;
 	var initPickers = function() {
@@ -47,7 +66,9 @@ var TableDatatablesAjax = function() {
 									"render" : function(data, type, full) {
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
-
+										html += "<a id='deleteLMR' class='col-md-6 btn red btn-table pull-right button-grilla-elimina-cuenta changeStatus'   data-id='"
+												+ full[7]
+												+ "' data-toggle='modal'><i class='fa fa-trash-o'></i></a>";
 										html += "<a class='col-md-6 btn grey btn-table  pull-right button-grilla-modifica-cuenta'  data-toggle='modal'  data-id='"
 												+ full[7]
 												+ "' href='#modal-modifica-cuenta'><i class='fa fa-pencil-square'></i></a> ";
@@ -104,29 +125,56 @@ var TableDatatablesAjax = function() {
 		// grid.clearAjaxParams();
 	}
 
-	var setEstado = function(){
-		$("body").on("click",".changeStatus",function(e){
-			var id = $(this).data("id");
-			$.ajax({
-				type : 'GET',
-				url : "/AgroVisionRestricciones/"+"json/limite/setStatus",
-				data : {
-					id: id
-				},
-				success : function(data) {
-					swal({
-						  title: 'Usuario Modificado exitosamente!',
-						  animation: true,
-						  customClass: 'animated tada'
-						})
-					var table = $('#datatable_ajax').DataTable({
-								bRetrieve : true
-					});
-					table.ajax.reload();
-				}
-			});
-		})
-	}
+	var setEstado = function () {
+	    $("body").on("click", ".changeStatus", function (e) {
+	        var id = $(this).data("id");
+
+	        swal({
+	            title: "¿Estás seguro?",
+	            text: "Esta acción eliminará el límite seleccionado.",
+	            type: "warning",
+	            showCancelButton: true,
+	            confirmButtonColor: "#d33",
+	            cancelButtonColor: "#3085d6",
+	            confirmButtonText: "Sí, eliminar",
+	            cancelButtonText: "Cancelar"
+	        }).then(function (result) {
+	            if (result.value) {
+	                $.ajax({
+	                    type: 'GET',
+	                    url: "/AgroVisionRestricciones/json/limite/delete/"+id,
+	                    success: function (data) {
+							console.log(data);
+							if(data.success){
+								swal(
+								    'Eliminado',
+								    'El límite fue eliminado correctamente.',
+								    'success'
+								);
+							}else{
+							swal(
+							    'Error',
+							    data.message,
+							    'error'
+							);
+							}
+	                        var table = $('#datatable_ajax').DataTable({
+	                            bRetrieve: true
+	                        });
+	                        table.ajax.reload();
+	                    },
+	                    error: function () {
+	                        swal(
+	                            'Error',
+	                            'No se pudo eliminar el límite.',
+	                            'error'
+	                        );
+	                    }
+	                });
+	            }
+	        });
+	    });
+	};
 	
 	var obtener = function() {
 		$("#modal-modifica-cuenta").on(
@@ -141,7 +189,6 @@ var TableDatatablesAjax = function() {
 						url : "/AgroVisionRestricciones/json/limite/" + id,
 						data : "",
 						success : function(data) {
-							console.log(data);
 							$("#updateLimite").val(data.limite);
 							$("#updateCodProducto").val(data.codProducto);
 							$("#updateMercado").val(data.idMercado);
@@ -359,9 +406,8 @@ var TableDatatablesAjax = function() {
 
 					submitHandler : function(form) {
 
-
+						debugger
 						// parametrosCuenta.Cuenta = cuenta;
-
 						row.idLimite = ID;
 						row.codProducto = $("#updateCodProducto").val();
 						row.idMercado = $("#updateMercado").val();
@@ -632,11 +678,6 @@ var TableDatatablesAjax = function() {
 			focusInvalid : true, 
 			rules : {
 				file : {required : true},
-				excelEspecie : {required : true},
-				excelTipoProducto : {required : true},
-				excelFuente : {required : true},
-				
-
 			},
 
 			messages : {
@@ -691,45 +732,73 @@ var TableDatatablesAjax = function() {
 				label.closest('.form-group').removeClass('has-error'); 
 			},
 
-			submitHandler : function(form) {
+			submitHandler: function () {
 
-				var oMyForm = new FormData();
-				  oMyForm.append("file", file.files[0]);
-				  oMyForm.append("hola","hola");
-				  oMyForm.append("idEspecie", $('#excelEspecie').val());
-				  oMyForm.append("idTipoProducto", $('#excelTipoProducto').val());
-				  oMyForm.append("idFuente", $('#excelFuente').val());
+			    const $fileInput = $('#file');
+			    const $errorBox  = $('#excel-error').hide().text('');  // limpia
 
-				$.ajax({
-							url : "/AgroVisionRestricciones/"+"json/limite/put",
-							data: oMyForm,
-						    dataType: 'text',
-						    processData: false,
-						    contentType: false,
-						    type: 'POST',
-							success : function(data, textStatus, jqXHR) {
-								$('#modal-crea-folio').modal('toggle');
-							swal({
-								  title: 'Excel Cargado exitosamente!',
-								  animation: true,
-								  customClass: 'animated tada'
-								})
-								var table = $('#datatable_ajax')
-										.DataTable({
-											bRetrieve : true
-										});
-								table.ajax.reload();
-							},
-							error : function(jqXHR, textStatus,
-									errorThrown) {
-								
+			    const file = $fileInput[0].files[0];
+			    if (!file) {
+			        $errorBox.text('Debe seleccionar un archivo Excel.').show();
+			        return;
+			    }
 
-							}
-						});
+			    const reader = new FileReader();
+			    reader.onload = function (e) {
+			        try {
+			            const wb   = XLSX.read(e.target.result, { type: 'binary' });
+			            const ws   = wb.Sheets[wb.SheetNames[0]];
+			            const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+			            const required = ['Especies', 'Fuentes', 'Ingrediente Activo', 'LMR', 'Mercados'];
+			            const errores  = [];
+
+			            rows.forEach(r => {
+			                const fila = (r.__rowNum__ || 0) + 2;
+			                required.forEach(col => {
+			                    if (!r[col] || r[col].toString().trim() === '') {
+			                        errores.push(`Fila ${fila - 1} → Columna “${col}” vacía`);
+			                    }
+			                });
+			            });
+
+			            if (errores.length) {
+			                $errorBox.text(errores.join('\n')).show();
+			                return;
+			            }
+
+			            const jsonExcel = rows.map(r => {
+			                const n = {};
+			                Object.keys(r).forEach(k => {
+			                    if (k !== '__rowNum__') n[k.replace(/ /g, '_')] = r[k];
+			                });
+			                return n;
+			            });
+						iniciarCarga();
+			            $.ajax({
+			                url        : '/AgroVisionRestricciones/json/limite/cargaMasiva',
+			                type       : 'POST',
+			                contentType: 'application/json',
+			                data       : JSON.stringify(jsonExcel)
+			            })
+			            .done(() => {
+							detenerCarga();
+			                $('#modal-crea-folio').modal('toggle');
+			                swal({ title: 'Excel cargado exitosamente', animation: true, customClass: 'animated tada' });
+			                $('#datatable_ajax').DataTable({ bRetrieve: true }).ajax.reload();
+			            })
+			            .fail(() => swal('Error', 'No se pudo cargar el Excel', 'error'));
+
+			        } catch (err) {
+			            console.error(err);
+			            $errorBox.text('Error leyendo el archivo: ' + err.message).show();
+			        }
+			    };
+
+			    reader.readAsBinaryString(file);
 			}
-
 		});
-}
+	}
 	var create = function() {
 		$("#modal-crea-folio").on(
 				'show.bs.modal',

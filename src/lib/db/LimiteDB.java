@@ -1,5 +1,7 @@
 package lib.db;
 
+import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,10 +9,19 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.lowagie.text.List;
 
 import lib.struc.Limite;
+import lib.struc.LimiteExcel;
 import lib.struc.filterSql;
 
 public class LimiteDB {
@@ -24,7 +35,7 @@ public class LimiteDB {
 		try
 		{
 			stmt = db.conn.createStatement();
-			sql = "Select * from limites where idLimites="+idLimite;
+			sql = "Select * from limites where estado=1 and idLimites="+idLimite;
 			ResultSet rs = stmt.executeQuery(sql);
 			if(rs.next())
 			{
@@ -49,7 +60,38 @@ public class LimiteDB {
 		}
 		return limite;
 	}
-	
+	public static boolean deleteLimite(String id) throws Exception {
+	    PreparedStatement ps = null;
+	    String sql = "";
+	    String d = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+	    ConnectionDB db = new ConnectionDB();
+
+	    try {
+	        db.conn.setAutoCommit(false);
+
+	        sql = "UPDATE limites SET estado = 0, modificacion = ? WHERE idLimites = ?";
+	        ps = db.conn.prepareStatement(sql);
+	        ps.setString(1, d);
+	        ps.setString(2, id);
+
+	        int rowsAffected = ps.executeUpdate();
+	        db.conn.commit();
+	        return rowsAffected > 0;
+
+	    } catch (SQLException e) {
+	        db.conn.rollback();
+	        System.out.println("Error: " + e.getMessage());
+	        System.out.println("SQL: " + sql);
+	        throw new Exception("updateLimite: " + e.getMessage());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        System.out.println("Error2: " + e.getMessage());
+	        throw new Exception("updateLimite: " + e.getMessage());
+	    } finally {
+	        db.close();
+	    }
+	}
+
 	public static void updateLimite(Limite limite) throws Exception {
 
 		PreparedStatement ps = null;
@@ -101,7 +143,7 @@ public class LimiteDB {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT count(1) FROM limites l";
+			sql = "SELECT count(1) FROM limites l where estado=1";
 
 			if (filter.size() > 0) {
 				String andSql="";
@@ -174,7 +216,7 @@ public class LimiteDB {
 			sql = "SELECT l.*,m.mercado,t.tipoProducto, f.nombre as fuente FROM limites l "
 					+ "inner join mercado m on (l.idMercado=m.idMercado) "
 					+ "inner join tipoProducto t on (l.idTipoProducto=t.idTipoProducto) "
-					+ "inner join fuente f on (l.idFuente=f.idFuente)";
+					+ "inner join fuente f on (l.idFuente=f.idFuente) where l.estado=1";
 
 			if (filter.size() > 0) {
 				String andSql="";
@@ -254,28 +296,33 @@ public class LimiteDB {
 		return limites;
 	}
 	
-	public static boolean insertLimite(Limite limite) throws ParseException
-	{
+	public static boolean insertLimite(Limite limite, int idUser) throws ParseException {
+	    String sql = "INSERT INTO limites " +
+	                 "(codProducto, idMercado, idTipoProducto, idFuente, limite, creado, modificacion, idEspecie, idUser) " +
+	                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	    String fechaActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
 		ConnectionDB db = new ConnectionDB();
-		Statement stmt = null;
-		String d = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		boolean resp = true;
-		String sql = "";
-		try
-		{
-			sql = "INSERT INTO limites(codProducto,idMercado,idTipoProducto,idFuente,limite,creado,modificacion,idEspecie) Values ('"+limite.getCodProducto()+"',"+limite.getIdMercado()+","+limite.getIdTipoProducto()+","+limite.getIdFuente()+",'"+limite.getLimite()+"','"+d+"','"+d+"',"+limite.getIdEspecie()+")";
-			stmt = db.conn.createStatement();
-			resp = stmt.execute(sql);
-			stmt.close();
-			
-		}catch(Exception ex)
-		{
-			System.out.println(ex.getMessage());
-		}finally
-		{
-			db.close();
-		}
-		return resp;
+	    try (PreparedStatement ps = db.conn.prepareStatement(sql)) {
+
+	        ps.setString(1, limite.getCodProducto());
+	        ps.setInt(2, limite.getIdMercado());
+	        ps.setInt(3, limite.getIdTipoProducto());
+	        ps.setInt(4, limite.getIdFuente());
+	        ps.setString(5, limite.getLimite());
+	        ps.setString(6, fechaActual);
+	        ps.setString(7, fechaActual);
+	        ps.setInt(8, limite.getIdEspecie());
+	        ps.setInt(9, idUser);
+
+	        int rowsAffected = ps.executeUpdate();
+	        return rowsAffected > 0;
+
+	    } catch (SQLException ex) {
+	        System.err.println("Error al insertar límite: " + ex.getMessage());
+	        return false;
+	    }
 	}
 	
 	public static Limite validaLimite(Limite limite)
@@ -286,7 +333,7 @@ public class LimiteDB {
 		String sql = "";
 		try
 		{
-			sql = "SELECT * FROM limites where idMercado="+limite.getIdMercado()+" and codProducto='"+limite.getCodProducto()+"' and idEspecie ="+ limite.getIdEspecie()+" and idTipoProducto="+limite.getIdTipoProducto()+" and idFuente="+limite.getIdFuente()+" and idLimites!="+limite.getIdLimite();
+			sql = "SELECT * FROM limites where estado=1 and idMercado="+limite.getIdMercado()+" and codProducto='"+limite.getCodProducto()+"' and idEspecie ="+ limite.getIdEspecie()+" and idTipoProducto="+limite.getIdTipoProducto()+" and idFuente="+limite.getIdFuente()+" and idLimites!="+limite.getIdLimite();
 			System.out.println("limite: "+sql);
 			stmt = db.conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
@@ -323,7 +370,7 @@ public class LimiteDB {
 		String sql = "";
 		try
 		{
-			sql = "SELECT * FROM limites where idMercado="+limite.getIdMercado()+" and codProducto='"+limite.getCodProducto()+"' and idEspecie='"+limite.getIdEspecie()+"'";
+			sql = "SELECT * FROM limites where estado=1 and idMercado="+limite.getIdMercado()+" and codProducto='"+limite.getCodProducto()+"' and idEspecie='"+limite.getIdEspecie()+"'";
 			//System.out.println(sql);
 			stmt = db.conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
@@ -359,7 +406,7 @@ public class LimiteDB {
 		String sql = "";
 		try
 		{
-			sql = "SELECT * FROM limites where idMercado='15' and codProducto='"+limite.getCodProducto()+"' and idEspecie='"+limite.getIdEspecie()+"'";
+			sql = "SELECT * FROM limites where estado=1 and idMercado='15' and codProducto='"+limite.getCodProducto()+"' and idEspecie='"+limite.getIdEspecie()+"'";
 			//System.out.println(sql);
 			stmt = db.conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
@@ -395,7 +442,7 @@ public class LimiteDB {
 		String sql = "";
 		try
 		{
-			sql = "SELECT * FROM limites where (limite=0 ) and  idMercado="+limite.getIdMercado()+" "
+			sql = "SELECT * FROM limites where estado = 1 and (limite=0 ) and  idMercado="+limite.getIdMercado()+" "
 					+ " and codProducto='"+limite.getCodProducto()+"' and idEspecie='"+limite.getIdEspecie()+"'";
 			//System.out.println(sql);
 			stmt = db.conn.createStatement();
@@ -431,7 +478,7 @@ public class LimiteDB {
 		String sql = "";
 		try
 		{
-			sql = "SELECT * FROM limites where (limite>'"+limite.getLimite()+"' ) and  idMercado="+limite.getIdMercado()+" "
+			sql = "SELECT * FROM limites where estado = 1 and (limite>'"+limite.getLimite()+"' ) and  idMercado="+limite.getIdMercado()+" "
 					+ " and codProducto='"+limite.getCodProducto()+"' and idEspecie='"+limite.getIdEspecie()+"'";
 			//System.out.println(sql);
 			stmt = db.conn.createStatement();
@@ -459,4 +506,116 @@ public class LimiteDB {
 		}
 		return limit;
 	}
+
+	public static boolean upsertBatchLimites(ArrayList<LimiteExcel> rows, int idUsuario) {
+
+	    ConnectionDB db = new ConnectionDB();
+	    Connection   conn = db.conn;
+	    PreparedStatement ps = null;
+
+	    try {
+	        conn.setAutoCommit(false);
+	        Set<String> nombresEsp  = new HashSet<>();
+	        Set<String> nombresFte  = new HashSet<>();
+	        Set<String> nombresMer  = new HashSet<>();
+
+	        for (LimiteExcel r : rows) {
+	            nombresEsp.add(r.getEspecies().trim().toUpperCase());
+	            nombresFte.add(r.getFuentes() .trim().toUpperCase());
+	            nombresMer.add(r.getMercados().trim().toUpperCase());
+	        }
+
+	        Map<String,Integer> idEspMap = bulkIds(conn,
+	            "SELECT especie, idEspecie FROM especie WHERE UPPER(especie) IN ",
+	            nombresEsp);
+
+	        Map<String,Integer> idFteMap = bulkIds(conn,
+	            "SELECT nombre,  idFuente  FROM fuente  WHERE UPPER(nombre)  IN ",
+	            nombresFte);
+
+	        Map<String,Integer> idMerMap = bulkIds(conn,
+	            "SELECT mercado, idMercado FROM mercado WHERE UPPER(mercado) IN ",
+	            nombresMer);
+
+	        String findSql = "SELECT idLimites FROM limites WHERE codProducto=? AND idMercado=? AND idTipoProducto=? AND idFuente=?   AND idEspecie=? LIMIT 1";
+	        PreparedStatement find = conn.prepareStatement(findSql);
+
+	        String insSql = "INSERT INTO limites (codProducto,idMercado,idTipoProducto,idFuente,limite,creado,modificacion,idEspecie,idUser,estado) VALUES (?,?,?,?,?,NOW(),NOW(),?,?,1)";
+	        PreparedStatement insert = conn.prepareStatement(insSql);
+
+	        String updSql = "UPDATE limites SET limite=?, modificacion=NOW(), idUser=?, estado=1 WHERE idLimites=?";
+	        PreparedStatement update = conn.prepareStatement(updSql);
+	        int idTipoProd = 2;
+	        for (LimiteExcel r : rows) {
+
+	            Integer idEsp = idEspMap.get(r.getEspecies().trim().toUpperCase());
+	            Integer idFte = idFteMap.get(r.getFuentes() .trim().toUpperCase());
+	            Integer idMer = idMerMap.get(r.getMercados().trim().toUpperCase());
+
+	            if (idEsp == null || idFte == null || idMer == null)
+	                throw new SQLException("Catálogo inexistente en fila: "
+	                        + r.getEspecies());
+	            find.setString(1, r.getIngredienteActivo());
+	            find.setInt   (2, idMer);
+	            find.setInt   (3, idTipoProd);
+	            find.setInt   (4, idFte);
+	            find.setInt   (5, idEsp);
+
+	            Integer idLim = null;
+	            try (ResultSet rs = find.executeQuery()) {
+	                if (rs.next()) idLim = rs.getInt(1);
+	            }
+
+	            if (idLim == null) {
+	                insert.setString (1, r.getIngredienteActivo());
+	                insert.setInt    (2, idMer);
+	                insert.setInt    (3, idTipoProd);
+	                insert.setInt    (4, idFte);
+	                insert.setBigDecimal(5,new BigDecimal(r.getLmr()));
+	                insert.setInt    (6, idEsp);
+	                insert.setInt    (7, idUsuario);
+	                insert.executeUpdate();
+	            } else {
+	                update.setBigDecimal(1,new BigDecimal(r.getLmr()));
+	                update.setInt       (2, idUsuario);
+	                update.setInt       (3, idLim);
+	                update.executeUpdate();
+	            }
+	        }
+
+	        conn.commit();
+	        return true;
+
+	    } catch (Exception ex) {
+	        try { conn.rollback(); } catch (SQLException ignored) {}
+	        ex.printStackTrace();
+	        return false;
+	    } finally {
+	        try { if (ps != null) ps.close(); } catch (SQLException ignored) {}
+	        db.close();
+	    }
+	}
+
+	private static Map<String,Integer> bulkIds(Connection conn,
+	                                           String prefixSql,
+	                                           Set<String> nombres) throws SQLException {
+
+	    if (nombres.isEmpty()) return Collections.emptyMap();
+
+	    String placeholders = nombres.stream().map(s -> "?")
+	                                 .collect(Collectors.joining(","));
+	    String sql = prefixSql + " (" + placeholders + ")";
+
+	    Map<String,Integer> map = new HashMap<>();
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        int i = 1;
+	        for (String n : nombres) ps.setString(i++, n);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next())
+	                map.put(rs.getString(1).trim().toUpperCase(), rs.getInt(2));
+	        }
+	    }
+	    return map;
+	}
+
 }
