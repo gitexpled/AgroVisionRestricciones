@@ -127,8 +127,8 @@ public class TemporadaJson {
 			return mensaje;
 		}
 		
-		String tope = TemporadaDB.getTopeTemporadaAnterior(row.getTemporada(),row.getIdEspecie());
-		String r = TemporadaDB.compareFecha(row.getDesde(), row.getHasta(), tope);
+		//String tope = TemporadaDB.getTopeTemporadaAnterior(row.getTemporada(),row.getIdEspecie());
+		String r = TemporadaDB.compareFecha(row.getDesde(), row.getHasta(), row.getIdEspecie());
 		
 		if(r == "ok") {
 			mensaje.setEstado("ok");
@@ -206,8 +206,8 @@ public class TemporadaJson {
 		}
 		System.out.println("PUT::::::::::::::::::::::::::::");
 		
-		String tope = TemporadaDB.getTopeTemporadaAnterior(row.getTemporada(),row.getIdEspecie());
-		String r = TemporadaDB.compareFecha(row.getDesde(), row.getHasta(), tope);
+		//String tope = TemporadaDB.getTopeTemporadaAnterior(row.getTemporada(),row.getIdEspecie());
+		String r = TemporadaDB.compareFecha(row.getDesde(), row.getHasta(), row.getIdEspecie());
 		
 		if(r == "ok") {
 			TemporadaDB.updateTemporada(row);

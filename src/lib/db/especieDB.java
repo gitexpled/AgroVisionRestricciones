@@ -260,6 +260,44 @@ public class especieDB {
 		return arr;
 	}
 	
+	public ArrayList<especie> getAllExcel() throws Exception {
+		ConnectionDB db = new ConnectionDB();
+		ArrayList<especie> esp = new ArrayList<especie>();
+		Statement stmt = null;
+		String sql = "";
+		try {
+			db = new ConnectionDB();
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT idEspecie,pf, especie,codLab  FROM especie where 1=1";
+			// sql += " limit 1";
+
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				especie o = new especie();
+				
+
+				o.setIdEspecie(rs.getInt("idEspecie"));
+				o.setEspecie(rs.getString("especie"));
+				o.setPf(rs.getString("pf"));
+				o.setCodLab(rs.getString("codLab"));
+				esp.add(o);
+			}
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			throw new Exception("getAllFileFolder: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return esp;
+	}
+	
 	public static boolean insert(cargaManual o) throws ParseException
 	{
 		ConnectionDB db = new ConnectionDB();

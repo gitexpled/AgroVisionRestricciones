@@ -389,7 +389,7 @@ public class TemporadaDB {
 
 	}
 	
-	public static String compareFecha(String desde, String hasta, String topeAnterior) {
+	public static String compareFecha(String desde, String hasta, String especie) throws Exception {
 		
 		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 		String response = "ok";
@@ -397,23 +397,20 @@ public class TemporadaDB {
         try {
             Date fechaDesde = formato.parse(desde);
             Date fechaHasta = formato.parse(hasta);
-            Date tope = formato.parse(topeAnterior);
-
-            System.out.println(topeAnterior);
-            System.out.println(desde);
+            boolean tope = getTopeTemporadaAnterior(especie, desde, hasta);
             
-            if (topeAnterior == "") {
-            	//response = true;
+            if (tope) {
+            	response = "La fecha desde o hasta estan dentro de otra temporada para esta especie";
                 System.out.println("No hay Fecha tope");
             }            
             if (fechaDesde.after(fechaHasta)) {
             	response = "La fecha 'desde' es posterior a 'hasta'";
                 System.out.println("La fecha 'desde' es posterior a 'hasta'");
             }  
-            if (fechaDesde.before(tope)) {
-            	response = "La fecha 'desde' es inferior a 'hasta' periodo anterior";
-                System.out.println("La fecha 'desde' es inferior a 'hasta' periodo anterior");
-            }            
+            //if (fechaDesde.before(tope)) {
+            	//response = "La fecha 'desde' es inferior a 'hasta' periodo anterior";
+                //System.out.println("La fecha 'desde' es inferior a 'hasta' periodo anterior");
+            //}            
           
         } catch (ParseException e) {
         	response = "Error al convertir fechas: " + e.getMessage();
@@ -424,21 +421,21 @@ public class TemporadaDB {
 		
 	}
 	
-	public static String getTopeTemporadaAnterior(String temporada, String especie) throws Exception {
+	public static boolean getTopeTemporadaAnterior( String especie, String desde, String hasta) throws Exception {
 
 		ConnectionDB db = new ConnectionDB();
 		Statement stmt = null;
 		String sql = "";
-		String tope = "";
+		boolean tope = false;
 		try {
 
 			stmt = db.conn.createStatement();
 
-			sql = "SELECT hasta FROM temporada  where temporada = '"+temporada+"'-101 and idEspecie = '"+especie+"'";
+			sql = "SELECT hasta FROM temporada  where  idEspecie = '"+especie+"' AND '"+desde+"' between desde and hasta or  '"+hasta+"' between desde and hasta";
 			
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next()) {
-				tope = rs.getString("hasta");
+				tope = true;
 			} 
 
 			rs.close();

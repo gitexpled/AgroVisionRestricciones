@@ -93,7 +93,7 @@ var TableDatatablesAjax = function() {
 						},
 						"columnDefs" : [
 						           {
-											"targets" : [0,1,2,3,4,5,6,7],
+											"targets" : [0,1,2,3,4,5,6,7,8],
 						           "render" : function(data, type, row,meta ) {
 										var html =data;
 										 ;
@@ -272,12 +272,14 @@ var TableDatatablesAjax = function() {
 					});
 				});
 	}
+	
+	
 
 	var editar = function() {
 
 		var row = {};
 
-		var form1 = $('#modifica-cuenta-form');
+		var form1 = $('#modal-fecha-cambio');
 
 		form1.validate({
 					errorElement : 'span', 
@@ -578,5 +580,8 @@ var TableDatatablesAjax = function() {
 
 jQuery(document).ready(function() {
 	TableDatatablesAjax.init();
-	
+	$("#exportaExcel").click(function(){		
+		window.location.href = "/AgroVisionRestricciones/webApp/exportaExcelResumen/"+$('#desde').val();
+		$('#cancelModal').trigger("click");
+	});
 });

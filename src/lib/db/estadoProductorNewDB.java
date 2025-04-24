@@ -3,15 +3,19 @@ package lib.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
-
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import lib.struc.Mercado;
+import lib.struc.filterSql;
+import lib.struc.jerarquia;
 
 
 
@@ -1632,5 +1636,51 @@ public class estadoProductorNewDB {
 
 		return json.toString();
 	}
+	
+	public static ArrayList<jerarquia> getCambios(String fecha)
+			throws Exception {
+
+		ArrayList<jerarquia> jerarquias = new ArrayList<jerarquia>();
+		Statement stmt = null;
+		String sql = "";
+		ConnectionDB db = new ConnectionDB();
+		try {
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT ifnull(vj.sociedad,'') sociedad, ifnull(vj.etapa,'') etapa , ifnull(vj.campo,'') campo, ifnull(vj.turno,0) turno, ifnull(vj.especie,'') especie, ifnull(vj.variedad,'') variedad, ifnull(vj.fundo,'') fundo "
+					+ "FROM versionJerarquias vj "
+					+ "WHERE fecha >= '"+fecha+"'; ";
+
+			System.out.println("sql: " + sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				jerarquia o = new jerarquia();
+				
+				o.setSociedad(rs.getString("sociedad"));
+				o.setEtapa(rs.getString("etapa"));
+				o.setCampo(rs.getString("campo"));
+				o.setTurno(rs.getString("turno"));
+				o.setEspecie(rs.getString("especie"));
+				o.setVariedad(rs.getString("variedad"));
+				o.setFundo(rs.getString("fundo"));
+				jerarquias.add(o);
+			}
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getMercado: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return jerarquias;
+	}
+
 
 }

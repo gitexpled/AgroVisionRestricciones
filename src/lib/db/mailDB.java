@@ -324,4 +324,44 @@ public class mailDB {
         }
         return sb.toString();
     }
+    
+    public static String getmail()
+			throws Exception {
+		String email="";
+		Statement stmt = null;
+		String sql = "";
+		ConnectionDB db = new ConnectionDB();
+		try {
+
+			stmt = db.conn.createStatement();
+
+			sql = "SELECT * FROM mail ";
+
+			
+			System.out.println(sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			String coma="";
+			while (rs.next()) {
+				email+=coma+rs.getString("mail");
+				
+				coma=";";
+			}
+			
+			System.out.println(email);
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			throw new Exception("getUsers: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return email;
+	}
+
 }
