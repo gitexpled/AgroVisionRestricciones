@@ -581,4 +581,14 @@ jQuery(document).ready(function() {
 		window.location.href = "/AgroVisionRestricciones/webApp/exportaExcelResumen/"+$('#desde').val();
 		$('#cancelModal').trigger("click");
 	});
+	$("#envioMail").click(function(){
+		$.ajax({
+		   url:"/AgroVisionRestricciones/json/mail/send",
+		   type:'GET',
+		   success: function(data){
+		       console.log(data);
+			   alert(data.mensaje);
+		   }
+		});
+	});
 });

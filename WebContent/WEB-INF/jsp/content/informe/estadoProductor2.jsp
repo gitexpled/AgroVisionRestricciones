@@ -14,7 +14,7 @@
 				<ul class="dropdown-menu pull-right">
 					<li><a href="/AgroVisionRestricciones/webApp/exportaExcel/1"> Export to Excel Normal</a></li>
 					<li><a data-toggle='modal'  href='#modal-view'>Export to Excel Con Cambios </a></li>	
-					<li><a href="/AgroVisionRestricciones/json/mail/send">ENVIO MAIL</a></li>
+					<li><a id="envioMail" href="#">ENVIO MAIL</a></li>
 					<!-- <li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/N"> Export SAP MERCADO</a></li>
 					<li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/Y"> Export SAP CLIENTE</a></li> -->
 					
