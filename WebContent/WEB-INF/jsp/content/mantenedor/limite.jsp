@@ -333,18 +333,18 @@
 						<h2 class="modal-title"></h2>
 					</div>
 					<div class="form-group">
-						<label class="col-md-4 control-label">Archivo LMR: </label>
-						<div class="col-md-8">
-							<div class="input-icon right">
-								<i data-container="body" data-original-title="File"
-									class="fa fa-info-circle tooltips"></i> <input type="file"
-									id="file" name="file" value=""
-									class="form-control"> <br />
-							</div>
-						</div>
-
-						<div class="clearfix"></div>
-
+					  <label class="col-md-4 control-label">Archivo LMR: </label>
+					  <div class="col-md-8">
+					    <div class="input-icon right">
+					      <i data-container="body" data-original-title="File" class="fa fa-info-circle tooltips"></i>
+					      <input type="file" id="file" name="file" class="form-control">
+					      <br />
+					      <a href="https://dev-net.goplicity.com/descargas/mval/base_lmr.xlsx" download class="btn btn-link p-0 mt-2">
+					        <i class="fa fa-download"></i> Descargar Excel base
+					      </a>
+					    </div>
+					  </div>
+					  <div class="clearfix"></div>
 					</div>
 					<div id="cargando" style="display: none; text-align: center; padding-bottom: 1rem; font-weight: 700;">
 					  Cargando<span id="puntos">.</span>
