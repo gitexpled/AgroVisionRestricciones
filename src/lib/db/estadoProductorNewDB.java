@@ -113,7 +113,7 @@ public class estadoProductorNewDB {
 			sql += "FROM  ";
 			sql += "  jerarquias j JOIN temporada t inner join  especie e on (j.Especie=e.pf) ";
 			sql += "  left join bloqueoClp xx on (j.productor=xx.productor and j.etapa=xx.etapa    and j.campo=xx.campo and j.VariedadDenomina=xx.variedad )";
-			sql += "where   ";
+			sql += "where   j.estado = 1 and ";
 			sql += "  e.idEspecie='"+idEspecie+"' and t.idTemporada='"+idTemporada+"'  and j.VariedadDenomina not in (SELECT variedad FROM eliminaVariedad) ";
 			
 			if (!productor.isEmpty())

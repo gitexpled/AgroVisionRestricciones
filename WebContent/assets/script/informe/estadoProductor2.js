@@ -591,4 +591,15 @@ jQuery(document).ready(function() {
 		   }
 		});
 	});
+	$("#enviarExcel").click(function(){		
+		$.ajax({
+		   url:"/AgroVisionRestricciones/json/mail/sendResumen/"+$('#desdeMail').val(),
+		   type:'GET',
+		   success: function(data){
+		       console.log(data);
+			   alert(data.mensaje);
+		   }
+		});
+		$('#cancelModalResumen').trigger("click");
+	});
 });

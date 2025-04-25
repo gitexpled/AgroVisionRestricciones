@@ -14,7 +14,8 @@
 				<ul class="dropdown-menu pull-right">
 					<li><a href="/AgroVisionRestricciones/webApp/exportaExcel/1"> Export to Excel Normal</a></li>
 					<li><a data-toggle='modal'  href='#modal-view'>Export to Excel Con Cambios </a></li>	
-					<li><a id="envioMail" href="#">ENVIO MAIL</a></li>
+					<li><a id="envioMail" href="#">Envio Mail</a></li>
+					<li><a id="envioMailResumen" data-toggle='modal' href='#modal-view-mail'>Envio Mail Con Cambios</a></li>
 					<!-- <li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/N"> Export SAP MERCADO</a></li>
 					<li><a href="/AgroVisionRestricciones/webApp/exportaExcelParcelaSap/1/Y"> Export SAP CLIENTE</a></li> -->
 					
@@ -199,6 +200,54 @@
 		</div>
 	</div>
 </div>
+
+<div id="modal-view-mail" class="modal fade" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog" style="width: 900px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true"></button>
+				<h4 class="modal-title">Reporte Con Cambios despues de:</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-md-4 control-label">Desde: </label>
+					<div class="col-md-8">
+                              <div class="input-inline input-large">
+                                  <div class="input-group">
+                                      <span class="input-group-addon" id="sizing-addon1">@</span>
+                                      <input name="desde" id="desdeMail" type="date" class="form-control" placeholder="Desde"> 
+                                    </div>
+                              </div>
+					</div>
+				</div>
+
+
+				<table
+					class="table table-bordered table-scrollable table-hovertable-striped  table-condensed nowrap"
+					id="tbl_det"></table>
+
+
+				<div class="modal-footer">
+					<button type="button" id='cancelModalMail' data-dismiss="modal"
+						class="btn dark btn-outline">Cancelar</button>
+					<button type="button" id="enviarExcel" class="btn green">Enviar</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
 
 
 

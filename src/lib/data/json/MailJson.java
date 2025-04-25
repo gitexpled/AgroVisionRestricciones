@@ -245,5 +245,44 @@ public class MailJson {
 
 	}
 	
+	@RequestMapping(value = "/mail/sendResumen/{fecha}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody mesajesJson sendMailResumen(HttpSession httpSession,@PathVariable("fecha") String fecha) throws Exception {
+		
+		mesajesJson mensaje = new mesajesJson();
+		System.out.println("send");
+		try {
+			excel exl=new excel();
+			System.out.println("216");
+			String fileStr=exl.createExcelResumen(fecha);
+			
+			String host = "cloud.goplicity.com";
+			String user = "envios@cloud.goplicity.com";
+			String password = "^BxUl91Cv-)5^SpA0E";
+			String port = "587";
+			String ssl = "ssl";
+			System.out.println("PARAMETROS: "+host+" --  "+user);
+			utilMail m = new utilMail();
+			System.out.println("226");
+			String[] arrFile= new String[1];
+			arrFile[0]=fileStr;
+			String destinatario=mailDB.getmail();
+			System.out.println("230");
+			m.send(destinatario, user, password, host, port, ssl, "Envio de reporte", "Reporte de restriciones", arrFile);
+			System.out.println("232");
+			mensaje.setEstado("ok");
+			mensaje.setMensaje("Mail Enviado con Éxito");
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			//log.error("Error:" + e.getMessage());
+		}
+		
+		return mensaje;
+
+	}
+	
 	
 }

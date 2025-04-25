@@ -8,10 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import lib.struc.especie;
+import lib.struc.jerarquia;
 
 public class excel {
     private static class Styles {
@@ -115,6 +117,83 @@ public class excel {
             ConditionalFormattingRule rule = cf.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
             rule.getMultiStateFormatting().setIconOnly(true);
             cf.addConditionalFormatting(rg, rule);
+        }
+        String path = "/tmp/" + UUID.randomUUID() + ".xlsx";
+        try (FileOutputStream out = new FileOutputStream(path)) { wb.write(out); }
+        wb.close();
+        return path;
+    }
+    
+    public String createExcelResumen(String fecha) throws Exception {
+
+        XSSFWorkbook wb = new XSSFWorkbook();
+        Styles st = buildStyles(wb);
+
+        List<especie> especies = new especieDB().getAllExcel();
+        estadoProductorNewDB d = new estadoProductorNewDB();
+        ArrayList<jerarquia> jerarquias = d.getCambios(fecha);
+        
+        String json = "";
+        
+        for (especie es : especies) {
+        	
+        	boolean cambio = false;
+	        for (jerarquia jr : jerarquias) {
+	        	if(es.getEspecie().equals(jr.getEspecie()) || jr.getEspecie().equals(""))
+	        	{
+	        		cambio = true;
+	        		json = d.getRestriccionesExcel(0, es.getIdEspecie(),"","","","", "", true);
+	        		//System.out.println(json);
+	        	}
+	        	
+	        	
+	        }
+	        
+	        if(cambio) {  
+            
+	            JSONObject o = new JSONObject(json);
+	            JSONArray cols = o.getJSONArray("columns");
+	            JSONArray data = o.getJSONArray("data");
+	
+	            Sheet sh = wb.createSheet(es.getEspecie());
+	            Row head = sh.createRow(0);
+	            for (int c = 0; c < cols.length(); c++) {
+	                Cell cell = head.createCell(c);
+	                cell.setCellStyle(st.header);
+	                cell.setCellValue(cols.getString(c).toUpperCase());
+	            }
+	            int rowIdx = 1;
+	            for (int r = 0; r < data.length(); r++) {
+	                JSONArray jRow = data.getJSONArray(r);
+	                boolean cambio2 = false;
+			        for (jerarquia jr : jerarquias) {
+			        	if(
+			        			(es.getEspecie().equals(jr.getEspecie()) || jr.getEspecie().equals("")) &&
+			        			(jRow.getString(4).trim().toUpperCase().equals(jr.getEtapa()) || jr.getEtapa().equals("")) &&
+			        			(jRow.getString(5).trim().toUpperCase().equals(jr.getCampo()) || jr.getCampo().equals("")) &&
+			        			(jRow.getString(6).trim().toUpperCase().equals(jr.getVariedad()) || jr.getVariedad().equals("")) 
+			        	)
+			        	{
+			        		cambio2 = true;
+			        		//System.out.println(row.getString(4).trim().toUpperCase());
+			        	}
+			        	
+			        	
+			        }
+			        
+			        if(cambio2) {
+			        	if (!jRow.getString(3).equalsIgnoreCase(es.getPf())) continue;
+		                Row row = sh.createRow(rowIdx++);
+		                writeRow(row, jRow, st, wb);
+			        }
+	                
+	            }
+	            SheetConditionalFormatting cf = sh.getSheetConditionalFormatting();
+	            CellRangeAddress[] rg = { CellRangeAddress.valueOf("I2:DA500") };
+	            ConditionalFormattingRule rule = cf.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
+	            rule.getMultiStateFormatting().setIconOnly(true);
+	            cf.addConditionalFormatting(rg, rule);
+	        }
         }
         String path = "/tmp/" + UUID.randomUUID() + ".xlsx";
         try (FileOutputStream out = new FileOutputStream(path)) { wb.write(out); }
