@@ -111,7 +111,7 @@ License: You must have a valid license purchased only from themeforest(the above
             <!-- END LOGIN FORM -->
             <!-- BEGIN FORGOT PASSWORD FORM -->
             <form class="forget-form" action="recupera" method="post">
-              <h3>Receuperar Contraseña!</h3>
+              <h3>Recuperar Contraseña!</h3>
                 <p> Ingrese su e-Mail y le enviaremos como  recuperarla </p>
                 <div class="form-group">
                     <div class="input-icon">

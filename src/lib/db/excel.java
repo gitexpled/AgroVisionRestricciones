@@ -1,148 +1,124 @@
 package lib.db;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
-
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.IconMultiStateFormatting.IconSet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-import org.springframework.util.FileCopyUtils;
+
+import java.io.FileOutputStream;
+import java.util.List;
+import java.util.UUID;
 
 import lib.struc.especie;
 
-
-
 public class excel {
+    private static class Styles {
+        final XSSFCellStyle header, base, check, cross;
+        Styles(XSSFCellStyle h, XSSFCellStyle b, XSSFCellStyle c1, XSSFCellStyle c2) {
+            header = h; base = b; check = c1; cross = c2;
+        }
+    }
 
-	//static Logger log = LoggerFactory.getLogger(api.cl.goplicity.controller.excel.class);
-	public String createExcel() throws Exception
-	{
-		String fileStr="";
-		// Workbook book=WorkbookFactory.create(in);
-				Workbook book = new XSSFWorkbook();
-				//log.info("comienzo excel");
+    private void borders(XSSFCellStyle s) {
+        s.setBorderTop(BorderStyle.THIN);
+        s.setBorderBottom(BorderStyle.THIN);
+        s.setBorderLeft(BorderStyle.THIN);
+        s.setBorderRight(BorderStyle.THIN);
+    }
 
-				ArrayList<especie> arrEspecie = null;
-				especieDB especie=new especieDB();
-				try {
-					arrEspecie = especie.getAllExcel();
-				} catch (Exception e) {
-					//
-					e.printStackTrace();
-				}
+    private XSSFColor rgb(int r, int g, int b) {
+        byte[] arr = { (byte) r, (byte) g, (byte) b };
+        try { return new XSSFColor(arr, null); }
+        catch (Throwable t) { return new XSSFColor(arr); }
+    }
 
-				Iterator<especie> ff = arrEspecie.iterator();
-				while (ff.hasNext()) {
-					especie es = ff.next();
-				
-					estadoProductorNewDB dataDB = new estadoProductorNewDB();
-					String json = dataDB.getRestriccionesExcel(0, es.getIdEspecie(), "", "", "", "", "",true);
-					
-					JSONObject j = new JSONObject(json);
-					//log.info("jsonO:"+j);
-					JSONArray columns = j.getJSONArray("columns");
-					JSONArray data = j.getJSONArray("data");
+    private Styles buildStyles(XSSFWorkbook wb) {
+    	XSSFColor blue  = rgb(  0, 112, 192); 
+    	XSSFColor green = rgb(  0, 176,  80);
+    	XSSFColor red   = rgb(192,   0,   0);
+    	XSSFColor white = rgb(255, 255, 255);
+        XSSFCellStyle header = wb.createCellStyle();
+        header.setFillForegroundColor(blue);
+        header.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        borders(header);
+        XSSFFont hFont = wb.createFont();
+        hFont.setBold(true); hFont.setFontName("Arial"); hFont.setColor(white);
+        header.setFont(hFont);
 
-					Sheet sheet = book.createSheet(es.getEspecie());
-					//log.info("-------------------------------------------------");
-					CellStyle tituloEstilo = book.createCellStyle();
-					tituloEstilo.setAlignment(HorizontalAlignment.CENTER);
-					tituloEstilo.setVerticalAlignment(VerticalAlignment.CENTER);
-					Font fuenteTitulo = book.createFont();
-					fuenteTitulo.setBold(true);
-					fuenteTitulo.setFontHeightInPoints((short) 14);
-					tituloEstilo.setFont(fuenteTitulo);
+        XSSFCellStyle base = wb.createCellStyle(); borders(base);
+        XSSFCellStyle check = wb.createCellStyle(); check.cloneStyleFrom(base);
+        XSSFFont gFont = wb.createFont(); gFont.setColor(green); check.setFont(gFont);
+        XSSFCellStyle cross = wb.createCellStyle(); cross.cloneStyleFrom(base);
+        XSSFFont rFont = wb.createFont(); rFont.setColor(red); cross.setFont(rFont);
 
-					CellStyle headerStyle = book.createCellStyle();
-					headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-					headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-					headerStyle.setBorderBottom(BorderStyle.THIN);
-					headerStyle.setBorderLeft(BorderStyle.THIN);
-					headerStyle.setBorderRight(BorderStyle.THIN);
-					headerStyle.setBorderTop(BorderStyle.THIN);
+        return new Styles(header, base, check, cross);
+    }
+    private void writeRow(Row row, JSONArray jsonRow, Styles st, XSSFWorkbook wb) {
 
-					Font font = book.createFont();
-					font.setFontName("Arial");
-					font.setBold(true);
-					font.setColor(IndexedColors.WHITE.getIndex());
-					headerStyle.setFont(font);
+        for (int c = 0; c < jsonRow.length(); c++) {
+            String v = jsonRow.getString(c).trim().toUpperCase();
+            Cell cell = row.createCell(c);
 
-					// INGRESAMOS LA DATA DEL EXCEL
-					CellStyle datoStyle = book.createCellStyle();
-					datoStyle.setBorderBottom(BorderStyle.THIN);
-					datoStyle.setBorderLeft(BorderStyle.THIN);
-					datoStyle.setBorderRight(BorderStyle.THIN);
-					datoStyle.setBorderTop(BorderStyle.THIN);
+            switch (v) {
+                case "SI": case "SI.":
+                    cell.setCellValue("✔️"); cell.setCellStyle(st.check); break;
+                case "NO": case "NO.":
+                    cell.setCellValue("❌"); cell.setCellStyle(st.cross); break;
+                case "PI": case "PI.":
+                    XSSFRichTextString rt = new XSSFRichTextString("PI❗");
+                    XSSFFont bold = wb.createFont(); bold.setBold(true);
+                    rt.applyFont(0, 2, bold);
+                    XSSFFont yell = wb.createFont();
+                    yell.setColor(rgb(255, 192, 0)); yell.setBold(true);
+                    rt.applyFont(2, 3, yell);
+                    cell.setCellValue(rt);
+                    cell.setCellStyle(st.base);
+                    break;
+                default:
+                    cell.setCellValue(v); cell.setCellStyle(st.base); break;
+            }
+        }
+    }
+    public String createExcel() throws Exception {
 
-					int i = 1;
-					int a = 0;
-					int x = 0;
-					Row fila = sheet.createRow(0);
-					for (int e = 0; e < columns.length(); ++e) {
-						String header = columns.getString(e);
-						Cell cell = fila.createCell(e);
-						cell.setCellStyle(datoStyle);
-						cell.setCellValue(header.toString().toUpperCase());
-					}
-					String espe = "";
-					for (int e = 0; e < data.length(); ++e) {
-						JSONArray ex = data.getJSONArray(e);
-						for (int d = 0; d < ex.length(); d++) {
-							if (ex.getString(d).equals(es.getPf())) {
-								espe = ex.getString(d);
-							}
-						}
-					}
-					for (int e = 0; e < data.length(); ++e) {
-						JSONArray ex = data.getJSONArray(e);
-						Row dataRow = sheet.createRow(i);
-						for (int d = 0; d < ex.length(); d++) {
-							if (ex.getString(3).toUpperCase().equals(es.getPf().toUpperCase())) {
-								String header = ex.getString(d);
-								Cell cell = dataRow.createCell(d);
-								cell.setCellStyle(datoStyle);
-								cell.setCellValue(header.toString().toUpperCase());
-							}
-						}
-						i++;
-					}
+        XSSFWorkbook wb = new XSSFWorkbook();
+        Styles st = buildStyles(wb);
 
-				}
-				// FIN DE EXCEL
+        List<especie> especies = new especieDB().getAllExcel();
 
-				try {
-					UUID uuid = UUID.randomUUID();
-					fileStr = "/tmp/" + uuid.toString() + ".xlsx";
-					//log.info(fileStr);
-					FileOutputStream fileout = new FileOutputStream(fileStr);
-					book.write(fileout);
-					fileout.close();
+        for (especie es : especies) {
 
-					
-				} catch (Exception e) {
-					// TODO
-					//log.error(e.getMessage());
-					e.printStackTrace();
-				}
-				
-				return fileStr;
-	
-	}
+            estadoProductorNewDB d = new estadoProductorNewDB();
+            String json = d.getRestriccionesExcel(0, es.getIdEspecie(),"","","","", "", true);
+            JSONObject o = new JSONObject(json);
+            JSONArray cols = o.getJSONArray("columns");
+            JSONArray data = o.getJSONArray("data");
+
+            Sheet sh = wb.createSheet(es.getEspecie());
+            Row head = sh.createRow(0);
+            for (int c = 0; c < cols.length(); c++) {
+                Cell cell = head.createCell(c);
+                cell.setCellStyle(st.header);
+                cell.setCellValue(cols.getString(c).toUpperCase());
+            }
+            int rowIdx = 1;
+            for (int r = 0; r < data.length(); r++) {
+                JSONArray jRow = data.getJSONArray(r);
+                if (!jRow.getString(3).equalsIgnoreCase(es.getPf())) continue;
+                Row row = sh.createRow(rowIdx++);
+                writeRow(row, jRow, st, wb);
+            }
+            SheetConditionalFormatting cf = sh.getSheetConditionalFormatting();
+            CellRangeAddress[] rg = { CellRangeAddress.valueOf("I2:DA500") };
+            ConditionalFormattingRule rule = cf.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
+            rule.getMultiStateFormatting().setIconOnly(true);
+            cf.addConditionalFormatting(rg, rule);
+        }
+        String path = "/tmp/" + UUID.randomUUID() + ".xlsx";
+        try (FileOutputStream out = new FileOutputStream(path)) { wb.write(out); }
+        wb.close();
+        return path;
+    }
 }
