@@ -62,7 +62,12 @@ public class excel {
         for (int c = 0; c < jsonRow.length(); c++) {
             String v = jsonRow.getString(c).trim().toUpperCase();
             Cell cell = row.createCell(c);
-
+            if (c == 7) {
+                cell.setCellValue(v); 
+                cell.setCellStyle(st.base);
+                continue;
+            }
+            System.out.println("Columna: " + c + " valor original: [" + jsonRow.getString(c) + "]");
             switch (v) {
                 case "SI": case "SI.":
                     cell.setCellValue("✔️"); cell.setCellStyle(st.check); break;
@@ -70,11 +75,10 @@ public class excel {
                     cell.setCellValue("❌"); cell.setCellStyle(st.cross); break;
                 case "PI": case "PI.":
                     XSSFRichTextString rt = new XSSFRichTextString("PI❗");
-                    XSSFFont bold = wb.createFont(); bold.setBold(true);
-                    rt.applyFont(0, 2, bold);
-                    XSSFFont yell = wb.createFont();
-                    yell.setColor(rgb(255, 192, 0)); yell.setBold(true);
-                    rt.applyFont(2, 3, yell);
+                    XSSFFont yellowFont = wb.createFont();
+                    yellowFont.setColor(rgb(255, 192, 0));
+                    yellowFont.setBold(true);
+                    rt.applyFont(0, 3, yellowFont);
                     cell.setCellValue(rt);
                     cell.setCellStyle(st.base);
                     break;

@@ -189,7 +189,7 @@
 					class="table table-bordered table-scrollable table-hovertable-striped  table-condensed nowrap"
 					id="tbl_det"></table>
 
-
+				<div id="mensaje-resultado" class="alert" style="display:none;"></div>
 				<div class="modal-footer">
 					<button type="button" id='cancelModal' data-dismiss="modal"
 						class="btn dark btn-outline">Cancelar</button>
@@ -228,6 +228,7 @@
 					id="tbl_det"></table>
 
 
+				<div id="mensaje-resultado2" class="alert" style="display:none;"></div>
 				<div class="modal-footer">
 					<button type="button" id='cancelModalMail' data-dismiss="modal"
 						class="btn dark btn-outline">Cancelar</button>

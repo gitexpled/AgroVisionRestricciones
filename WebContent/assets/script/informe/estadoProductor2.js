@@ -1,3 +1,21 @@
+function mostrarMensaje(tipo, texto, id) {
+	const div = $('#' + id);
+	div.removeClass();
+	div.show();
+	if (tipo === 'success') {
+		div.addClass('alert alert-success');
+		div.html('<strong>Éxito!</strong> ' + texto);
+	} else if (tipo === 'error') {
+		div.addClass('alert alert-danger');
+		div.html('<strong>Error!</strong> ' + texto);
+	} else if (tipo === 'warning') {
+		div.addClass('alert alert-warning');
+		div.html('<strong>Atención!</strong> ' + texto);
+	} else if (tipo === 'loading') {
+		div.addClass('alert alert-info');
+		div.html('<strong>Cargando...</strong> ' + texto + ' <i class="fa fa-spinner fa-spin"></i>');
+	}
+}
 var TableDatatablesAjax = function() {
 	
 	
@@ -577,29 +595,65 @@ var TableDatatablesAjax = function() {
 
 jQuery(document).ready(function() {
 	TableDatatablesAjax.init();
-	$("#exportaExcel").click(function(){		
+	$("#exportaExcel").click(function(){	
+		const fecha = $('#desde').val();
+		if (!fecha) {
+			mostrarMensaje('warning', 'Debe seleccionar una fecha para exportar el reporte.','mensaje-resultado');
+			return;
+		}
+		$('#mensaje-resultado').hide();
 		window.location.href = "/AgroVisionRestricciones/webApp/exportaExcelResumen/"+$('#desde').val();
 		$('#cancelModal').trigger("click");
 	});
-	$("#envioMail").click(function(){
+	$("#envioMail").click(function () {
+		$('#cancelModal').trigger("click");
 		$.ajax({
-		   url:"/AgroVisionRestricciones/json/mail/send",
-		   type:'GET',
-		   success: function(data){
-		       console.log(data);
-			   alert(data.mensaje);
-		   }
+			url: "/AgroVisionRestricciones/json/mail/send",
+			type: 'GET',
+			beforeSend: function () {
+				swal({
+					title: 'Enviando resumen...',
+					text: 'Espere mientras se procesa el envío.',
+					icon: 'info',
+					buttons: false,
+					closeOnClickOutside: false,
+					closeOnEsc: false
+				});
+			},
+			success: function (data) {
+				swal.close();
+				swal({
+					title: 'Correo enviado',
+					text: data.mensaje || 'El resumen fue enviado exitosamente.',
+					icon: 'success',
+					button: 'Cerrar'
+				});
+			},
+			error: function () {
+				swal.close();
+				swal({
+					title: 'Error',
+					text: 'No se pudo completar el envío del correo.',
+					icon: 'error',
+					button: 'Cerrar'
+				});
+			}
 		});
 	});
 	$("#enviarExcel").click(function(){		
+		const fecha = $('#desdeMail').val();
+		if (!fecha) {
+			mostrarMensaje('warning', 'Debe seleccionar una fecha para exportar el reporte.','mensaje-resultado2');
+			return;
+		}
+		mostrarMensaje('loading', '','mensaje-resultado2');
 		$.ajax({
 		   url:"/AgroVisionRestricciones/json/mail/sendResumen/"+$('#desdeMail').val(),
 		   type:'GET',
 		   success: function(data){
-		       console.log(data);
-			   alert(data.mensaje);
+	   			mostrarMensaje('success', data.mensaje,'mensaje-resultado2');
+	   			return;
 		   }
 		});
-		$('#cancelModalResumen').trigger("click");
 	});
 });
