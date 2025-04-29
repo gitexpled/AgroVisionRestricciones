@@ -2,6 +2,15 @@ package lib.db;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import lib.struc.Parcela;
+import lib.struc.filterSql;
+import lib.struc.jerarquia;
 
 public class jerarquiaDB {
 
@@ -43,6 +52,49 @@ public class jerarquiaDB {
 
         return data.toString();
     }
+    
+    public ArrayList<jerarquia> getCambios(String desde, String hasta) throws Exception {
+    	
+    	ArrayList<jerarquia> cambios = new ArrayList<jerarquia>();
+		Statement stmt = null;
+		String sql = "";
+		ConnectionDB db = new ConnectionDB();
+		try {
+
+			stmt = db.conn.createStatement();
+			
+			sql = "SELECT * FROM versionJerarquias where fecha between '"+desde+"' and '"+hasta+"';";
+
+			System.out.println("sql: " + sql);
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				jerarquia j= new jerarquia();
+				j.setSociedad(rs.getString("sociedad"));
+				j.setEtapa(rs.getString("etapa"));
+				j.setCampo(rs.getString("campo"));
+				j.setTurno(rs.getString("turno"));
+				j.setVariedad(rs.getString("variedad"));
+				j.setFundo(rs.getString("fundo"));
+				j.setOrigen(rs.getString("origen"));
+				j.setAccion(rs.getString("operacion"));
+				j.setFecha(rs.getString("fecha"));
+				cambios.add(j);
+			}
+			rs.close();
+			stmt.close();
+			db.conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Error: " + e.getMessage());
+			System.out.println("sql: " + sql);
+			//throw new Exception("getUsers: " + e.getMessage());
+		} finally {
+			db.close();
+		}
+
+		return cambios;
+    }
     public boolean updateEstadoById(int id, int estado) {
         String sql = "UPDATE jerarquias SET estado = ? WHERE id = ?";
         boolean success = false;
@@ -70,4 +122,6 @@ public class jerarquiaDB {
 
         return success;
     }
+    
+    
 }

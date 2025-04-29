@@ -128,7 +128,7 @@ public class excel {
 
         XSSFWorkbook wb = new XSSFWorkbook();
         Styles st = buildStyles(wb);
-
+        System.out.println(fecha+" 131");
         List<especie> especies = new especieDB().getAllExcel();
         estadoProductorNewDB d = new estadoProductorNewDB();
         ArrayList<jerarquia> jerarquias = d.getCambios(fecha);
