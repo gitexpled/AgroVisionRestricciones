@@ -252,7 +252,7 @@ public class MailJson {
 		System.out.println("send");
 		try {
 			excel exl=new excel();
-			System.out.println("216");
+			System.out.println(fecha + " 255");
 			String fileStr=exl.createExcelResumen(fecha);
 			
 			String host = "cloud.goplicity.com";

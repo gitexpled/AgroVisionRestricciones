@@ -156,7 +156,7 @@ var TableDatatablesAjax = function() {
 										else if (data=='SI.')
 											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"/"+full[7].replace("'","@")+"'  href='#modal-informe' style='color:orange'>LC<i class='fa fa-exclamation-circle'  style='font-size:14px;color:orange'></i></a>";
 										else if (data=='PI')
-											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"/"+full[7].replace("'","@")+"'  href='#modal-informe' style='color:black'>PI<i class='fa fa-exclamation-circle'  style='font-size:14px;color:yellow'></i></a>";
+											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"/"+full[7].replace("'","@")+"'  href='#modal-informe' style='color:#ecf014'>PI<i class='fa fa-exclamation-circle'  style='font-size:14px;color:#ecf014'></i></a>";
 										else
 											html="<a data-toggle='modal'  data-id='/AgroVisionRestricciones/json/detalleRest/"+colName+"/"+especie+"/"+full[1]+"/"+full[4]+"/"+full[5]+"/"+full[6]+"/"+full[7].replace("'","@")+"'  href='#modal-informe' style='color: #34cb5d'><i class='fa fa-check'  style='font-size:24px;color:green'></i></a>";
 										

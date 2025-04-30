@@ -11,9 +11,30 @@ public class jerarquia {
 	private String especie;
 	private String variedad;
 	private String fundo;
+	private String origen;
+	private String accion;
+	private String fecha;
 
 	
 	
+	public String getFecha() {
+		return fecha;
+	}
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
+	public String getOrigen() {
+		return origen;
+	}
+	public void setOrigen(String origen) {
+		this.origen = origen;
+	}
+	public String getAccion() {
+		return accion;
+	}
+	public void setAccion(String accion) {
+		this.accion = accion;
+	}
 	public String getSociedad() {
 		return sociedad;
 	}

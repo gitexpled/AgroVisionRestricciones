@@ -1,10 +1,20 @@
 package lib.data.json;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import lib.db.TurnoDB;
 import lib.db.jerarquiaDB;
+import lib.security.session;
+import lib.struc.Turno;
+import lib.struc.filterSql;
+import lib.struc.jerarquia;
+
 import org.json.JSONObject;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -45,4 +55,20 @@ public class JerarquiaController {
 
         return resp.toString();
     }
+    
+    @RequestMapping(value = "/getCambioJerarquia/{desde}/{hasta}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ArrayList<jerarquia> getCambioJerarquia(HttpServletRequest request, HttpSession httpSession,@PathVariable("desde") String desde,@PathVariable("hasta") String hasta) throws Exception
+	{
+		session ses = new session(httpSession);
+		ArrayList<jerarquia> jer = new ArrayList<jerarquia>();
+		if(ses.isValid())
+		{
+			jer = null;
+			return jer;
+		}
+		
+		jerarquiaDB db = new jerarquiaDB();
+		jer = db.getCambios(desde,  hasta);
+		return jer;
+	}
 }
