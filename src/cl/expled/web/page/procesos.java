@@ -922,15 +922,16 @@ public class procesos {
 			String fechaFormateada = hoy.format(formato);
 
 			String fileStr = "/tmp/informeEstadoProductor_" + fechaFormateada + ".xlsx";
+			System.out.println(fileStr);
 			try (FileOutputStream fileout = new FileOutputStream(fileStr)) {
 				book.write(fileout);
 			}
 
-			try (FileInputStream fis = new FileInputStream(new File(fileStr))) {
-				FileCopyUtils.copy(fis, response.getOutputStream());
-			}
+			//try (FileInputStream fis = new FileInputStream(new File(fileStr))) {
+				//FileCopyUtils.copy(fis, response.getOutputStream());
+			//}
 
-			new File(fileStr).delete();
+			//new File(fileStr).delete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

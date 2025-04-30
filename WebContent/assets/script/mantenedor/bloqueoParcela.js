@@ -420,8 +420,6 @@ var TableDatatablesAjax = function() {
 					},
 
 					submitHandler : function(form) {
-
-						debugger;
 						
 //						row.codParcela = $('#codParcela').val();
 //						row.codProductor = $('#codProductor').val();
@@ -673,12 +671,15 @@ $('#codProductor').on('change', function() {
 	$('.idVariedad').empty();
 	$('.idVariedad').append('<option value="">Seleccionar</option>');
 	var codParcela=$('#codParcela').children("option:selected").val();
+	var codProductor=$('#codProductor').children("option:selected").val();
 	
 	
 	const get = {
 		SP: "get_VariedadByTurnos",
 		FILTERS: {
-			p_parcela: codParcela,
+			p_productor: codProductor,
+			p_etapa: codParcela,
+			p_campo: '',
 			p_turno: ''
 		}
 	}
