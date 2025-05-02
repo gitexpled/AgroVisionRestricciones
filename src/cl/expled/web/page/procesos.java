@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -791,150 +793,156 @@ public class procesos {
 
 	// ADMINISTRACION DE FOLIOS CAF
 	@RequestMapping(value = "/exportaExcelDiario", method = { RequestMethod.GET })
-	public void exportaExcelDiario(HttpServletResponse response, HttpSession httpSession) throws Exception {
+	public void exportaExcelDiario(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request) throws Exception {
 
-		System.out.println("Prueba 794 ");
-		session ses = new session(httpSession);
-		if (ses.isValid()) {
-			String errorMessage = "Session terminada ";
-			try (OutputStream outputStream = response.getOutputStream()) {
-				outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return;
-		}
+	    System.out.println("Prueba 794");
+	    session ses = new session(httpSession);
 
-		response.setContentType("application/octet-stream");
-		response.setHeader("Content-Disposition", "inline; filename=\"archivo.xlsx\"");
-		System.out.println("Prueba 808 ");
-		XSSFWorkbook book = new XSSFWorkbook();
+	    if (ses.isValid()) {
+	        String errorMessage = "Sesión terminada";
+	        try (OutputStream outputStream = response.getOutputStream()) {
+	            outputStream.write(errorMessage.getBytes(Charset.forName("UTF-8")));
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	        return;
+	    }
 
-		XSSFCellStyle headerStyle = book.createCellStyle();
-		headerStyle.setFillForegroundColor(rgb(0, 112, 192));
-		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		headerStyle.setBorderBottom(BorderStyle.THIN);
-		headerStyle.setBorderLeft(BorderStyle.THIN);
-		headerStyle.setBorderRight(BorderStyle.THIN);
-		headerStyle.setBorderTop(BorderStyle.THIN);
-		XSSFFont headerFont = book.createFont();
-		headerFont.setFontName("Arial");
-		headerFont.setBold(true);
-		headerFont.setColor(rgb(255, 255, 255));
-		headerStyle.setFont(headerFont);
+	    // Preparar libro Excel
+	    XSSFWorkbook book = new XSSFWorkbook();
 
-		XSSFCellStyle baseStyle = book.createCellStyle();
-		baseStyle.setBorderBottom(BorderStyle.THIN);
-		baseStyle.setBorderLeft(BorderStyle.THIN);
-		baseStyle.setBorderRight(BorderStyle.THIN);
-		baseStyle.setBorderTop(BorderStyle.THIN);
+	    XSSFCellStyle headerStyle = book.createCellStyle();
+	    headerStyle.setFillForegroundColor(rgb(0, 112, 192));
+	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    headerStyle.setBorderBottom(BorderStyle.THIN);
+	    headerStyle.setBorderLeft(BorderStyle.THIN);
+	    headerStyle.setBorderRight(BorderStyle.THIN);
+	    headerStyle.setBorderTop(BorderStyle.THIN);
+	    XSSFFont headerFont = book.createFont();
+	    headerFont.setFontName("Arial");
+	    headerFont.setBold(true);
+	    headerFont.setColor(rgb(255, 255, 255));
+	    headerStyle.setFont(headerFont);
 
-		XSSFCellStyle checkStyle = book.createCellStyle();
-		checkStyle.cloneStyleFrom(baseStyle);
-		XSSFFont checkFont = book.createFont();
-		checkFont.setColor(rgb(0, 176, 80));
-		checkStyle.setFont(checkFont);
+	    XSSFCellStyle baseStyle = book.createCellStyle();
+	    baseStyle.setBorderBottom(BorderStyle.THIN);
+	    baseStyle.setBorderLeft(BorderStyle.THIN);
+	    baseStyle.setBorderRight(BorderStyle.THIN);
+	    baseStyle.setBorderTop(BorderStyle.THIN);
 
-		XSSFCellStyle crossStyle = book.createCellStyle();
-		crossStyle.cloneStyleFrom(baseStyle);
-		XSSFFont crossFont = book.createFont();
-		crossFont.setColor(rgb(192, 0, 0));
-		crossStyle.setFont(crossFont);
+	    XSSFCellStyle checkStyle = book.createCellStyle();
+	    checkStyle.cloneStyleFrom(baseStyle);
+	    XSSFFont checkFont = book.createFont();
+	    checkFont.setColor(rgb(0, 176, 80));
+	    checkStyle.setFont(checkFont);
 
-		ArrayList<especie> esp = especieDB.getAll(new ArrayList<>(), "idEspecie", 0, 9999);
+	    XSSFCellStyle crossStyle = book.createCellStyle();
+	    crossStyle.cloneStyleFrom(baseStyle);
+	    XSSFFont crossFont = book.createFont();
+	    crossFont.setColor(rgb(192, 0, 0));
+	    crossStyle.setFont(crossFont);
 
-		for (especie es : esp) {
-			estadoProductorNewDB dataDB = new estadoProductorNewDB();
-			String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(), es.getIdEspecie(), "", "", "", "", "",
-					true);
-			JSONObject j = new JSONObject(json);
-			JSONArray columns = j.getJSONArray("columns");
-			JSONArray data = j.getJSONArray("data");
+	    ArrayList<especie> esp = especieDB.getAll(new ArrayList<>(), "idEspecie", 0, 9999);
 
-			Sheet sheet = book.createSheet(es.getEspecie());
+	    for (especie es : esp) {
+	        estadoProductorNewDB dataDB = new estadoProductorNewDB();
+	        String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(), es.getIdEspecie(), "", "", "", "", "", true);
+	        JSONObject j = new JSONObject(json);
+	        JSONArray columns = j.getJSONArray("columns");
+	        JSONArray data = j.getJSONArray("data");
 
-			Row headerRow = sheet.createRow(0);
-			for (int i = 0; i < columns.length(); ++i) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellStyle(headerStyle);
-				cell.setCellValue(columns.getString(i).toUpperCase());
-			}
+	        Sheet sheet = book.createSheet(es.getEspecie());
+	        Row headerRow = sheet.createRow(0);
+	        for (int i = 0; i < columns.length(); ++i) {
+	            Cell cell = headerRow.createCell(i);
+	            cell.setCellStyle(headerStyle);
+	            cell.setCellValue(columns.getString(i).toUpperCase());
+	        }
 
-			int rowIndex = 1;
-			for (int e = 0; e < data.length(); ++e) {
-				JSONArray row = data.getJSONArray(e);
-				if (!row.getString(3).equalsIgnoreCase(es.getPf()))
-					continue;
+	        int rowIndex = 1;
+	        for (int e = 0; e < data.length(); ++e) {
+	            JSONArray row = data.getJSONArray(e);
+	            if (!row.getString(3).equalsIgnoreCase(es.getPf()))
+	                continue;
 
-				Row dataRow = sheet.createRow(rowIndex++);
-				for (int d = 0; d < row.length(); d++) {
-					String value = row.getString(d).trim();
-					String upper = value.toUpperCase();
-					Cell cell = dataRow.createCell(d);
-					if (d == 7) {
-						cell.setCellValue(value);
-						cell.setCellStyle(baseStyle);
-						continue;
-					}
+	            Row dataRow = sheet.createRow(rowIndex++);
+	            for (int d = 0; d < row.length(); d++) {
+	                String value = row.getString(d).trim();
+	                String upper = value.toUpperCase();
+	                Cell cell = dataRow.createCell(d);
+	                if (d == 7) {
+	                    cell.setCellValue(value);
+	                    cell.setCellStyle(baseStyle);
+	                    continue;
+	                }
 
-					switch (upper) {
-					case "SI":
-					case "SI.":
-						cell.setCellValue("✔️");
-						cell.setCellStyle(checkStyle);
-						break;
-					case "NO":
-					case "NO.":
-						cell.setCellValue("❌");
-						cell.setCellStyle(crossStyle);
-						break;
-					case "PI":
-					case "PI.":
-						XSSFRichTextString richText = new XSSFRichTextString("PI❗");
-						XSSFFont yellowFont = book.createFont();
-						yellowFont.setBold(true);
-						yellowFont.setColor(rgb(255, 192, 0));
-						richText.applyFont(0, 3, yellowFont);
-						cell.setCellValue(richText);
-						cell.setCellStyle(baseStyle);
-						break;
-					default:
-						cell.setCellValue(value);
-						cell.setCellStyle(baseStyle);
-						break;
-					}
-				}
-			}
+	                switch (upper) {
+	                    case "SI":
+	                    case "SI.":
+	                        cell.setCellValue("✔️");
+	                        cell.setCellStyle(checkStyle);
+	                        break;
+	                    case "NO":
+	                    case "NO.":
+	                        cell.setCellValue("❌");
+	                        cell.setCellStyle(crossStyle);
+	                        break;
+	                    case "PI":
+	                    case "PI.":
+	                        XSSFRichTextString richText = new XSSFRichTextString("PI❗");
+	                        XSSFFont yellowFont = book.createFont();
+	                        yellowFont.setBold(true);
+	                        yellowFont.setColor(rgb(255, 192, 0));
+	                        richText.applyFont(0, 3, yellowFont);
+	                        cell.setCellValue(richText);
+	                        cell.setCellStyle(baseStyle);
+	                        break;
+	                    default:
+	                        cell.setCellValue(value);
+	                        cell.setCellStyle(baseStyle);
+	                        break;
+	                }
+	            }
+	        }
 
-			SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
-			CellRangeAddress[] regiones = { CellRangeAddress.valueOf("I2:DA500") };
-			ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
-			IconMultiStateFormatting iconFmt = rule.getMultiStateFormatting();
-			iconFmt.setIconSet(IconSet.GREY_3_ARROWS);
-			iconFmt.setIconOnly(true);
-			sheetCF.addConditionalFormatting(regiones, rule);
-		}
+	        SheetConditionalFormatting sheetCF = sheet.getSheetConditionalFormatting();
+	        CellRangeAddress[] regiones = { CellRangeAddress.valueOf("I2:DA500") };
+	        ConditionalFormattingRule rule = sheetCF.createConditionalFormattingRule(IconSet.GREY_3_ARROWS);
+	        IconMultiStateFormatting iconFmt = rule.getMultiStateFormatting();
+	        iconFmt.setIconSet(IconSet.GREY_3_ARROWS);
+	        iconFmt.setIconOnly(true);
+	        sheetCF.addConditionalFormatting(regiones, rule);
+	    }
 
-		try {
-			// UUID uuid = UUID.randomUUID();
-			LocalDate hoy = LocalDate.now();
-			DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			String fechaFormateada = hoy.format(formato);
+	    try {
+	        LocalDate hoy = LocalDate.now();
+	        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        String fechaFormateada = hoy.format(formato);
 
-			String fileStr = "/tmp/informeEstadoProductor_" + fechaFormateada + ".xlsx";
-			System.out.println(fileStr);
-			try (FileOutputStream fileout = new FileOutputStream(fileStr)) {
-				book.write(fileout);
-			}
+	        String relativePath = "descargas";
+	        String realPath = request.getServletContext().getRealPath("/") + relativePath;
 
-			//try (FileInputStream fis = new FileInputStream(new File(fileStr))) {
-				//FileCopyUtils.copy(fis, response.getOutputStream());
-			//}
+	        File carpeta = new File(realPath);
+	        if (!carpeta.exists()) {
+	            Files.createDirectories(carpeta.toPath());
+	            System.out.println("Carpeta 'descargas' creada.");
+	        }
 
-			//new File(fileStr).delete();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	        String fileName = "informeEstadoProductor_" + fechaFormateada + ".xlsx";
+	        String filePath = realPath + File.separator + fileName;
+
+	        try (FileOutputStream fileout = new FileOutputStream(filePath)) {
+	            book.write(fileout);
+	            System.out.println("Archivo generado en: " + filePath);
+	        }
+
+	        response.setContentType("text/plain");
+	        response.getWriter().write("Archivo disponible en: /" + relativePath + "/" + fileName);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        response.getWriter().write("Error al generar el archivo.");
+	    }
 	}
 
 	// ADMINISTRACION DE FOLIOS CAF //IM solo con cambios posteriores a fecha

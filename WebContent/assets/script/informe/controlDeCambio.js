@@ -13,7 +13,6 @@ function getDateRange(start, end) {
     range.push(`${year}-${month}-${day}`);
     current.setDate(current.getDate() + 1);
   }
-
   return range;
 }
 
@@ -46,17 +45,23 @@ function renderTable() {
         const tieneCambios = cambiosPorFecha[fecha] !== undefined;
         if (onlyChanges && !tieneCambios) return null;
 
-        let estado = tieneCambios ? 'CAMBIOS' : 'SIN CAMBIOS';
-        let botonDetalle = tieneCambios
+        const estado = tieneCambios ? 'CAMBIOS' : 'SIN CAMBIOS';
+
+        const botonDetalle = tieneCambios
           ? `<button class="text-blue-600 hover:underline openModal" data-fecha="${fecha}">Ver detalle</button>`
           : '—';
+
+        const botonDescarga = `
+          <button class="text-green-600 hover:underline btnDescargarExcel" data-fecha="${fecha}">
+            Descargar
+          </button>`;
 
         return `
           <tr class="border-b hover:bg-gray-50">
             <td class="px-4 py-2">${fecha}</td>
             <td class="px-4 py-2">${estado}</td>
             <td class="px-4 py-2">${botonDetalle}</td>
-            <td class="px-4 py-2"><a href="#" class="text-green-600 hover:underline">DESCARGAR</a></td>
+            <td class="px-4 py-2">${botonDescarga}</td>
           </tr>
         `;
       }).filter(row => row !== null);
@@ -66,6 +71,7 @@ function renderTable() {
       } else {
         tbody.html(`<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">No se encontraron registros</td></tr>`);
       }
+
       $('#versionTable').data('cambios', cambiosPorFecha);
     })
     .catch(err => {
@@ -90,7 +96,7 @@ $(document).on('click', '.openModal', function () {
         <td class="px-4 py-2 border-r">${item.variedad || '-'}</td>
         <td class="px-4 py-2 border-r">${item.fundo || '-'}</td>
         <td class="px-4 py-2 border-r">${item.origen || '-'}</td>
-        <td class="px-4 py-2">${(item.accion === 'UPDATE'? 'Modificado': item.accion) || '-'}</td>
+        <td class="px-4 py-2">${(item.accion === 'UPDATE' ? 'Modificado' : item.accion) || '-'}</td>
       </tr>
     `;
     tbody.append(row);
@@ -106,3 +112,19 @@ $('#closeModal, #modal').on('click', function (e) {
 });
 
 $('#btnBuscar, #onlyChanges').on('click', renderTable);
+
+$(document).on('click', '.btnDescargarExcel', function () {
+  const fecha = $(this).data('fecha');
+  const url = `/AgroVisionRestricciones/descargas/informeEstadoProductor_${fecha}.xlsx`;
+
+  $.ajax({
+    url: url,
+    type: 'HEAD',
+    success: function () {
+      window.location.href = url;
+    },
+    error: function () {
+      alert(`El archivo Excel para ${fecha} aún no está disponible.`);
+    }
+  });
+});
