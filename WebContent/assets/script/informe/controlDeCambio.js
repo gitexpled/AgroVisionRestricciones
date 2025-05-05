@@ -48,20 +48,20 @@ function renderTable() {
         const estado = tieneCambios ? 'CAMBIOS' : 'SIN CAMBIOS';
 
         const botonDetalle = tieneCambios
-          ? `<button class="text-blue-600 hover:underline openModal" data-fecha="${fecha}">Ver detalle</button>`
+          ? `<button class="btn btn-link btn-sm openModal" data-fecha="${fecha}">Ver detalle</button>`
           : '—';
 
         const botonDescarga = `
-          <button class="text-green-600 hover:underline btnDescargarExcel" data-fecha="${fecha}">
+          <button class="btn btn-success btn-xs btnDescargarExcel" data-fecha="${fecha}">
             Descargar
           </button>`;
 
         return `
-          <tr class="border-b hover:bg-gray-50">
-            <td class="px-4 py-2">${fecha}</td>
-            <td class="px-4 py-2">${estado}</td>
-            <td class="px-4 py-2">${botonDetalle}</td>
-            <td class="px-4 py-2">${botonDescarga}</td>
+          <tr>
+            <td>${fecha}</td>
+            <td>${estado}</td>
+            <td>${botonDetalle}</td>
+            <td>${botonDescarga}</td>
           </tr>
         `;
       }).filter(row => row !== null);
@@ -69,14 +69,14 @@ function renderTable() {
       if (filas.length > 0) {
         tbody.html(filas.join(''));
       } else {
-        tbody.html(`<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">No se encontraron registros</td></tr>`);
+        tbody.html(`<tr><td colspan="4" class="text-center text-muted" style="padding: 15px;">No se encontraron registros</td></tr>`);
       }
 
       $('#versionTable').data('cambios', cambiosPorFecha);
     })
     .catch(err => {
       console.error('Error al cargar cambios:', err);
-      tbody.html(`<tr><td colspan="4" class="text-center text-red-600 p-4">Error al obtener datos del servidor</td></tr>`);
+      tbody.html(`<tr><td colspan="4" class="text-center text-danger" style="padding: 15px;">Error al obtener datos del servidor</td></tr>`);
     });
 }
 
@@ -86,28 +86,29 @@ $(document).on('click', '.openModal', function () {
   if (!cambios || cambios.length === 0) return;
   const tbody = $('#modalTableBody');
   tbody.empty();
+
   cambios.forEach(item => {
     const row = `
-      <tr class="border-t">
-        <td class="px-4 py-2 border-r">${item.sociedad || '-'}</td>
-        <td class="px-4 py-2 border-r">${item.etapa || '-'}</td>
-        <td class="px-4 py-2 border-r">${item.campo || '-'}</td>
-        <td class="px-4 py-2 border-r">${item.turno || '-'}</td>
-        <td class="px-4 py-2 border-r">${item.variedad || '-'}</td>
-        <td class="px-4 py-2 border-r">${item.fundo || '-'}</td>
-        <td class="px-4 py-2 border-r">${item.origen || '-'}</td>
-        <td class="px-4 py-2">${(item.accion === 'UPDATE' ? 'Modificado' : item.accion) || '-'}</td>
+      <tr>
+        <td>${item.sociedad || '-'}</td>
+        <td>${item.etapa || '-'}</td>
+        <td>${item.campo || '-'}</td>
+        <td>${item.turno || '-'}</td>
+        <td>${item.variedad || '-'}</td>
+        <td>${item.fundo || '-'}</td>
+        <td>${item.origen || '-'}</td>
+        <td>${(item.accion === 'UPDATE' ? 'Modificado' : item.accion) || '-'}</td>
       </tr>
     `;
     tbody.append(row);
   });
 
-  $('#modal').removeClass('hidden').addClass('flex');
+  $('#modal').css('display', 'flex');
 });
 
 $('#closeModal, #modal').on('click', function (e) {
   if (e.target.id === 'closeModal' || e.target.id === 'modal') {
-    $('#modal').addClass('hidden');
+    $('#modal').css('display', 'none');
   }
 });
 
