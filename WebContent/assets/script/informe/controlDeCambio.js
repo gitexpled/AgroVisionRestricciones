@@ -125,7 +125,11 @@ $(document).on('click', '.btnDescargarExcel', function () {
       window.location.href = url;
     },
     error: function () {
-      alert(`El archivo Excel para ${fecha} aún no está disponible.`);
+		swal({
+		  title: `El archivo Excel para ${fecha} aún no está disponible.`,
+		  animation: true,
+		  customClass: 'animated tada'
+		})
     }
   });
 });
