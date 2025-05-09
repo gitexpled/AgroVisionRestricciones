@@ -1015,30 +1015,46 @@ public class estadoProductorNewDB {
 		return data;
 	}
 	private Hashtable<String, Hashtable<String, Integer>> setGroup(Hashtable<String, Hashtable<String, Integer>> data) {
+		
 		Hashtable<String, Hashtable<String, Integer>>  array = new Hashtable<String, Hashtable<String, Integer>>();
 		
 		try {
 			
 			TreeMap<String, Hashtable<String, Integer>> arrMap = new TreeMap<>(data);
+			System.out.println("arrMap:"+arrMap);
 			for (Map.Entry<String, Hashtable<String, Integer>> dataMatrix : arrMap.entrySet()) {
+				System.out.println("dataMatrix:"+dataMatrix);
 				String key = dataMatrix.getKey();
+				System.out.println("key:"+key);
 				Hashtable<String, Integer> restriccionMercado = dataMatrix.getValue();
+				System.out.println("restriccionMercado:"+restriccionMercado);
 				String[] arrKey=key.split("\\$");
+				System.out.println("arrKey:"+arrKey);
 				String llave=arrKey[0]+"$"+arrKey[1]+"$"+arrKey[2]+"$"+arrKey[3]+"$"+arrKey[4]+"$"+arrKey[5]+"$"+arrKey[7]+"$"+arrKey[8];
+				System.out.println(llave);
+				
 				
 				TreeMap<String, Integer> arrMapMercado = new TreeMap<>(restriccionMercado);
+				//System.out.println("llave:"+array);
+				//System.out.println("llave:"+array.get(llave));
 				
 				if (array.get(llave)==null)
 				{
 					Hashtable<String, Integer> mercados = new Hashtable<>();
 					for (Map.Entry<String, Integer> row : arrMapMercado.entrySet()) {
-						if (row.getValue()!=0)
-						{
-							row.setValue(-1);
-						}
+						System.out.println("row.getValue():"+row.getValue());
+						System.out.println("row.getKey():"+row.getKey());
+						//if (row.getValue()!=0)
+						//{
+							//row.setValue(-1);
+						//}
+						
 						mercados.put(row.getKey(), row.getValue());
 					}
+					
 					array.put(llave, mercados);
+					
+					
 				}
 				else
 				{
@@ -1048,8 +1064,8 @@ public class estadoProductorNewDB {
 						//System.out.println("get(9):"+arr.get(9));
 						Integer value=row.getValue();
 						//System.out.println("value:"+value);
-						//if (row.getKey().equals("China"))
-						//System.out.println(llave+"-"+row.getKey()+"-"+"("+valor+")-("+value+")");
+						if (row.getKey().equals("India"))
+						System.out.println(llave+"-"+row.getKey()+"-"+"("+valor+")-("+value+")");
 						if (valor==0 && value==0)
 						{
 							valor=0;
@@ -1222,7 +1238,10 @@ public class estadoProductorNewDB {
 			ArrayList<ArrayList<String>> habilitacionComercial= getHabilitadoComercial(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
 			matrix=setBloqueo(matrix,habilitacionComercial,false);
 			
+			System.out.println(matrix);
+			
 			matrix=setGroup(matrix);
+			System.out.println(matrix);
 			data = getMatrix(matrix, mercado);
 
 		} catch (Exception e) {
