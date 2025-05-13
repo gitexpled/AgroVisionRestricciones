@@ -31,6 +31,13 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+	  <repository>
+	    <id>com.e-iceblue</id>
+	    <name>e-iceblue Repository</name>
+	    <url>https://repo.e-iceblue.com/nexus/content/groups/public/</url>
+	  </repository>
+	</repositories>
 	<dependencies>
 	
 		<dependency>
@@ -82,11 +89,6 @@
 			<version>1.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>fr.opensagres.xdocreport</groupId>
-		    <artifactId>org.apache.poi.xwpf.converter.pdf</artifactId>
-		    <version>1.0.5</version>
-		</dependency>
-		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp</artifactId>
 		    <version>4.9.1</version>
@@ -122,20 +124,20 @@
 		  <version>5.2.5</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.apache.poi</groupId>
-		  <artifactId>poi-ooxml-full</artifactId>
-		  <version>5.2.5</version>
-		  <exclusions>
-		     <exclusion>
-		        <groupId>org.apache.poi</groupId>
-		        <artifactId>poi-ooxml</artifactId>
-		     </exclusion>
-		  </exclusions>
-		</dependency>
-		<dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>
 		    <version>2.13.0</version>
+		</dependency>
+		<!-- Núcleo + objetos OpenXML -->
+		<dependency>
+		    <groupId>e-iceblue</groupId>
+		    <artifactId>spire.xls.free</artifactId>
+		    <version>5.1.0</version> 
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>5.1.1</version> <!-- La última versión compatible con POI 5.2.5 -->
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
