@@ -75,7 +75,6 @@ public class excel {
                     cell.setCellValue("❌"); cell.setCellStyle(st.cross); break;
                 case "PI": case "PI.":
                     XSSFRichTextString rt = new XSSFRichTextString("PI❗");
-                    rt.applyFont(0, 3, yellowFont);
                     cell.setCellValue(rt);
                     cell.setCellStyle(st.base);
                     break;
