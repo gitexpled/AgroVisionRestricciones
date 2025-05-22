@@ -752,8 +752,6 @@ public class procesos {
 						XSSFRichTextString richText = new XSSFRichTextString("PI❗");
 						XSSFFont yellowFont = book.createFont();
 						yellowFont.setBold(true);
-						yellowFont.setColor(rgb(255, 192, 0));
-						richText.applyFont(0, 3, yellowFont);
 						cell.setCellValue(richText);
 						cell.setCellStyle(baseStyle);
 						break;
@@ -892,8 +890,6 @@ public class procesos {
 	                        XSSFRichTextString richText = new XSSFRichTextString("PI❗");
 	                        XSSFFont yellowFont = book.createFont();
 	                        yellowFont.setBold(true);
-	                        yellowFont.setColor(rgb(255, 192, 0));
-	                        richText.applyFont(0, 3, yellowFont);
 	                        cell.setCellValue(richText);
 	                        cell.setCellStyle(baseStyle);
 	                        break;
