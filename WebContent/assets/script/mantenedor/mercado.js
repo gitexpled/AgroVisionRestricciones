@@ -1,3 +1,4 @@
+
 var TableDatatablesAjax = function() {
 	var handleDemo1 = function() {
 
@@ -30,7 +31,7 @@ var TableDatatablesAjax = function() {
 						],
 						"pageLength" : 20, // default record count per page
 						"ajax" : {
-							"url" : webPageApp+"/json/mercado/view", // ajax
+							"url" : "/AgroVisionRestricciones/"+"/json/mercado/view", // ajax
 																				// source
 						},
 						"columnDefs" : [
@@ -125,7 +126,7 @@ var TableDatatablesAjax = function() {
 					ID=id;
 					$.ajax({
 						type : 'GET',
-						url : webPageApp+"/json/mercado/" + id,
+						url : "/AgroVisionRestricciones/"+"/json/mercado/" + id,
 						data : "",
 						success : function(data) {
 							console.log(data)
@@ -395,7 +396,7 @@ var TableDatatablesAjax = function() {
 						row.restPorArfD = $("#update_restPorArfD").val();
 						
 						$.ajax({
-									url : webPageApp+"/json/mercado/put",
+									url : "/AgroVisionRestricciones/"+"/json/mercado/put",
 									type : "PUT",
 									data : JSON.stringify(row),
 									beforeSend : function(xhr) {
@@ -573,7 +574,7 @@ var TableDatatablesAjax = function() {
 						console.log(row);
 
 						$.ajax({
-									url : webPageApp+"/json/mercado/insertMercado",
+									url : "/AgroVisionRestricciones/"+"/json/mercado/insertMercado",
 									type : "PUT",
 									data : JSON.stringify(row),
 									beforeSend : function(xhr) {
