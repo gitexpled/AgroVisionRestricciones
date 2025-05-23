@@ -22,6 +22,7 @@
 							<th width="10%">ID</th>
 							<th width="10%">Cód Productor</th>
 							<th width="10%">Cód Etapa</th>
+							<th width="10%">Cód Campo</th>
 							<th width="10%">Cód Variedad</th>
 							<th width="10%">Cód Mercado</th>
 							<th width="10%">Comentario</th>
@@ -36,6 +37,8 @@
 								class="form-control form-filter input-sm" name="vw_codProductor"></td>
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_codParcela"></td>
+							<td><input type="text"
+								class="form-control form-filter input-sm" name="vw_codCampo"></td>
 							<td><input type="text"
 								class="form-control form-filter input-sm" name="vw_codVariedad"></td>
 							<td><input type="text"
@@ -169,6 +172,19 @@
                                 <div class="input-icon input-large">
                                     <div class="input-group">
                                    <select name="codParcela" class="codParcela form-control" id="codParcela">
+                                       		<option value="">Seleccionar</option>
+                                      </select>
+                                      </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">Campo</label>
+                           <div class="col-md-8">
+                                <div class="input-icon input-large">
+                                    <div class="input-group">
+                                   <select name="codCampo" class="codCampo form-control" id="codCampo">
                                        		<option value="">Seleccionar</option>
                                       </select>
                                       </div>

@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.lowagie.text.List;
-
 import lib.struc.Limite;
 import lib.struc.LimiteExcel;
 import lib.struc.filterSql;

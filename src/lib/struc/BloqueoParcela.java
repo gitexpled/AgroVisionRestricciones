@@ -7,12 +7,20 @@ public class BloqueoParcela {
 	private int idBloqueo;
 	private String codProductor;
 	private String codParcela;
+	private String codCampo;
 	private String comentario;
 	private Date creado;
 	private String estado;
 	private String idVariedad;
 	private int idMercado;
 	
+
+	public String getCodCampo() {
+		return codCampo;
+	}
+	public void setCodCampo(String codCampo) {
+		this.codCampo = codCampo;
+	}
 	public int getIdMercado() {
 		return idMercado;
 	}

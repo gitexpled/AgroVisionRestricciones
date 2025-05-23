@@ -7,9 +7,9 @@ var TableDatatablesAjax = function() {
 					onSuccess : function(grid, response) {
 						console.log(response.data)
 						for(var i = 0; i < response.data.length; i++){
-							response.data[i][3] = response.data[i][3] == "-1"? "Todos": $variedad[response.data[i][3]];
-							response.data[i][4] = response.data[i][4] == "-1"? "Todos": $mercado[response.data[i][4]];
-							console.log(response.data[i][3])
+							response.data[i][4] = response.data[i][4] == "-1"? "Todos": $variedad[response.data[i][4]];
+							response.data[i][5] = response.data[i][4] == "-1"? "Todos": $mercado[response.data[i][5]];
+							console.log(response.data[i][4])
 //							for(var x = 0; x < response[i].length; x++){
 //								response[i][x]
 //							}
@@ -43,12 +43,12 @@ var TableDatatablesAjax = function() {
 						},
 						"columnDefs" : [
 								{
-									"targets" : [8],
+									"targets" : [9],
 									"render" : function(data, type, full) {
-										console.log(data)
+										console.log("data view",data)
 										var html = "<div style='float:left!important;' class='btn-group pull-right  btn-group-sm'>";
 
-										if(full[7] == 'Activo'){
+										if(full[8] == 'Activo'){
 												html += "<a onclick='' class='col-md-6 btn red btn-table pull-right button-grilla-elimina-cuenta drop'   data-id='"
 												+ full[0]
 												+ "' data-toggle='modal'><i class='fa fa-trash-o'></i></a>";
@@ -140,8 +140,10 @@ var TableDatatablesAjax = function() {
 				function(e) {
 
 					 $('#codParcela').val("");
+					$('#codCampo').val("");
 					$('#codVariedad').val("");
-					
+					$('#idVariedad').val("");
+					$('#idComentario').val("");
 				
 				});
 	}
@@ -198,6 +200,10 @@ var TableDatatablesAjax = function() {
 							rangelength : [ 4, 50 ]
 						},
 						idMercado : {
+							required : true,
+							rangelength : [ 4, 50 ]
+						},
+						codCampo : {
 							required : true,
 							rangelength : [ 4, 50 ]
 						}
@@ -279,8 +285,9 @@ var TableDatatablesAjax = function() {
 
 						// parametrosCuenta.Cuenta = cuenta;
 
-						row.idVariedad = $('#updatecodVariedad').val();;
+						row.idVariedad = $('#updatecodVariedad').val();
 						row.codParcela = $("#updatecodParcela").val();
+						row.codCampo = $("#updatecodParcela").val();
 
 						row.id = $('#updateId').val();;
 						
@@ -438,6 +445,7 @@ var TableDatatablesAjax = function() {
 								creado: dateHoy(),
 								idVariedad: $('#idVariedad').val(),
 								idMercado: mercados[i],
+								codCampo: $('#codCampo').val()
 							}
 							arrayV.push(row)
 						}
@@ -605,7 +613,6 @@ jQuery(document).ready(function() {
 $('#codProductor').on('change', function() {
 	$('.codParcela').empty();
 	$('.codParcela').append('<option value="">Seleccionar</option>');
-	
 	const get = {
 		SP: "get_ParcelaByProductor",
 		FILTERS: {
@@ -640,6 +647,8 @@ $('#codProductor').on('change', function() {
 	return;
 	
 	$('.codParcela').empty();
+	$('.codCampo').empty();
+	
 	$('.codParcela').append('<option value="">Seleccionar</option>');
 	$.ajax({
 		url : "/AgroVisionRestricciones/"+"json/parcela/getAllByProductor/"+this.value,
@@ -668,22 +677,60 @@ $('#codProductor').on('change', function() {
    
  });
  $('#codParcela').on('change', function() {
+	$('.codCampo').empty();
+	$('.codCampo').append('<option value="">Seleccionar</option>');
+	var codParcela=$('#codParcela').children("option:selected").val();
+	var codProductor=$('#codProductor').children("option:selected").val();
+	const getTPP2 = {
+		SP: "get_CampoByProdEtapa",
+		FILTERS: {
+			p_productor: codProductor,
+			p_etapa: codParcela
+		}
+	}
+	console.log(getTPP2)
+	$.ajax({
+		url: PROYECT + "json/CallSp",
+		type: "PUT",
+		dataType: 'json',
+		data: JSON.stringify(getTPP2),
+		async: false,
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Accept", "application/json");
+			xhr.setRequestHeader("Content-Type", "application/json");
+		},
+		success: function (res) {
+			console.log(res)
+			var options = "";
+
+			$(res.data).each(function (key, val) {
+				let selected = val.codCampo == codCampo? "selected": ""
+				options += "<option value='" + val.codCampo + "' "+selected+">" + val.nombre + "</option>";
+			})
+			$('.codCampo').append(options);
+		}, error: function (e) {
+			console.log(e)
+		}, complete: function () {
+			return data;
+		}
+	})
+})
+$('#codParcela').on('change', function() {
 	$('.idVariedad').empty();
 	$('.idVariedad').append('<option value="">Seleccionar</option>');
 	var codParcela=$('#codParcela').children("option:selected").val();
 	var codProductor=$('#codProductor').children("option:selected").val();
-	
-	
+	var codCampo=$('#codCampo').children("option:selected").val();
+
 	const get = {
 		SP: "get_VariedadByTurnos",
 		FILTERS: {
 			p_productor: codProductor,
 			p_etapa: codParcela,
-			p_campo: '',
+			p_campo: codCampo,
 			p_turno: ''
 		}
 	}
-	console.log(get)
 	$.ajax({
 		url: PROYECT+"json/CallSp",
 		type:	"PUT",

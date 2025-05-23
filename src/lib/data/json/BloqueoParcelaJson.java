@@ -85,11 +85,12 @@ public class BloqueoParcelaJson {
 		case "0":colum = "idBloqueo";break;
 		case "1":colum = "codProductor";break;
 		case "2":colum = "codParcela";break;
-		case "3":colum = "idVariedad";break;
-		case "4":colum = "idMercado";break;
-		case "5":colum = "comentario";break;
-		case "6":colum = "creado";break;
-		case "7":colum = "estado";break;
+		case "3":colum = "codCampo";break;
+		case "4":colum = "idVariedad";break;
+		case "5":colum = "idMercado";break;
+		case "6":colum = "comentario";break;
+		case "7":colum = "creado";break;
+		case "8":colum = "estado";break;
 		}
 		
 		order = colum + ":" + dir;
@@ -133,7 +134,7 @@ public class BloqueoParcelaJson {
 				String habilitado = "NO";
 
 				
-				String[] d = {row.getIdBloqueo()+"", row.getCodProductor(), row.getCodParcela(), row.getIdVariedad(), row.getIdMercado()+"",row.getComentario(),row.getCreado()+"",row.getEstado()+""};
+				String[] d = {row.getIdBloqueo()+"", row.getCodProductor(), row.getCodParcela(), row.getCodCampo(), row.getIdVariedad(), row.getIdMercado()+"",row.getComentario(),row.getCreado()+"",row.getEstado()+""};
 
 				data.setData(d); 
 

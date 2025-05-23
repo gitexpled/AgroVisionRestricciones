@@ -272,6 +272,7 @@ public class BloqueoParcelaDB {
 				BloqueoParcela o = new BloqueoParcela();
 				o.setIdBloqueo(rs.getInt("idBloqueo"));
 				o.setCodParcela(rs.getString("codParcela"));
+				o.setCodCampo(rs.getString("codCampo"));
 				o.setCodProductor(rs.getString("codProductor"));
 				o.setComentario(rs.getString("comentario"));
 				o.setIdVariedad(rs.getString("idVariedad"));
