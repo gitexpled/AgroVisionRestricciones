@@ -792,7 +792,7 @@ public class procesos {
 	public void exportaExcelDiario(HttpServletResponse response, HttpSession httpSession, HttpServletRequest request) throws Exception {
 
 	    System.out.println("Prueba 794");
-	    session ses = new session(httpSession);
+	    /*session ses = new session(httpSession);
 
 	    if (ses.isValid()) {
 	        String errorMessage = "Sesión terminada";
@@ -803,6 +803,7 @@ public class procesos {
 	        }
 	        return;
 	    }
+	    */
 
 	    // Preparar libro Excel
 	    XSSFWorkbook book = new XSSFWorkbook();
