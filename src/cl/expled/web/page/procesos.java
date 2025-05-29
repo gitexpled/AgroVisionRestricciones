@@ -843,7 +843,7 @@ public class procesos {
 
 	    for (especie es : esp) {
 	        estadoProductorNewDB dataDB = new estadoProductorNewDB();
-	        String json = dataDB.getRestriccionesExcel(ses.getIdTemporada(), es.getIdEspecie(), "", "", "", "", "", true);
+	        String json = dataDB.getRestriccionesExcel(1, es.getIdEspecie(), "", "", "", "", "", true);
 	        JSONObject j = new JSONObject(json);
 	        JSONArray columns = j.getJSONArray("columns");
 	        JSONArray data = j.getJSONArray("data");
