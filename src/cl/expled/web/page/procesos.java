@@ -910,29 +910,38 @@ public class procesos {
 	    }
 
 	    try {
-	        LocalDate hoy = LocalDate.now();
-	        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	        String fechaFormateada = hoy.format(formato);
+	    	String sistemaOperativo = System.getProperty("os.name").toLowerCase();
 
-	        String relativePath = "descargas";
-	        String realPath = request.getServletContext().getRealPath("/") + relativePath;
+	    	String realPath;
+	    	if (sistemaOperativo.contains("linux")) {
+	    	    realPath = "/var/lib/tomcat8/webapps/descargas";
+	    	} else {
+	    	    String relativePath = "descargas";
+	    	    realPath = request.getServletContext().getRealPath("/") + File.separator + relativePath;
+	    	}
 
-	        File carpeta = new File(realPath);
-	        if (!carpeta.exists()) {
-	            Files.createDirectories(carpeta.toPath());
-	            System.out.println("Carpeta 'descargas' creada.");
-	        }
+	    	File carpeta = new File(realPath);
+	    	if (!carpeta.exists()) {
+	    	    Files.createDirectories(carpeta.toPath());
+	    	    System.out.println("Carpeta creada en: " + realPath);
+	    	}
 
-	        String fileName = "informeEstadoProductor_" + fechaFormateada + ".xlsx";
-	        String filePath = realPath + File.separator + fileName;
+	    	LocalDate hoy = LocalDate.now();
+	    	DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    	String fechaFormateada = hoy.format(formato);
+	    	String fileName = "informeEstadoProductor_" + fechaFormateada + ".xlsx";
+	    	String filePath = realPath + File.separator + fileName;
 
-	        try (FileOutputStream fileout = new FileOutputStream(filePath)) {
-	            book.write(fileout);
-	            System.out.println("Archivo generado en: " + filePath);
-	        }
+	    	try (FileOutputStream fileout = new FileOutputStream(filePath)) {
+	    	    book.write(fileout);
+	    	    System.out.println("Archivo generado en: " + filePath);
+	    	}
+	    	String publicPath = sistemaOperativo.contains("linux")
+	    	    ? "/descargas/" + fileName
+	    	    : request.getContextPath() + "/descargas/" + fileName;
 
-	        response.setContentType("text/plain");
-	        response.getWriter().write("Archivo disponible en: /" + relativePath + "/" + fileName);
+	    	response.setContentType("text/plain");
+	    	response.getWriter().write("Archivo disponible en: " + publicPath);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
