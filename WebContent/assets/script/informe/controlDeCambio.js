@@ -116,7 +116,7 @@ $('#btnBuscar, #onlyChanges').on('click', renderTable);
 
 $(document).on('click', '.btnDescargarExcel', function () {
   const fecha = $(this).data('fecha');
-  const url = `/AgroVisionRestricciones/descargas/informeEstadoProductor_${fecha}.xlsx`;
+  const url = `/descargas/informeEstadoProductor_${fecha}.xlsx`;
 
   $.ajax({
     url: url,
