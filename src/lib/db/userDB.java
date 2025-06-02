@@ -100,7 +100,7 @@ public class userDB {
 	public static ArrayList<Map<String, Object>> getRoles() throws Exception {
 	    ConnectionDB db = new ConnectionDB();
 	    Statement stmt = null;
-	    String sql = "SELECT id, name FROM role_user";
+	    String sql = "SELECT idPerfil as id, nombre as name FROM systemPerfil";
 	    ArrayList<Map<String, Object>> roles = new ArrayList<>();
 
 	    try {
