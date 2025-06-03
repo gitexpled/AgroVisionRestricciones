@@ -130,8 +130,8 @@ public class estadoProductorNewDB {
 				
 				if (!variedad.isEmpty())
 					sql += " and j.VariedadDenomina='"+variedad.replace("\'", "\\'")+"' ";
-			System.out.println("VARIEDAD: "+variedad+"::::::::::::::::"+variedad.replace("\'", "\\'"));
-			System.out.println(sql);
+			//System.out.println("VARIEDAD: "+variedad+"::::::::::::::::"+variedad.replace("\'", "\\'"));
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				ArrayList<String> l = new ArrayList<>();
@@ -212,7 +212,7 @@ public class estadoProductorNewDB {
 		
 			
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				//if (rs.getString("vigente").equals("1")) {
@@ -295,7 +295,7 @@ public class estadoProductorNewDB {
 			if (swHaving)
 				sql += "  having b>molecula";
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				//if (rs.getString("vigente").equals("1")) {
@@ -377,7 +377,7 @@ public class estadoProductorNewDB {
 			if (swHaving)
 				sql += "  having b>restValor";
 
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				//if (rs.getString("vigente").equals("1")) {
@@ -549,7 +549,7 @@ public class estadoProductorNewDB {
 			if (!Mercado.isEmpty())
 				sql += " and m.mercado='"+Mercado+"' ";
 			
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				ArrayList<String> l = new ArrayList<>();
@@ -635,7 +635,7 @@ public class estadoProductorNewDB {
 			if (!Mercado.isEmpty())
 				sql += " and m.mercado='"+Mercado+"' ";
 			
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				ArrayList<String> l = new ArrayList<>();
@@ -718,7 +718,7 @@ public class estadoProductorNewDB {
 				
 			
 			
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				ArrayList<String> l = new ArrayList<>();
@@ -802,7 +802,7 @@ public class estadoProductorNewDB {
 				
 			
 			
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				ArrayList<String> l = new ArrayList<>();
@@ -879,7 +879,7 @@ public class estadoProductorNewDB {
 			if (!idVariedad.isEmpty())
 				sql += " and r.VariedadDenomina='"+idVariedad.replace("\'", "\\'")+"' ";
 			
-			System.out.println(sql);
+			//System.out.println(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				ArrayList<String> l = new ArrayList<>();
@@ -1023,15 +1023,15 @@ public class estadoProductorNewDB {
 			TreeMap<String, Hashtable<String, Integer>> arrMap = new TreeMap<>(data);
 			System.out.println("arrMap:"+arrMap);
 			for (Map.Entry<String, Hashtable<String, Integer>> dataMatrix : arrMap.entrySet()) {
-				System.out.println("dataMatrix:"+dataMatrix);
+				//System.out.println("dataMatrix:"+dataMatrix);
 				String key = dataMatrix.getKey();
-				System.out.println("key:"+key);
+				//System.out.println("key:"+key);
 				Hashtable<String, Integer> restriccionMercado = dataMatrix.getValue();
-				System.out.println("restriccionMercado:"+restriccionMercado);
+				//System.out.println("restriccionMercado:"+restriccionMercado);
 				String[] arrKey=key.split("\\$");
-				System.out.println("arrKey:"+arrKey);
+				//System.out.println("arrKey:"+arrKey);
 				String llave=arrKey[0]+"$"+arrKey[1]+"$"+arrKey[2]+"$"+arrKey[3]+"$"+arrKey[4]+"$"+arrKey[5]+"$"+arrKey[7]+"$"+arrKey[8];
-				System.out.println(llave);
+				//System.out.println(llave);
 				
 				
 				TreeMap<String, Integer> arrMapMercado = new TreeMap<>(restriccionMercado);
@@ -1042,8 +1042,8 @@ public class estadoProductorNewDB {
 				{
 					Hashtable<String, Integer> mercados = new Hashtable<>();
 					for (Map.Entry<String, Integer> row : arrMapMercado.entrySet()) {
-						System.out.println("row.getValue():"+row.getValue());
-						System.out.println("row.getKey():"+row.getKey());
+						//System.out.println("row.getValue():"+row.getValue());
+						//System.out.println("row.getKey():"+row.getKey());
 						//if (row.getValue()!=0)
 						//{
 							//row.setValue(-1);
@@ -1064,8 +1064,7 @@ public class estadoProductorNewDB {
 						//System.out.println("get(9):"+arr.get(9));
 						Integer value=row.getValue();
 						//System.out.println("value:"+value);
-						if (row.getKey().equals("India"))
-						System.out.println(llave+"-"+row.getKey()+"-"+"("+valor+")-("+value+")");
+						
 						if (valor==0 && value==0)
 						{
 							valor=0;
@@ -1074,6 +1073,9 @@ public class estadoProductorNewDB {
 						{
 							if (value==999)
 							{
+								if (row.getKey().equals("Korea"))
+								System.out.println(llave+"-"+row.getKey()+"-"+"("+valor+")-("+value+")");
+								
 								valor=999;
 								value=999;
 							}
@@ -1238,10 +1240,10 @@ public class estadoProductorNewDB {
 			ArrayList<ArrayList<String>> habilitacionComercial= getHabilitadoComercial(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
 			matrix=setBloqueo(matrix,habilitacionComercial,false);
 			
-			System.out.println(matrix);
+			//System.out.println(matrix);
 			
 			matrix=setGroup(matrix);
-			System.out.println(matrix);
+			//System.out.println(matrix);
 			data = getMatrix(matrix, mercado);
 
 		} catch (Exception e) {
@@ -1415,7 +1417,7 @@ public class estadoProductorNewDB {
 			ArrayList<ArrayList<String>> jerarquea= getJerarquia(idTemporada,idEspecie,variedad,productor,etapa,campo,"",false);
 			Hashtable<String, Hashtable<String, Integer>> matrix = createMatrix(mercado,jerarquea);
 			
-			System.out.println(idTemporada+","+idEspecie+","+variedad+","+""+","+productor+","+etapa+","+campo+","+"");
+		//	System.out.println(idTemporada+","+idEspecie+","+variedad+","+""+","+productor+","+etapa+","+campo+","+"");
 	
 			ArrayList<ArrayList<String>> bloqueoLmr= getLmr(idTemporada,idEspecie,variedad,"",productor,etapa,campo,"");
 			matrix=setBloqueo(matrix,bloqueoLmr,false);
@@ -1446,6 +1448,7 @@ public class estadoProductorNewDB {
 			
 			
 			matrix=setGroup(matrix);
+			//System.out.println(matrix);
 			data = getMatrix(matrix, mercado);
 			
 			
@@ -1502,8 +1505,9 @@ public class estadoProductorNewDB {
 			}
 			
 			json.put("columns", columns);
-			System.out.println(columns);
+			//System.out.println(columns);
 			json.put("data", array);
+			System.out.println(array);
 			
 
 		} catch (SQLException e) {

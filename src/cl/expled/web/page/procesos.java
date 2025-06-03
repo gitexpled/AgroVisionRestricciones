@@ -677,7 +677,7 @@ public class procesos {
 		XSSFFont headerFont = book.createFont();
 		headerFont.setFontName("Arial");
 		headerFont.setBold(true);
-		headerFont.setColor(rgb(255, 255, 255));
+		headerFont.setColor(rgb(255, 255, 255)); 
 		headerStyle.setFont(headerFont);
 
 		XSSFCellStyle baseStyle = book.createCellStyle();
@@ -692,6 +692,14 @@ public class procesos {
 		checkFont.setColor(rgb(0, 176, 80));
 		checkStyle.setFont(checkFont);
 
+		XSSFCellStyle checkStyle2 = book.createCellStyle();
+		checkStyle2.cloneStyleFrom(baseStyle);
+		XSSFFont checkFont2 = book.createFont();
+		checkFont2.setColor(rgb(255, 160, 0));
+		checkStyle2.setFont(checkFont2);
+		
+		
+		
 		XSSFCellStyle crossStyle = book.createCellStyle();
 		crossStyle.cloneStyleFrom(baseStyle);
 		XSSFFont crossFont = book.createFont();
@@ -733,12 +741,18 @@ public class procesos {
 						cell.setCellStyle(baseStyle);
 						continue;
 					}
-
+					
 					switch (upper) {
 					case "SI":
-					case "SI.":
 						cell.setCellValue("✔️");
 						cell.setCellStyle(checkStyle);
+						break;
+					case "SI.":
+						XSSFRichTextString richText2 = new XSSFRichTextString("LC❗");
+						XSSFFont yellowFont2 = book.createFont();
+						yellowFont2.setBold(true);
+						cell.setCellValue(richText2);
+						cell.setCellStyle(checkStyle2);
 						break;
 					case "NO":
 					case "NO.":
@@ -753,6 +767,8 @@ public class procesos {
 						cell.setCellValue(richText);
 						cell.setCellStyle(baseStyle);
 						break;
+				
+					
 					default:
 						cell.setCellValue(value);
 						cell.setCellStyle(baseStyle);

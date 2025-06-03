@@ -145,7 +145,7 @@ public class LimiteDB {
 
 			if (filter.size() > 0) {
 				String andSql="";
-				andSql += " WHERE ";
+				andSql += " AND ";
 				Iterator<filterSql> f = filter.iterator();
 				
 				while (f.hasNext()) 
@@ -218,7 +218,7 @@ public class LimiteDB {
 
 			if (filter.size() > 0) {
 				String andSql="";
-				andSql += " WHERE ";
+				andSql += " AND ";
 				Iterator<filterSql> f = filter.iterator();
 
 				while (f.hasNext()) 
@@ -297,7 +297,7 @@ public class LimiteDB {
 	public static boolean insertLimite(Limite limite, int idUser) throws ParseException {
 	    String sql = "INSERT INTO limites " +
 	                 "(codProducto, idMercado, idTipoProducto, idFuente, limite, creado, modificacion, idEspecie, idUser) " +
-	                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
 
 	    String fechaActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
@@ -314,6 +314,8 @@ public class LimiteDB {
 	        ps.setInt(8, limite.getIdEspecie());
 	        ps.setInt(9, idUser);
 
+	        System.out.println("limite: "+ps);
+	        
 	        int rowsAffected = ps.executeUpdate();
 	        return rowsAffected > 0;
 

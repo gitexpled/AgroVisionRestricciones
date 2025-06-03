@@ -573,7 +573,7 @@ public class estadoProductorJson {
 			data.setDraw(0);
 			data.init();
 			try {
-				System.out.println("idEspecie: "+idEspecie);
+				//System.out.println("idEspecie: "+idEspecie);
 				ArrayList<String[]> pp=estadoP.getEstadoProductorB(ses.getIdTemporada(),idEspecie,productor,etapa,campo,variedad,false,"");
 				data.setDatas(pp);
 				data.setRecordsFiltered(pp.size());
